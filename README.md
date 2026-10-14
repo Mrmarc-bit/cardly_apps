@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/icons/logo_1.svg" width="96" height="96" alt="Cardly Logo">
+  <img src="assets/icons/logo_2.svg" width="96" height="96" alt="Cardly Logo">
 </p>
 
 <h1 align="center">Cardly Mobile</h1>
@@ -15,7 +15,7 @@
   <a href="https://supabase.com"><img src="https://img.shields.io/badge/Supabase-Backend%20Hub-3ECF8E?logo=supabase&logoColor=white" alt="Supabase"></a>
   <a href="https://pages.cloudflare.com"><img src="https://img.shields.io/badge/Cloudflare_Pages-Deployment-F38020?logo=cloudflare&logoColor=white" alt="Cloudflare"></a>
   <a href="https://cardly.suntree.my.id/download"><img src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white" alt="Android"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Proprietary-blue.svg" alt="License"></a>
+  <a href="https://github.com/Mrmarc-bit/cardly_apps/releases"><img src="https://img.shields.io/badge/Release-v1.0.0-C8F45A?logo=github&logoColor=black" alt="Release"></a>
 </p>
 
 ---
@@ -28,9 +28,53 @@ Dilengkapi teknologi **In-App Auto-Update OTA (Over-The-Air)**, Cardly mendistri
 
 ### Tautan Resmi:
 * 🌐 **Situs Resmi:** [https://cardly.suntree.my.id](https://cardly.suntree.my.id)
-* 📥 **Portal Unduh APK:** [https://cardly.suntree.my.id/download](https://cardly.suntree.my.id/download)
+* 📥 **Portal Unduh Langsung APK:** [https://cardly.suntree.my.id/download](https://cardly.suntree.my.id/download)
+* 📦 **GitHub Releases:** [https://github.com/Mrmarc-bit/cardly_apps/releases](https://github.com/Mrmarc-bit/cardly_apps/releases)
 * 🔒 **Kebijakan Privasi:** [https://cardly.suntree.my.id/privacy](https://cardly.suntree.my.id/privacy)
 * 📜 **Ketentuan Layanan:** [https://cardly.suntree.my.id/terms](https://cardly.suntree.my.id/terms)
+
+---
+
+## 📸 Cuplikan Antarmuka (UI Showcase)
+
+<div align="center">
+  <table>
+    <tr>
+      <td width="33%" align="center">
+        <img src="assets/previews/01_beranda_dashboard.png" width="100%" alt="Beranda Utama"><br><br>
+        <strong>1. Beranda Utama</strong><br>
+        <em>Ringkasan kartu & status dokumen</em>
+      </td>
+      <td width="33%" align="center">
+        <img src="assets/previews/02_kartu_saya.png" width="100%" alt="Kartu Saya"><br><br>
+        <strong>2. Dompet Kartu</strong><br>
+        <em>Tumpukan kartu dinamis & interaktif</em>
+      </td>
+      <td width="33%" align="center">
+        <img src="assets/previews/03_scan_kamera.png" width="100%" alt="Kamera Scanner"><br><br>
+        <strong>3. Pemindai ISO ID-1</strong><br>
+        <em>Laser overlay & auto-crop kartu</em>
+      </td>
+    </tr>
+    <tr>
+      <td width="33%" align="center">
+        <img src="assets/previews/04_ocr_extraction.png" width="100%" alt="Ekstraksi OCR"><br><br>
+        <strong>4. Ekstraksi OCR Pintar</strong><br>
+        <em>Pembacaan teks e-KTP & kartu otomatis</em>
+      </td>
+      <td width="33%" align="center">
+        <img src="assets/previews/05_brankas_terbuka.png" width="100%" alt="Brankas Terbuka"><br><br>
+        <strong>5. Brankas Privat</strong><br>
+        <em>Perlindungan biometrik & enkripsi lokal</em>
+      </td>
+      <td width="33%" align="center">
+        <img src="assets/previews/06_pengingat_detail.png" width="100%" alt="Detail Pengingat"><br><br>
+        <strong>6. Pengingat Kedaluwarsa</strong><br>
+        <em>Notifikasi tepat waktu sebelum kadaluwarsa</em>
+      </td>
+    </tr>
+  </table>
+</div>
 
 ---
 
