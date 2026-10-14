@@ -215,9 +215,17 @@ final cardListProvider =
 class CardListNotifier extends StateNotifier<List<CardItem>> {
   final CardRepository _repo;
 
-  CardListNotifier(this._repo) : super(_repo.getAllCards());
+  CardListNotifier(this._repo) : super(_repo.getAllCards()) {
+    _initLoad();
+  }
 
-  void refresh() {
+  Future<void> _initLoad() async {
+    await _repo.loadFromDatabase();
+    state = _repo.getAllCards();
+  }
+
+  Future<void> refresh() async {
+    await _repo.loadFromDatabase();
     state = _repo.getAllCards();
   }
 
@@ -258,9 +266,17 @@ final documentListProvider =
 class DocumentListNotifier extends StateNotifier<List<DocumentItem>> {
   final DocumentRepository _repo;
 
-  DocumentListNotifier(this._repo) : super(_repo.getAllDocuments());
+  DocumentListNotifier(this._repo) : super(_repo.getAllDocuments()) {
+    _initLoad();
+  }
 
-  void refresh() {
+  Future<void> _initLoad() async {
+    await _repo.loadFromDatabase();
+    state = _repo.getAllDocuments();
+  }
+
+  Future<void> refresh() async {
+    await _repo.loadFromDatabase();
     state = _repo.getAllDocuments();
   }
 
@@ -291,9 +307,17 @@ final reminderListProvider =
 class ReminderListNotifier extends StateNotifier<List<ReminderItem>> {
   final ReminderRepository _repo;
 
-  ReminderListNotifier(this._repo) : super(_repo.getAllReminders());
+  ReminderListNotifier(this._repo) : super(_repo.getAllReminders()) {
+    _initLoad();
+  }
 
-  void refresh() {
+  Future<void> _initLoad() async {
+    await _repo.loadFromDatabase();
+    state = _repo.getAllReminders();
+  }
+
+  Future<void> refresh() async {
+    await _repo.loadFromDatabase();
     state = _repo.getAllReminders();
   }
 

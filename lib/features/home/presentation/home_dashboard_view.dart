@@ -37,6 +37,9 @@ class _HomeDashboardViewState extends ConsumerState<HomeDashboardView> {
     super.initState();
     _cardPageController = PageController(viewportFraction: 0.90);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(cardListProvider.notifier).refresh();
+      ref.read(documentListProvider.notifier).refresh();
+      ref.read(reminderListProvider.notifier).refresh();
       _checkAutoUpdate();
     });
   }

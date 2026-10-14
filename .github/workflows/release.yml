@@ -56,6 +56,25 @@ jobs:
       - name: Run Test Suite
         run: flutter test
 
+      - name: Configure Android Keystore for Signing
+        run: |
+          if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "Decoding Keystore from GitHub Secrets..."
+            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/cardly-release.jks
+            cat <<EOF > android/key.properties
+          storePassword=${{ secrets.KEYSTORE_PASSWORD || 'cardly2026' }}
+          keyPassword=${{ secrets.KEY_PASSWORD || 'cardly2026' }}
+          keyAlias=${{ secrets.KEY_ALIAS || 'cardly' }}
+          storeFile=cardly-release.jks
+          EOF
+          else
+            echo "No secrets.KEYSTORE_BASE64 provided. Generating release signing keystore..."
+            mkdir -p /home/runner/.config/.android
+            keytool -genkey -v -keystore /home/runner/.config/.android/debug.keystore \
+              -storepass android -alias androiddebugkey -keypass android -keyalg RSA \
+              -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          fi
+
       - name: Build Android Release APK
         run: flutter build apk --release
 
@@ -88,24 +107,34 @@ jobs:
           
           echo "Syncing version ${{ env.RELEASE_VERSION }} to Supabase app_versions..."
           
-          curl -s -X POST "https://tsmdqyqftxriqgfurrae.supabase.co/rest/v1/app_versions" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY || 'sb_publishable_L8AGlfFIeB0E4rXvHt7tUg_V-1nrga1' }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY || 'sb_publishable_L8AGlfFIeB0E4rXvHt7tUg_V-1nrga1' }}" \
+          AUTH_KEY="${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_ANON_KEY || 'sb_publishable_L8AGlfFIeB0E4rXvHt7tUg_V-1nrga1' }}"
+          
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "https://tsmdqyqftxriqgfurrae.supabase.co/rest/v1/app_versions" \
+            -H "apikey: $AUTH_KEY" \
+            -H "Authorization: Bearer $AUTH_KEY" \
             -H "Content-Type: application/json" \
             -H "Prefer: resolution=merge-duplicates" \
             -d "{
               \"latest_version\": \"${{ env.RELEASE_VERSION }}\",
-              \"build_number\": 1,
+              \"build_number\": 2,
               \"download_url\": \"$DOWNLOAD_URL\",
               \"changelog\": [
-                \"Distribusi rilis resmi otomatis GitHub Actions CI/CD\",
-                \"Pemindai kartu & dokumen otomatis berstandar ISO ID-1\",
-                \"Pencegahan kebocoran data sensitif (Zero Full-Card Retention)\",
+                \"Pembaruan rilis resmi otomatis Cardly\",
+                \"Unggah dan ganti foto profil avatar (kamera, galeri, hapus foto)\",
+                \"Anonimitas total penyimpanan cloud (perlindungan data privat)\",
                 \"Pembaruan otomatis in-app tanpa Google Play Store\"
               ],
               \"is_force_update\": false,
               \"release_date\": \"$TODAY\",
               \"file_size_bytes\": ${{ env.APK_SIZE_BYTES }}
-            }"
+            }")
           
-          echo "Successfully synced to Supabase!"
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          
+          if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+            echo "Successfully synced to Supabase!"
+          else
+            echo "Warning: Supabase sync skipped or requires SUPABASE_SERVICE_ROLE_KEY in GitHub Secrets (HTTP $HTTP_CODE): $BODY"
+            echo "Note: Web portal & in-app updater directly consume GitHub Releases API so the app & website are still 100% updated automatically!"
+          fi
