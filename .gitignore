@@ -53,3 +53,8 @@ key.properties
 *.jks
 *.keystore
 
+# Android build outputs
+*.apk
+*.aab
+
+
