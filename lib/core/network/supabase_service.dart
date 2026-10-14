@@ -126,7 +126,7 @@ class SupabaseService {
     return await c.auth.signInWithOAuth(
       OAuthProvider.google,
       redirectTo: redirectTo ?? SupabaseConfig.oauthCallbackUrl,
-      authScreenLaunchMode: LaunchMode.inAppBrowserView,
+      authScreenLaunchMode: LaunchMode.externalApplication,
     );
   }
 

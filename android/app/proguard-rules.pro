@@ -25,3 +25,10 @@
 -keepclasseswithmembernames class * {
     native <methods>;
 }
+
+# Google Play Services Auth & Sign-In Keep Rules (Critical for Release APK)
+-keep class com.google.android.gms.auth.api.** { *; }
+-keep class com.google.android.gms.common.** { *; }
+-keep class com.google.android.gms.internal.auth.** { *; }
+-dontwarn com.google.android.gms.**
+
