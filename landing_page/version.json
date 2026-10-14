@@ -1,14 +1,16 @@
 {
-  "latest_version": "1.0.1",
-  "build_number": 2,
+  "latest_version": "1.0.2",
+  "build_number": 3,
   "is_force_update": false,
-  "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.1/cardly-universal-v1.0.1.apk",
-  "release_date": "2026-10-14",
+  "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.2/cardly-release-v1.0.2.apk",
+  "release_date": "2026-10-15",
   "changelog": [
-    "Fitur unggah dan ganti foto profil avatar (kamera, galeri, dan hapus foto)",
-    "Anonimitas total penyimpanan cloud (perlindungan data privat tanpa ekspos vendor backend)",
-    "Optimasi antarmuka responsif mobile portal web & timeline changelog modern",
-    "Dukungan arsitektur terpisah (ARM64 & ARMv7) dan paket Universal untuk semua tipe HP Android"
+    "Penyimpanan folder nyata di database SQLite lokal (CRUD & integrasi dokumen)",
+    "Alur penambahan kartu instan langsung ke pengisian detail tanpa langkah redundan",
+    "Komponen CardlyToast melayang modern (pill shape) dengan haptic feedback",
+    "Pembersihan tombol ganda pada empty state dan simplifikasi bilah pencarian",
+    "Proteksi privasi penyamaran layar sistem (FLAG_SECURE) dan auto-lock timeout latar belakang",
+    "Animasi navigasi pegas dinamis dan penanganan tombol kembali Android cerdas"
   ],
   "file_size_bytes": 35203072,
   "variants": [
@@ -17,30 +19,30 @@
       "label": "ARM64 (64-bit)",
       "badge": "Rekomendasi Utama",
       "desc": "Optimal untuk smartphone Android modern (Samsung, Xiaomi, Oppo, Vivo, Pixel, dll)",
-      "file_name": "cardly-arm64-v8a-v1.0.1.apk",
-      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.1/cardly-arm64-v8a-v1.0.1.apk",
+      "file_name": "cardly-arm64-v8a-v1.0.2.apk",
+      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.2/cardly-arm64-v8a-v1.0.2.apk",
       "file_size_bytes": 35203072,
-      "sha256": "52ab4d4bd5d8bfb0f3e4b522e7621de25f07b38384d1b9e660e4ce745af083f6"
+      "sha256": ""
     },
     {
       "arch": "armeabi-v7a",
       "label": "ARMv7 (32-bit)",
       "badge": "Ponsel Lawas / Helio 32-bit",
       "desc": "Untuk ponsel Android 32-bit (Infinix Hot/Smart Helio, smartphone lawas)",
-      "file_name": "cardly-armeabi-v7a-v1.0.1.apk",
-      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.1/cardly-armeabi-v7a-v1.0.1.apk",
+      "file_name": "cardly-armeabi-v7a-v1.0.2.apk",
+      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.2/cardly-armeabi-v7a-v1.0.2.apk",
       "file_size_bytes": 28418674,
-      "sha256": "ff9cf4db3baf2e93a7554b4066eaa8979a91c467d3f296d36c1e77b1b09faa9d"
+      "sha256": ""
     },
     {
       "arch": "universal",
       "label": "Universal (Semua HP)",
       "badge": "Kompatibilitas Penuh",
       "desc": "Memuat pustaka 64-bit dan 32-bit, dijamin dapat dipasang di seluruh perangkat Android",
-      "file_name": "cardly-universal-v1.0.1.apk",
-      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.1/cardly-universal-v1.0.1.apk",
+      "file_name": "cardly-release-v1.0.2.apk",
+      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.2/cardly-release-v1.0.2.apk",
       "file_size_bytes": 92600000,
-      "sha256": "9c453aa452e4ddc8bdd8924ed896a659423e7bd20bb8c537f18d2fb01257f431"
+      "sha256": ""
     }
   ]
 }

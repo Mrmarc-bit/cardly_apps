@@ -818,7 +818,7 @@ class _HomeDashboardViewState extends ConsumerState<HomeDashboardView> {
                 _buildNotificationItem(
                   isDark: isDark,
                   icon: Icons.system_update_rounded,
-                  title: 'Versi 1.0.1 Terpasang',
+                  title: 'Versi 1.0.2 Terpasang',
                   desc: 'Aplikasi berjalan pada rilis terbaru dengan proteksi privasi mandiri.',
                   time: 'Aktif',
                 ),

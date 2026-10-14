@@ -212,7 +212,7 @@ class ProfileDashboardView extends ConsumerWidget {
                   ListTile(
                     leading: const Icon(Icons.system_update_rounded),
                     title: const Text('Periksa Pembaruan Aplikasi'),
-                    subtitle: const Text('v1.0.1 • Cek versi rilis terbaru'),
+                    subtitle: const Text('v1.0.2 • Cek versi rilis terbaru'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => _handleManualUpdateCheck(context, ref),
                   ),
@@ -234,7 +234,7 @@ class ProfileDashboardView extends ConsumerWidget {
 
             Center(
               child: Text(
-                'Cardly v1.0.1 (Build 2) • Indonesia',
+                'Cardly v1.0.2 (Build 3) • Indonesia',
                 style: AppTypography.caption(context)
                     .copyWith(color: AppColors.mutedText),
               ),
