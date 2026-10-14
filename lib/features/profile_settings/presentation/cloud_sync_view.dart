@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
-import '../../../core/config/supabase_config.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -93,7 +92,7 @@ class _CloudSyncViewState extends ConsumerState<CloudSyncView> {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'Sinkronisasi Cloud Supabase',
+          'Sinkronisasi Cloud',
           style: AppTypography.pageHeading.copyWith(
             fontSize: 18.0,
             fontWeight: FontWeight.w700,
@@ -109,7 +108,7 @@ class _CloudSyncViewState extends ConsumerState<CloudSyncView> {
           ),
           physics: const BouncingScrollPhysics(),
           children: [
-            // Status Card Supabase Engine
+            // Status Card Cloud Sync
             Container(
               padding: const EdgeInsets.all(AppSpacing.lg),
               decoration: BoxDecoration(
@@ -119,82 +118,47 @@ class _CloudSyncViewState extends ConsumerState<CloudSyncView> {
                   color: isDark ? AppColors.darkBorder : AppColors.softGray,
                 ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(
-                          color: AppColors.lime.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(
-                            AppRadius.control,
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.cloud_done_rounded,
-                          color: isDark ? AppColors.lime : AppColors.ink,
-                          size: 28,
-                        ),
+                  Container(
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      color: AppColors.lime.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(
+                        AppRadius.control,
                       ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Supabase PostgreSQL',
-                              style: AppTypography.bodyStyle.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: isDark ? AppColors.white : AppColors.ink,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              isConnected
-                                  ? 'Backend Siap & Terhubung'
-                                  : 'Backend Standby (Offline)',
-                              style: AppTypography.caption(context).copyWith(
-                                color: isConnected
-                                    ? Colors.green
-                                    : AppColors.muted,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isConnected
-                              ? Colors.green.withValues(alpha: 0.15)
-                              : Colors.orange.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(AppRadius.pill),
-                        ),
-                        child: Text(
-                          isConnected ? 'AKTIF' : 'LOKAL',
-                          style: TextStyle(
-                            color: isConnected ? Colors.green : Colors.orange,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
+                    child: Icon(
+                      Icons.cloud_done_rounded,
+                      color: isDark ? AppColors.lime : AppColors.ink,
+                      size: 28,
+                    ),
                   ),
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    'Endpoint Proyek: ${SupabaseConfig.url}',
-                    style: AppTypography.caption(context).copyWith(
-                      color: isDark
-                          ? AppColors.textSecondaryDark
-                          : AppColors.muted,
-                      fontFamily: 'monospace',
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Penyimpanan Cloud Terenkripsi',
+                          style: AppTypography.bodyStyle.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: isDark ? AppColors.white : AppColors.ink,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          isConnected
+                              ? 'Cadangan Cloud Siap & Terhubung'
+                              : 'Mode Cadangan Lokal (Offline)',
+                          style: AppTypography.caption(context).copyWith(
+                            color: isConnected
+                                ? Colors.green
+                                : AppColors.muted,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -423,7 +387,7 @@ class _CloudSyncViewState extends ConsumerState<CloudSyncView> {
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
-                      'Privasi Mutlak: Kredensial sensitif perbankan (nomor kartu 16 digit lengkap, PIN, CVV) tidak pernah disimpan di database atau dikirim ke cloud. Setiap data Anda diisolasi menggunakan PostgreSQL Row Level Security (RLS).',
+                      'Privasi Mutlak: Kredensial sensitif perbankan (nomor kartu 16 digit lengkap, PIN, CVV) tidak pernah disimpan di database atau dikirim ke cloud. Setiap data Anda diisolasi menggunakan Enkripsi End-to-End & Row Level Security (RLS).',
                       style: AppTypography.caption(context).copyWith(
                         color: isDark
                             ? AppColors.textSecondaryDark

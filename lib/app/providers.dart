@@ -94,6 +94,7 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 class UserProfile {
   final String fullName;
   final String email;
+  final String avatarPath;
   final bool isLoggedIn;
   final bool hasBiometrics;
   final bool isBiometricActive;
@@ -102,6 +103,7 @@ class UserProfile {
   const UserProfile({
     this.fullName = '',
     this.email = '',
+    this.avatarPath = '',
     this.isLoggedIn = false,
     this.hasBiometrics = true,
     this.isBiometricActive = false,
@@ -111,6 +113,7 @@ class UserProfile {
   UserProfile copyWith({
     String? fullName,
     String? email,
+    String? avatarPath,
     bool? isLoggedIn,
     bool? hasBiometrics,
     bool? isBiometricActive,
@@ -119,6 +122,7 @@ class UserProfile {
     return UserProfile(
       fullName: fullName ?? this.fullName,
       email: email ?? this.email,
+      avatarPath: avatarPath ?? this.avatarPath,
       isLoggedIn: isLoggedIn ?? this.isLoggedIn,
       hasBiometrics: hasBiometrics ?? this.hasBiometrics,
       isBiometricActive: isBiometricActive ?? this.isBiometricActive,
@@ -141,14 +145,26 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
         UserProfile(
           fullName: _storage.userName,
           email: _storage.userEmail,
+          avatarPath: _storage.userAvatarPath,
           isLoggedIn: _storage.isLoggedIn,
         ),
       );
 
-  void updateProfile({String? name, String? email}) {
-    state = state.copyWith(fullName: name, email: email);
+  void updateProfile({String? name, String? email, String? avatarPath}) {
+    state = state.copyWith(fullName: name, email: email, avatarPath: avatarPath);
     if (name != null) _storage.setUserName(name);
     if (email != null) _storage.setUserEmail(email);
+    if (avatarPath != null) _storage.setUserAvatarPath(avatarPath);
+  }
+
+  void updateAvatar(String path) {
+    state = state.copyWith(avatarPath: path);
+    _storage.setUserAvatarPath(path);
+  }
+
+  void removeAvatar() {
+    state = state.copyWith(avatarPath: '');
+    _storage.setUserAvatarPath('');
   }
 
   void setBiometricActive(bool active) {
