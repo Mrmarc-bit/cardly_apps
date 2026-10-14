@@ -18,8 +18,22 @@ import '../features/reminders/data/reminder_repository.dart';
 import '../features/reminders/domain/reminder_model.dart';
 
 import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 // --- Global Storage & Repository Providers ---
+
+final packageInfoProvider = FutureProvider<PackageInfo>((ref) async {
+  try {
+    return await PackageInfo.fromPlatform();
+  } catch (_) {
+    return PackageInfo(
+      appName: 'Cardly',
+      packageName: 'com.cardly.app',
+      version: '1.0.2',
+      buildNumber: '3',
+    );
+  }
+});
 
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
   throw UnimplementedError(

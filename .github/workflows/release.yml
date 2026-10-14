@@ -100,6 +100,49 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Auto-generate version.json & Sync to Main
+        run: |
+          APK_DEST="cardly-release-${{ env.RELEASE_TAG }}.apk"
+          SHA256=$(sha256sum "$APK_DEST" | awk '{print $1}')
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ env.RELEASE_TAG }}/cardly-release-${{ env.RELEASE_TAG }}.apk"
+          TODAY=$(date +%Y-%m-%d)
+
+          cat <<EOF > version.json
+          {
+            "latest_version": "${{ env.RELEASE_VERSION }}",
+            "build_number": ${{ github.run_number }},
+            "is_force_update": false,
+            "download_url": "$DOWNLOAD_URL",
+            "release_date": "$TODAY",
+            "changelog": [
+              "Pembaruan rilis resmi otomatis Cardly ${{ env.RELEASE_TAG }}",
+              "Peningkatan kestabilan, performa, dan sinkronisasi data privat"
+            ],
+            "file_size_bytes": ${{ env.APK_SIZE_BYTES }},
+            "variants": [
+              {
+                "arch": "universal",
+                "label": "Universal (Semua HP)",
+                "badge": "Kompatibilitas Penuh",
+                "desc": "Memuat pustaka 64-bit dan 32-bit, dijamin dapat dipasang di seluruh perangkat Android",
+                "file_name": "cardly-release-${{ env.RELEASE_TAG }}.apk",
+                "download_url": "$DOWNLOAD_URL",
+                "file_size_bytes": ${{ env.APK_SIZE_BYTES }},
+                "sha256": "$SHA256"
+              }
+            ]
+          }
+          EOF
+          cp version.json landing_page/version.json
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout main
+          git pull origin main --rebase
+          git add version.json landing_page/version.json
+          git commit -m "chore(release): auto-sync version.json to ${{ env.RELEASE_TAG }} [skip ci]" || echo "No changes to commit"
+          git push origin main || echo "Auto-commit push failed, non-blocking"
+
       - name: Sync Metadata to Supabase Hub
         run: |
           DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ env.RELEASE_TAG }}/cardly-release-${{ env.RELEASE_TAG }}.apk"
@@ -116,13 +159,11 @@ jobs:
             -H "Prefer: resolution=merge-duplicates" \
             -d "{
               \"latest_version\": \"${{ env.RELEASE_VERSION }}\",
-              \"build_number\": 2,
+              \"build_number\": ${{ github.run_number }},
               \"download_url\": \"$DOWNLOAD_URL\",
               \"changelog\": [
-                \"Pembaruan rilis resmi otomatis Cardly\",
-                \"Unggah dan ganti foto profil avatar (kamera, galeri, hapus foto)\",
-                \"Anonimitas total penyimpanan cloud (perlindungan data privat)\",
-                \"Pembaruan otomatis in-app tanpa Google Play Store\"
+                \"Pembaruan rilis resmi otomatis Cardly ${{ env.RELEASE_TAG }}\",
+                \"Peningkatan kestabilan, performa, dan sinkronisasi data privat\"
               ],
               \"is_force_update\": false,
               \"release_date\": \"$TODAY\",
@@ -138,3 +179,4 @@ jobs:
             echo "Warning: Supabase sync skipped or requires SUPABASE_SERVICE_ROLE_KEY in GitHub Secrets (HTTP $HTTP_CODE): $BODY"
             echo "Note: Web portal & in-app updater directly consume GitHub Releases API so the app & website are still 100% updated automatically!"
           fi
+

@@ -23,6 +23,18 @@ class ProfileDashboardView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final profile = ref.watch(userProfileProvider);
+    final packageInfoAsync = ref.watch(packageInfoProvider);
+    final versionStr = packageInfoAsync.when(
+      data: (info) => 'v${info.version}',
+      loading: () => 'v1.0.2',
+      error: (_, _) => 'v1.0.2',
+    );
+    final fullVersionStr = packageInfoAsync.when(
+      data: (info) =>
+          'Cardly v${info.version} (Build ${info.buildNumber}) • Indonesia',
+      loading: () => 'Cardly v1.0.2 (Build 3) • Indonesia',
+      error: (_, _) => 'Cardly v1.0.2 (Build 3) • Indonesia',
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profil & Pengaturan')),
@@ -212,7 +224,7 @@ class ProfileDashboardView extends ConsumerWidget {
                   ListTile(
                     leading: const Icon(Icons.system_update_rounded),
                     title: const Text('Periksa Pembaruan Aplikasi'),
-                    subtitle: const Text('v1.0.2 • Cek versi rilis terbaru'),
+                    subtitle: Text('$versionStr • Cek versi rilis terbaru'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => _handleManualUpdateCheck(context, ref),
                   ),
@@ -234,7 +246,7 @@ class ProfileDashboardView extends ConsumerWidget {
 
             Center(
               child: Text(
-                'Cardly v1.0.2 (Build 3) • Indonesia',
+                fullVersionStr,
                 style: AppTypography.caption(context)
                     .copyWith(color: AppColors.mutedText),
               ),

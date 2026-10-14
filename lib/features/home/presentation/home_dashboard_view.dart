@@ -756,6 +756,11 @@ class _HomeDashboardViewState extends ConsumerState<HomeDashboardView> {
   }
 
   void _showNotificationSheet(BuildContext context, bool isDark) {
+    final pkg = ref.read(packageInfoProvider).valueOrNull;
+    final verTitle = pkg != null
+        ? 'Versi ${pkg.version} Terpasang'
+        : 'Versi Terpasang Aktif';
+
     showModalBottomSheet(
       context: context,
       backgroundColor: isDark ? AppColors.charcoal : AppColors.white,
@@ -818,7 +823,7 @@ class _HomeDashboardViewState extends ConsumerState<HomeDashboardView> {
                 _buildNotificationItem(
                   isDark: isDark,
                   icon: Icons.system_update_rounded,
-                  title: 'Versi 1.0.2 Terpasang',
+                  title: verTitle,
                   desc: 'Aplikasi berjalan pada rilis terbaru dengan proteksi privasi mandiri.',
                   time: 'Aktif',
                 ),

@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -39,6 +39,25 @@ class AppUpdateService {
   static const String currentVersion = '1.0.2';
   static const int currentBuildNumber = 3;
 
+  /// Membaca versi semantik yang aktif dari sistem operasi secara dinamis
+  Future<String> getLocalVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (info.version.isNotEmpty) return info.version;
+    } catch (_) {}
+    return currentVersion;
+  }
+
+  /// Membaca build number yang aktif dari sistem operasi secara dinamis
+  Future<int> getLocalBuildNumber() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      final parsed = int.tryParse(info.buildNumber);
+      if (parsed != null) return parsed;
+    } catch (_) {}
+    return currentBuildNumber;
+  }
+
   static const String githubRawUrl =
       'https://raw.githubusercontent.com/Mrmarc-bit/cardly_apps/main/version.json';
   static const String githubReleasesApiUrl =
@@ -49,7 +68,7 @@ class AppUpdateService {
   );
 
   /// Memeriksa ketersediaan versi baru dengan mekanisme Multi-Source:
-  /// Mengambil data dari GitHub (version.json & Releases API) dan Supabase (app_versions),
+  /// Mengambil data dari GitHub (Releases API & version.json) dan Supabase (app_versions),
   /// lalu memilih kandidat versi/build number tertinggi secara otomatis.
   Future<AppUpdateInfo?> checkForUpdate() async {
     // Mode testing headless
@@ -57,9 +76,12 @@ class AppUpdateService {
       return null;
     }
 
+    final localVer = await getLocalVersion();
+    final localBuild = await getLocalBuildNumber();
+
     AppUpdateInfo? bestUpdate;
 
-    // 1. Ambil dari GitHub (version.json dan Releases API publik)
+    // 1. Ambil dari GitHub (Prioritaskan GitHub Releases API resmi real-time)
     try {
       final githubInfo = await _fetchFromGitHub();
       if (githubInfo != null) {
@@ -95,10 +117,11 @@ class AppUpdateService {
 
     if (bestUpdate == null) return null;
 
-    // Bandingkan apakah versi remote lebih tinggi dari versi saat ini
+    // Bandingkan apakah versi remote lebih tinggi dari versi lokal saat ini
     final hasNewVersion =
-        isNewerVersion(bestUpdate.latestVersion, currentVersion) ||
-        bestUpdate.buildNumber > currentBuildNumber;
+        isNewerVersion(bestUpdate.latestVersion, localVer) ||
+        (bestUpdate.latestVersion == localVer &&
+            bestUpdate.buildNumber > localBuild);
 
     if (hasNewVersion) {
       return bestUpdate;
@@ -112,34 +135,8 @@ class AppUpdateService {
     final client = HttpClient();
     client.connectionTimeout = const Duration(seconds: 8);
 
-    AppUpdateInfo? rawInfo;
+    // 1. Prioritaskan GitHub Releases API resmi: Real-time tanpa jeda CDN cache
     try {
-      // Coba raw version.json terlebih dahulu dengan timestamp anti-cache
-      final request = await client.getUrl(
-        Uri.parse('$githubRawUrl?_t=${DateTime.now().millisecondsSinceEpoch}'),
-      );
-      final response = await request.close();
-
-      if (response.statusCode == 200) {
-        final body = await response.transform(utf8.decoder).join();
-        final jsonMap = jsonDecode(body) as Map<String, dynamic>;
-        rawInfo = AppUpdateInfo.fromJson(jsonMap);
-      }
-    } catch (_) {
-      // Abaikan dan lanjut ke GitHub Releases API
-    }
-
-    // Jika raw version.json sudah memiliki versi yang lebih tinggi dari aplikasi lokal,
-    // langsung gunakan info dari version.json tersebut.
-    if (rawInfo != null &&
-        (isNewerVersion(rawInfo.latestVersion, currentVersion) ||
-            rawInfo.buildNumber > currentBuildNumber)) {
-      client.close();
-      return rawInfo;
-    }
-
-    try {
-      // Coba GitHub Releases API resmi sebagai sumber rilis real-time
       final req = await client.getUrl(Uri.parse(githubReleasesApiUrl));
       req.headers.set('User-Agent', 'Cardly-App');
       final res = await req.close();
@@ -148,7 +145,6 @@ class AppUpdateService {
         final body = await res.transform(utf8.decoder).join();
         final releaseJson = jsonDecode(body) as Map<String, dynamic>;
 
-        // Cari aset file .apk di assets
         final assets = releaseJson['assets'] as List<dynamic>?;
         String apkDownloadUrl = '';
         int apkSize = 0;
@@ -168,10 +164,12 @@ class AppUpdateService {
           apkDownloadUrl = (releaseJson['html_url'] as String?) ?? '';
         }
 
+        final rawTag = (releaseJson['tag_name'] as String?) ?? '1.0.0';
+        final cleanVersion = rawTag.replaceAll('v', '').trim();
+
+        client.close();
         return AppUpdateInfo(
-          latestVersion:
-              (releaseJson['tag_name'] as String?)?.replaceAll('v', '') ??
-              '1.0.0',
+          latestVersion: cleanVersion,
           buildNumber: 99,
           downloadUrl: apkDownloadUrl,
           changelog:
@@ -186,13 +184,27 @@ class AppUpdateService {
           fileSizeBytes: apkSize,
         );
       }
-    } catch (e) {
-      debugPrint('[AppUpdateService] GitHub check error: $e');
-    } finally {
-      client.close();
+    } catch (_) {
+      // Jika Releases API mengalami rate-limit atau gagal, beralih ke raw version.json
     }
 
-    return rawInfo;
+    // 2. Fallback: Raw version.json
+    try {
+      final request = await client.getUrl(
+        Uri.parse('$githubRawUrl?_t=${DateTime.now().millisecondsSinceEpoch}'),
+      );
+      final response = await request.close();
+
+      if (response.statusCode == 200) {
+        final body = await response.transform(utf8.decoder).join();
+        final jsonMap = jsonDecode(body) as Map<String, dynamic>;
+        client.close();
+        return AppUpdateInfo.fromJson(jsonMap);
+      }
+    } catch (_) {}
+
+    client.close();
+    return null;
   }
 
   /// Membandingkan dua string versi semantik (e.g. '1.0.1' > '1.0.0')
