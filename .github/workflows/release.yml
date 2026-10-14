@@ -1,0 +1,111 @@
+name: Cardly Auto Release & Supabase Sync
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag rilis (contoh: v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build APK & Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine Release Tag
+        id: vars
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.tag_name }}"
+          else
+            TAG="${{ github.ref_name }}"
+          fi
+          VERSION="${TAG#v}"
+          echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Release Tag: $TAG (Version: $VERSION)"
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Flutter Dependencies
+        run: flutter pub get
+
+      - name: Run Test Suite
+        run: flutter test
+
+      - name: Build Android Release APK
+        run: flutter build apk --release
+
+      - name: Prepare Release APK Artifact
+        id: prepare_apk
+        run: |
+          APK_SRC="build/app/outputs/flutter-apk/app-release.apk"
+          APK_DEST="cardly-release-${{ env.RELEASE_TAG }}.apk"
+          cp "$APK_SRC" "$APK_DEST"
+          SIZE_BYTES=$(stat -c%s "$APK_DEST" 2>/dev/null || stat -f%z "$APK_DEST")
+          echo "APK_SIZE_BYTES=$SIZE_BYTES" >> $GITHUB_ENV
+          echo "APK Size: $SIZE_BYTES bytes"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: "Cardly Release ${{ env.RELEASE_TAG }}"
+          files: cardly-release-${{ env.RELEASE_TAG }}.apk
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync Metadata to Supabase Hub
+        run: |
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ env.RELEASE_TAG }}/cardly-release-${{ env.RELEASE_TAG }}.apk"
+          TODAY=$(date +%Y-%m-%d)
+          
+          echo "Syncing version ${{ env.RELEASE_VERSION }} to Supabase app_versions..."
+          
+          curl -s -X POST "https://tsmdqyqftxriqgfurrae.supabase.co/rest/v1/app_versions" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY || 'sb_publishable_L8AGlfFIeB0E4rXvHt7tUg_V-1nrga1' }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY || 'sb_publishable_L8AGlfFIeB0E4rXvHt7tUg_V-1nrga1' }}" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: resolution=merge-duplicates" \
+            -d "{
+              \"latest_version\": \"${{ env.RELEASE_VERSION }}\",
+              \"build_number\": 1,
+              \"download_url\": \"$DOWNLOAD_URL\",
+              \"changelog\": [
+                \"Distribusi rilis resmi otomatis GitHub Actions CI/CD\",
+                \"Pemindai kartu & dokumen otomatis berstandar ISO ID-1\",
+                \"Pencegahan kebocoran data sensitif (Zero Full-Card Retention)\",
+                \"Pembaruan otomatis in-app tanpa Google Play Store\"
+              ],
+              \"is_force_update\": false,
+              \"release_date\": \"$TODAY\",
+              \"file_size_bytes\": ${{ env.APK_SIZE_BYTES }}
+            }"
+          
+          echo "Successfully synced to Supabase!"

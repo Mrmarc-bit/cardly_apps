@@ -9,6 +9,12 @@
 
   // Konfigurasi Default & Sumber Data
   const CONFIG = {
+    // Supabase Centralized Hub (Sumber Utama)
+    supabaseUrl: 'https://tsmdqyqftxriqgfurrae.supabase.co',
+    supabaseAnonKey: 'sb_publishable_L8AGlfFIeB0E4rXvHt7tUg_V-1nrga1',
+    supabaseEndpoint: 'https://tsmdqyqftxriqgfurrae.supabase.co/rest/v1/app_versions?select=*&order=build_number.desc&limit=1',
+
+    // Fallback GitHub
     repoOwner: 'Mrmarc-bit',
     repoName: 'cardly_apps',
     rawVersionUrl: 'https://raw.githubusercontent.com/Mrmarc-bit/cardly_apps/main/version.json',
@@ -70,31 +76,62 @@
   async function fetchLatestRelease() {
     let release = null;
 
-    // 1. Coba ambil dari version.json di repo GitHub (paling cepat & real-time)
+    // 1. Prioritas Utama: Ambil langsung dari Supabase Database (Tabel app_versions)
     try {
-      const res = await fetch(`${CONFIG.rawVersionUrl}?_t=${Date.now()}`, {
+      const res = await fetch(CONFIG.supabaseEndpoint, {
+        headers: {
+          'apikey': CONFIG.supabaseAnonKey,
+          'Authorization': `Bearer ${CONFIG.supabaseAnonKey}`
+        },
         cache: 'no-store'
       });
       if (res.ok) {
-        const json = await res.json();
-        if (json && json.latest_version) {
+        const rows = await res.json();
+        if (Array.isArray(rows) && rows.length > 0) {
+          const row = rows[0];
           release = {
-            latest_version: json.latest_version,
-            build_number: json.build_number || 1,
-            download_url: json.download_url || CONFIG.defaultDownloadUrl,
-            release_date: formatDate(json.release_date),
-            file_size_bytes: json.file_size_bytes || 97517568,
-            changelog: Array.isArray(json.changelog) && json.changelog.length > 0
-              ? json.changelog
+            latest_version: row.latest_version,
+            build_number: row.build_number || 1,
+            download_url: row.download_url || CONFIG.defaultDownloadUrl,
+            release_date: formatDate(row.release_date),
+            file_size_bytes: row.file_size_bytes || 97517568,
+            changelog: Array.isArray(row.changelog) && row.changelog.length > 0
+              ? row.changelog
               : CONFIG.fallbackData.changelog
           };
         }
       }
     } catch (e) {
-      console.warn('[CardlyUpdater] Fetch from version.json skipped:', e);
+      console.warn('[CardlyUpdater] Fetch from Supabase skipped:', e);
     }
 
-    // 2. Fallback: Coba ambil dari GitHub Releases API publik
+    // 2. Fallback: Coba ambil dari version.json di repo GitHub
+    if (!release) {
+      try {
+        const res = await fetch(`${CONFIG.rawVersionUrl}?_t=${Date.now()}`, {
+          cache: 'no-store'
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.latest_version) {
+            release = {
+              latest_version: json.latest_version,
+              build_number: json.build_number || 1,
+              download_url: json.download_url || CONFIG.defaultDownloadUrl,
+              release_date: formatDate(json.release_date),
+              file_size_bytes: json.file_size_bytes || 97517568,
+              changelog: Array.isArray(json.changelog) && json.changelog.length > 0
+                ? json.changelog
+                : CONFIG.fallbackData.changelog
+            };
+          }
+        }
+      } catch (e) {
+        console.warn('[CardlyUpdater] Fetch from version.json skipped:', e);
+      }
+    }
+
+    // 3. Fallback: Coba ambil dari GitHub Releases API publik
     if (!release) {
       try {
         const res = await fetch(CONFIG.githubApiUrl);
