@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Cardly Luxury Dark Theme Override for Document Scanner -->
+    <color name="cunning_black">#171717</color>
+    <color name="cunning_done_button_inner_circle_color">#C8F45A</color>
+    <color name="cunning_page_progress_label_text">#FFFFFF</color>
+    <color name="cunning_page_progress_label_background">#171717</color>
+</resources>

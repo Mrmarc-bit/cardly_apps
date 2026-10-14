@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kebijakan Privasi - Cardly (cardly.suntree.my.id)</title>
+  <meta name="description" content="Kebijakan Privasi resmi aplikasi Cardly. Kepatuhan perlindungan data pengguna, Google OAuth User Data Policy, dan transparansi penyimpanan lokal SQLite.">
+  <link rel="canonical" href="https://cardly.suntree.my.id/privacy">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="ambient-glow"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <nav class="nav-shell">
+        <a href="/" class="brand-lockup">
+          <div class="brand-icon">C</div>
+          <span class="brand-name">Cardly</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="/#features">Fitur</a></li>
+          <li><a href="/#security">Keamanan</a></li>
+          <li><a href="/privacy" style="color: var(--lime);">Privasi</a></li>
+          <li><a href="/terms">Ketentuan</a></li>
+        </ul>
+        <a href="/" class="nav-btn">Kembali ke Beranda</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Legal Content -->
+  <main class="container">
+    <article class="legal-container">
+      <header class="legal-header">
+        <span class="section-tag">Dokumen Hukum & Kepatuhan</span>
+        <h1>Kebijakan Privasi (Privacy Policy)</h1>
+        <div class="legal-meta">Terakhir Diperbarui: 13 Oktober 2026 • Berlaku Efektif: Versi 1.0</div>
+      </header>
+
+      <div class="legal-body">
+        <div class="callout-box">
+          <p><strong>Ringkasan Komitmen Kami:</strong> Cardly (disediakan melalui domain <code>cardly.suntree.my.id</code>) adalah aplikasi pengatur catatan kartu dan dokumen privat. Kami <strong>tidak pernah menjual data pribadi Anda</strong>, tidak memproses transaksi pembayaran, dan <strong>melarang keras penyimpanan kredensial perbankan sensitif</strong> (nomor kartu 16-digit lengkap, CVV, atau PIN perbankan).</p>
+        </div>
+
+        <h2>1. Pendahuluan</h2>
+        <p>Kebijakan Privasi ini menjelaskan bagaimana <strong>Cardly</strong> ("kami", "aplikasi", atau "layanan") mengumpulkan, menggunakan, menyimpan, dan melindungi informasi Anda saat Anda menggunakan aplikasi mobile Cardly serta situs web kami di <code>cardly.suntree.my.id</code>.</p>
+        <p>Dengan mengunduh, mengakses, atau menggunakan Cardly, Anda menyetujui praktik data yang dijelaskan dalam Kebijakan Privasi ini.</p>
+
+        <h2>2. Data yang Kami Kumpulkan</h2>
+        <h3>A. Informasi yang Diberikan Pengguna Secara Langsung</h3>
+        <ul>
+          <li><strong>Informasi Akun:</strong> Nama lengkap dan alamat email yang Anda berikan saat mendaftar akun Cardly atau masuk melalui Google OAuth.</li>
+          <li><strong>Metadata Kartu & Dokumen:</strong> Nama alias kartu, penerbit kartu, 4 digit terakhir nomor kartu, masa berlaku, kategori dokumen, dan tanggal pengingat yang Anda masukkan.</li>
+          <li><strong>Berkas Dokumen Lokal:</strong> Foto atau pindaian dokumen (KTP, SIM, paspor, kartu asuransi) yang Anda pilih untuk disimpan di dalam brankas aplikasi.</li>
+        </ul>
+
+        <h3>B. Data yang Secara Tegas TIDAK PERNAH Kami Kumpulkan</h3>
+        <p>Untuk melindungi keamanan finansial Anda sekelas enterprise:</p>
+        <ul>
+          <li>Kami <strong>TIDAK PERNAH</strong> meminta atau menyimpan nomor kartu kredit/debit lengkap (16 digit).</li>
+          <li>Kami <strong>TIDAK PERNAH</strong> meminta atau menyimpan kode keamanan CVV / CVC.</li>
+          <li>Kami <strong>TIDAK PERNAH</strong> meminta PIN ATM, PIN perbankan, atau kode OTP transaksi bank.</li>
+        </ul>
+
+        <h2>3. Penggunaan Data Pengguna Google (Google OAuth)</h2>
+        <p>Aplikasi Cardly menyediakan opsi masuk cepat menggunakan <strong>Google Sign-In</strong>. Terkait data yang kami terima dari antarmuka Google API:</p>
+        <ul>
+          <li><strong>Data yang Diakses:</strong> Alamat email utama dan nama profil akun Google Anda.</li>
+          <li><strong>Tujuan Penggunaan:</strong> Data tersebut semata-mata digunakan untuk mengidentifikasi akun Anda, mengamankan sesi masuk, dan mengaitkan brankas cloud Anda.</li>
+          <li><strong>Kepatuhan Google API Services:</strong> Penggunaan dan transfer informasi yang diterima dari Google API oleh Cardly ke aplikasi lain akan mematuhi <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" style="color: var(--lime); text-decoration: underline;">Google API Services User Data Policy</a>, termasuk persyaratan Penggunaan Terbatas (<em>Limited Use requirements</em>).</li>
+          <li><strong>Tidak Ada Pihak Ketiga:</strong> Kami tidak pernah membagikan, meminjamkan, atau menjual data profil Google Anda ke pengiklan atau pialang data pihak ketiga mana pun.</li>
+        </ul>
+
+        <h2>4. Penyimpanan dan Keamanan Data</h2>
+        <h3>A. Penyimpanan Lokal (On-Device First)</h3>
+        <p>Data utama Anda diproses dan disimpan secara lokal di dalam database terstruktur <strong>SQLite</strong> di memori ponsel pintar Anda. Berkas fisik dokumen Anda dilindungi oleh sandbox sistem operasi perangkat keras Anda.</p>
+
+        <h3>B. Sinkronisasi Cloud Aman (Supabase)</h3>
+        <p>Jika Anda mengaktifkan fitur sinkronisasi cloud:</p>
+        <ul>
+          <li>Data dienkripsi saat transit menggunakan protokol TLS/HTTPS berstandar modern.</li>
+          <li>Data disimpan dalam basis data PostgreSQL Supabase yang dilindungi oleh <strong>Row Level Security (RLS)</strong>. Kebijakan ini secara matematis menjamin bahwa hanya token identitas unik Anda (<code>auth.uid()</code>) yang berhak membaca atau memodifikasi data Anda.</li>
+        </ul>
+
+        <h3>C. Keamanan Sesi Biometrik & PIN</h3>
+        <p>Cardly mengintegrasikan perlindungan biometrik hardware (Fingerprint / Face ID) dan PIN 6 digit mandiri. Kunci enkripsi sesi disimpan di Secure Storage tingkat hardware (iOS Keychain dan Android Keystore).</p>
+
+        <h2>5. Hak Pengguna dan Penghapusan Data (Data Deletion)</h2>
+        <p>Kami meyakini kedaulatan data mutlak berada di tangan Anda:</p>
+        <ul>
+          <li><strong>Pembersihan Lokal Seketika (Emergency Wipe):</strong> Anda dapat menghapus seluruh data kartu, dokumen, berkas, dan preferensi lokal kapan pun melalui tombol <em>"Hapus Data Brankas"</em> di menu Keamanan & Brankas aplikasi.</li>
+          <li><strong>Permintaan Penghapusan Akun & Data Cloud:</strong> Anda berhak meminta penghapusan akun secara permanen beserta seluruh data cadangan di server cloud kami. Permintaan dapat diajukan secara langsung dengan mengirimkan email ke <a href="mailto:muchlisinmaruf@gmail.com" style="color: var(--lime); font-weight: 600;">muchlisinmaruf@gmail.com</a> dengan subjek <em>"Permintaan Penghapusan Akun Cardly"</em>. Kami akan memproses penghapusan total dalam waktu 7 hari kerja.</li>
+        </ul>
+
+        <h2>6. Layanan Pihak Ketiga</h2>
+        <p>Aplikasi kami menggunakan layanan infrastruktur pihak ketiga tepercaya berikut untuk mendukung fungsinya:</p>
+        <ul>
+          <li><strong>Google Identity Services:</strong> Untuk memfasilitasi autentikasi Google OAuth secara aman.</li>
+          <li><strong>Supabase:</strong> Untuk penyediaan otentikasi akun, penyimpanan cloud terenkripsi, dan basis data PostgreSQL dengan Row Level Security.</li>
+          <li><strong>Cloudflare:</strong> Untuk penyediaan DNS, perlindungan DDoS, dan sertifikat enkripsi SSL/TLS pada domain web <code>cardly.suntree.my.id</code>.</li>
+        </ul>
+
+        <h2>7. Privasi Anak-Anak</h2>
+        <p>Layanan kami tidak ditujukan untuk anak-anak di bawah usia 13 tahun. Kami tidak secara sengaja mengumpulkan informasi identitas pribadi dari anak-anak.</p>
+
+        <h2>8. Perubahan Kebijakan Privasi Ini</h2>
+        <p>Kami dapat memperbarui Kebijakan Privasi kami dari waktu ke waktu. Setiap perubahan akan diumumkan dengan memperbarui tanggal <em>"Terakhir Diperbarui"</em> di bagian atas dokumen ini.</p>
+
+        <h2>9. Hubungi Kami</h2>
+        <p>Jika Anda memiliki pertanyaan, masukan, atau kekhawatiran terkait Kebijakan Privasi ini atau pengelolaan data Anda, silakan hubungi kami:</p>
+        <ul>
+          <li><strong>Pengembang:</strong> Ma'ruf (Cardly Development Team)</li>
+          <li><strong>Email Resmi:</strong> <a href="mailto:muchlisinmaruf@gmail.com" style="color: var(--lime);">muchlisinmaruf@gmail.com</a></li>
+          <li><strong>Situs Resmi:</strong> <a href="https://cardly.suntree.my.id" style="color: var(--lime);">https://cardly.suntree.my.id</a></li>
+        </ul>
+      </div>
+    </article>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>&copy; 2026 Cardly (suntree.my.id). Seluruh hak cipta dilindungi.</div>
+        <div><a href="/terms" style="color: var(--text-secondary); text-decoration: underline;">Ketentuan Layanan</a></div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "latest_version": "1.0.0",
+  "build_number": 1,
+  "is_force_update": false,
+  "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.0/cardly-release.apk",
+  "release_date": "2026-10-14",
+  "changelog": [
+    "Pemindai dokumen rounded corner standar fisik ISO/IEC 7810 ID-1",
+    "Ekstraksi teks e-KTP dan kartu bank on-device otomatis & presisi",
+    "Pencegahan kebocoran data sensitif (zero full-card retention)",
+    "Pembaruan in-app installer otomatis tanpa Google Play Store"
+  ],
+  "file_size_bytes": 28450000
+}

@@ -1,0 +1,75 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../core/network/supabase_service.dart';
+import '../core/theme/app_theme.dart';
+import 'app_router.dart';
+import 'providers.dart';
+
+class CardlyApp extends ConsumerStatefulWidget {
+  const CardlyApp({super.key});
+
+  @override
+  ConsumerState<CardlyApp> createState() => _CardlyAppState();
+}
+
+class _CardlyAppState extends ConsumerState<CardlyApp> {
+  StreamSubscription<AuthState>? _authSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _setupSupabaseAuthListener();
+  }
+
+  void _setupSupabaseAuthListener() {
+    final supabase = SupabaseService.instance;
+    final stream = supabase.authStateChanges;
+    if (stream != null) {
+      _authSubscription = stream.listen((data) {
+        final event = data.event;
+        final session = data.session;
+        if (event == AuthChangeEvent.signedIn && session != null) {
+          final user = session.user;
+          final email = user.email ?? '';
+          final fullName =
+              (user.userMetadata?['full_name'] as String?) ??
+              (user.userMetadata?['name'] as String?) ??
+              (email.isNotEmpty ? email.split('@').first : 'Pengguna Cardly');
+
+          ref.read(userProfileProvider.notifier).login(fullName, email);
+
+          // Jika user masuk melalui alur OAuth (Google dll), arahkan ke beranda
+          try {
+            appRouter.go('/shell');
+          } catch (_) {}
+        } else if (event == AuthChangeEvent.signedOut) {
+          ref.read(userProfileProvider.notifier).logout();
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
+
+    return MaterialApp.router(
+      title: 'Cardly',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeMode,
+      routerConfig: appRouter,
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
