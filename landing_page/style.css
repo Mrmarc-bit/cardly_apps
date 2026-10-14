@@ -1406,6 +1406,35 @@ footer.site-footer {
   transform: translateX(3px);
 }
 
+/* Changelog Redirect Banner on Download Page */
+.changelog-redirect-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 32px;
+  max-width: 840px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.changelog-redirect-text {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .changelog-redirect-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 16px;
+  }
+}
+
 /* ==========================================================================
    RESPONSIVE BREAKPOINTS - MOBILE & TABLET (ALWAYS AT BOTTOM OF CSS CASCADE)
    ========================================================================== */

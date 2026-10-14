@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catatan Pembaruan (Changelog) • Cardly</title>
+  <meta name="description" content="Riwayat lengkap pembaruan fitur baru, peningkatan keamanan, dan optimasi performa Cardly Mobile di setiap versi rilis.">
+  <link rel="canonical" href="https://cardly.suntree.my.id/changelog">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png?v=2">
+  <link rel="icon" type="image/png" sizes="192x192" href="/app_icon.png?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/app_icon.png?v=2">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <!-- Ambient Glow Effects -->
+  <div class="ambient-glow"></div>
+  <div class="ambient-glow-bottom"></div>
+
+  <!-- Site Navigation -->
+  <header class="site-header">
+    <div class="container">
+      <nav class="nav-shell">
+        <a href="/" class="brand-lockup">
+          <img src="/logo_1.svg" alt="Cardly Logo" width="36" height="36" class="brand-logo-img">
+          <span class="brand-name">Cardly</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/download">Download</a></li>
+          <li><a href="/changelog" style="color: var(--lime); font-weight: 600;">Changelog</a></li>
+          <li><a href="/privacy">Privasi</a></li>
+          <li><a href="/terms">Ketentuan</a></li>
+        </ul>
+        <div class="nav-actions">
+          <a href="/download" class="nav-btn">Download APK</a>
+          <button class="nav-toggle" aria-label="Buka navigasi" type="button">
+            <svg class="icon-menu" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+            <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="container">
+    <!-- Changelog Timeline Section (Inspired by shadcn/ui Changelog1) -->
+    <section class="changelog-timeline-section" id="changelog" style="margin-top: 40px;">
+      <div class="changelog-header-block">
+        <span class="section-tag">Riwayat Rilis</span>
+        <h1 class="changelog-timeline-title">Catatan Pembaruan (Changelog)</h1>
+        <p class="changelog-timeline-desc">Pantau perkembangan fitur baru, peningkatan keamanan, dan optimasi performa Cardly di setiap versi rilis.</p>
+      </div>
+
+      <div class="changelog-entries-container" data-cardly-timeline-entries>
+        <!-- Entry 1: Version 1.0.1 (Latest) -->
+        <article class="changelog-entry">
+          <div class="changelog-meta-col">
+            <span class="badge-version-pill current">Version 1.0.1</span>
+            <time class="changelog-date" datetime="2026-10-14">14 Oktober 2026</time>
+          </div>
+          <div class="changelog-content-col">
+            <h2 class="changelog-entry-title">Foto Profil Avatar, Kompresi 64% & Privasi Cloud Penuh</h2>
+            <p class="changelog-entry-desc">Pembaruan besar yang menghadirkan kustomisasi avatar pengguna, penghapusan ketergantungan nama vendor untuk keamanan privasi, kompresi ukuran berkas APK hingga 33.6 MB, dan auto-updater cerdas.</p>
+            <ul class="changelog-entry-list">
+              <li><strong>Manajemen Foto Profil Avatar:</strong> Ambil foto langsung dengan kamera, pilih dari galeri foto, atau hapus foto profil untuk kembali ke inisial nama dengan modal dialog modern.</li>
+              <li><strong>Anonimitas Total Penyimpanan Cloud:</strong> Pembersihan seluruh jejak vendor backend dari antarmuka pengguna demi privasi berdaulat penuh.</li>
+              <li><strong>Kompresi Ukuran APK 64% Lebih Ramping (33.6 MB):</strong> Optimalisasi R8 Minifier dan pemisahan arsitektur CPU (ARM64 & ARMv7) mengurangi ukuran unduhan secara drastis.</li>
+              <li><strong>Pendeteksi Perangkat Cerdas & Multi-Arsitektur:</strong> Portal web secara otomatis mendeteksi spesifikasi ponsel pengunjung dan merekomendasikan varian APK yang paling sesuai.</li>
+              <li><strong>Perbaikan State Persistensi SQLite:</strong> Penanganan inisialisasi asynchronous database lokal saat pembaruan aplikasi agar data kartu dan dokumen tidak hilang.</li>
+            </ul>
+            <div class="changelog-entry-footer">
+              <a href="https://github.com/Mrmarc-bit/cardly_apps/releases/tag/v1.0.1" target="_blank" rel="noopener noreferrer" class="changelog-link-btn">
+                <span>Catatan Rilis di GitHub</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Entry 2: Version 1.0.0 (Initial Release) -->
+        <article class="changelog-entry">
+          <div class="changelog-meta-col">
+            <span class="badge-version-pill">Version 1.0.0</span>
+            <time class="changelog-date" datetime="2026-10-14">14 Oktober 2026</time>
+          </div>
+          <div class="changelog-content-col">
+            <h2 class="changelog-entry-title">Peluncuran Perdana Cardly Mobile (Official Initial Release)</h2>
+            <p class="changelog-entry-desc">Rilis perdana Cardly sebagai Personal Organizer & Private Space untuk kartu pembayaran, dokumen identitas resmi, dan pengingat masa berlaku.</p>
+            <ul class="changelog-entry-list">
+              <li><strong>Pemindai Kartu Berstandar ISO ID-1:</strong> Deteksi kontur kartu otomatis dengan panduan laser dan sudut membulat presisi.</li>
+              <li><strong>Ekstraksi Teks OCR On-Device:</strong> Membaca data e-KTP dan nomor kartu bank langsung di perangkat ponsel tanpa internet.</li>
+              <li><strong>Protokol Privasi Zero Full-Card Retention:</strong> Hanya mencatat 4 digit terakhir nomor kartu; tidak pernah meminta CVV atau PIN perbankan.</li>
+              <li><strong>Brankas Lokal SQLite & Kunci Biometrik:</strong> Penyimpanan terenkripsi dengan otentikasi sensor sidik jari (Fingerprint / Face ID) dan PIN 6-digit.</li>
+              <li><strong>Sistem Pembaruan Otomatis In-App (OTA):</strong> Mendukung pengecekan dan penginstalan pembaruan langsung tanpa melalui Google Play Store.</li>
+            </ul>
+            <div class="changelog-entry-footer">
+              <a href="https://github.com/Mrmarc-bit/cardly_apps/releases/tag/v1.0.0" target="_blank" rel="noopener noreferrer" class="changelog-link-btn">
+                <span>Catatan Rilis di GitHub</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Bottom Download CTA -->
+      <div class="changelog-redirect-card" style="margin-top: 64px;">
+        <div class="changelog-redirect-text">
+          <span class="section-tag">Unduh Aplikasi</span>
+          <h3 style="font-size: 20px; font-weight: 700; color: var(--text-primary); margin: 6px 0 6px 0;">Siap Menggunakan Versi Terbaru?</h3>
+          <p style="font-size: 14px; color: var(--text-secondary); margin: 0;">Dapatkan berkas APK resmi terverifikasi dengan perlindungan privasi data penuh.</p>
+        </div>
+        <a href="/download" class="btn-primary" style="white-space: nowrap;">
+          <span>Buka Laman Download</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand-lockup">
+            <img src="/logo_1.svg" alt="Cardly Logo" width="36" height="36" class="brand-logo-img">
+            <span class="brand-name">Cardly</span>
+          </div>
+          <p>Personal Organizer & Private Space untuk kartu, dokumen penting, dan pengingat masa berlaku.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Navigasi</h4>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/download">Download</a></li>
+            <li><a href="/changelog">Changelog</a></li>
+            <li><a href="https://github.com/Mrmarc-bit/cardly_apps/releases" target="_blank" rel="noopener noreferrer">Semua Rilis GitHub</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Legal & Kepatuhan</h4>
+          <ul>
+            <li><a href="/privacy">Kebijakan Privasi</a></li>
+            <li><a href="/terms">Ketentuan Layanan</a></li>
+            <li><a href="mailto:muchlisinmaruf@gmail.com">Kontak Pengembang</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 Cardly. Seluruh hak cipta dilindungi undang-undang.</p>
+        <span class="footer-badge">Versi <span data-cardly-version>v1.0.1</span> • Private & Secure</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Realtime Release Sync & Device Engine -->
+  <script src="/app-updater.js"></script>
+</body>
+</html>
