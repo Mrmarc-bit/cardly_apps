@@ -26,14 +26,14 @@ class ProfileDashboardView extends ConsumerWidget {
     final packageInfoAsync = ref.watch(packageInfoProvider);
     final versionStr = packageInfoAsync.when(
       data: (info) => 'v${info.version}',
-      loading: () => 'v1.0.2',
-      error: (_, _) => 'v1.0.2',
+      loading: () => 'v1.0.3',
+      error: (_, _) => 'v1.0.3',
     );
     final fullVersionStr = packageInfoAsync.when(
       data: (info) =>
           'Cardly v${info.version} (Build ${info.buildNumber}) • Indonesia',
-      loading: () => 'Cardly v1.0.2 (Build 3) • Indonesia',
-      error: (_, _) => 'Cardly v1.0.2 (Build 3) • Indonesia',
+      loading: () => 'Cardly v1.0.3 (Build 4) • Indonesia',
+      error: (_, _) => 'Cardly v1.0.3 (Build 4) • Indonesia',
     );
 
     return Scaffold(

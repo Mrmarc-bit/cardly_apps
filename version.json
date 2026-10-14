@@ -1,28 +1,25 @@
 {
-  "latest_version": "1.0.2",
-  "build_number": 3,
+  "latest_version": "1.0.3",
+  "build_number": 4,
   "is_force_update": false,
-  "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.2/cardly-release-v1.0.2.apk",
+  "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.3/cardly-release-v1.0.3.apk",
   "release_date": "2026-10-15",
   "changelog": [
-    "Penyimpanan folder nyata di database SQLite lokal (CRUD & integrasi dokumen)",
-    "Alur penambahan kartu instan langsung ke pengisian detail tanpa langkah redundan",
-    "Komponen CardlyToast melayang modern (pill shape) dengan haptic feedback",
-    "Pembersihan tombol ganda pada empty state dan simplifikasi bilah pencarian",
-    "Proteksi privasi penyamaran layar sistem (FLAG_SECURE) dan auto-lock timeout latar belakang",
-    "Animasi navigasi pegas dinamis dan penanganan tombol kembali Android cerdas"
+    "Perbaikan integrasi Google OAuth via peluncuran browser sistem resmi (kebijakan keamanan Google)",
+    "Penambahan aturan Proguard/R8 pelindung dependensi Google Play Services SDK pada mode release",
+    "Konfigurasi penandatanganan rilis APK v2 terverifikasi untuk pembaruan instan tanpa konflik signature"
   ],
-  "file_size_bytes": 97399575,
+  "file_size_bytes": 97917423,
   "variants": [
     {
       "arch": "universal",
       "label": "Universal (Semua HP)",
       "badge": "Kompatibilitas Penuh",
       "desc": "Memuat pustaka 64-bit dan 32-bit, dijamin dapat dipasang di seluruh perangkat Android",
-      "file_name": "cardly-release-v1.0.2.apk",
-      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.2/cardly-release-v1.0.2.apk",
-      "file_size_bytes": 97399575,
-      "sha256": "1389c839298d02a6f0ee5ddf3ba5c5a36a4722c643fef854b098eda590f33187"
+      "file_name": "cardly-release-v1.0.3.apk",
+      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.3/cardly-release-v1.0.3.apk",
+      "file_size_bytes": 97917423,
+      "sha256": "f4f54bee6a51d248466553c2ced71d8a580d4ba01cec4f16ce7f931f6793fc56"
     }
   ]
 }
