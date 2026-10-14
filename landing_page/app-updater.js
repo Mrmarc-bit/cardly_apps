@@ -25,7 +25,7 @@
       build_number: 2,
       download_url: 'https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.1/cardly-release-v1.0.1.apk',
       release_date: '14 Oktober 2026',
-      file_size_bytes: 97184891,
+      file_size_bytes: 35203072,
       changelog: [
         'Fitur unggah dan ganti foto profil avatar (kamera, galeri, dan hapus foto)',
         'Anonimitas total penyimpanan cloud (perlindungan data privat tanpa ekspos vendor)',
@@ -39,7 +39,7 @@
    * Format bytes ke ukuran yang mudah dibaca (MB)
    */
   function formatBytes(bytes) {
-    if (!bytes || bytes <= 0) return '93 MB';
+    if (!bytes || bytes <= 0) return '33.6 MB';
     const mb = bytes / (1024 * 1024);
     return `${mb.toFixed(1)} MB`;
   }

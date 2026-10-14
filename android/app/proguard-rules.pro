@@ -4,6 +4,24 @@
 -dontwarn com.google.mlkit.vision.text.japanese.**
 -dontwarn com.google.mlkit.vision.text.korean.**
 
+# Flutter deferred components (Play Store Split) suppression
+-dontwarn com.google.android.play.core.splitcompat.**
+-dontwarn com.google.android.play.core.splitinstall.**
+-dontwarn com.google.android.play.core.tasks.**
+
 # Keep ML Kit components
 -keep class com.google.mlkit.** { *; }
 -keep interface com.google.mlkit.** { *; }
+
+# Flutter & Plugins standard keep rules
+-keep class io.flutter.app.** { *; }
+-keep class io.flutter.plugin.** { *; }
+-keep class io.flutter.util.** { *; }
+-keep class io.flutter.view.** { *; }
+-keep class io.flutter.** { *; }
+-keep class io.flutter.plugins.** { *; }
+
+# Keep native methods for JNI
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
