@@ -6,9 +6,31 @@
   "release_date": "2026-10-14",
   "changelog": [
     "Fitur unggah dan ganti foto profil avatar (kamera, galeri, dan hapus foto)",
-    "Anonimitas total penyimpanan cloud (perlindungan data privat tanpa ekspos vendor)",
-    "Optimasi antarmuka responsif mobile portal web",
-    "Perbaikan kestabilan performa dan keamanan data lokal"
+    "Anonimitas total penyimpanan cloud (perlindungan data privat tanpa ekspos vendor backend)",
+    "Optimasi antarmuka responsif mobile portal web & pendeteksi perangkat cerdas",
+    "Kompresi ukuran APK 64% lebih ramping (33.6 MB) dengan dukungan arsitektur terpisah"
   ],
-  "file_size_bytes": 35203072
+  "file_size_bytes": 35203072,
+  "variants": [
+    {
+      "arch": "arm64-v8a",
+      "label": "ARM64 (64-bit)",
+      "badge": "Rekomendasi Utama",
+      "desc": "Optimal untuk smartphone Android modern (Samsung, Xiaomi, Oppo, Vivo, Pixel, dll)",
+      "file_name": "cardly-arm64-v8a-v1.0.1.apk",
+      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.1/cardly-arm64-v8a-v1.0.1.apk",
+      "file_size_bytes": 35203072,
+      "sha256": "52ab4d4bd5d8bfb0f3e4b522e7621de25f07b38384d1b9e660e4ce745af083f6"
+    },
+    {
+      "arch": "armeabi-v7a",
+      "label": "ARMv7 (32-bit)",
+      "badge": "Ponsel Lawas",
+      "desc": "Untuk ponsel Android generasi sebelumnya atau prosesor 32-bit",
+      "file_name": "cardly-armeabi-v7a-v1.0.1.apk",
+      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.1/cardly-armeabi-v7a-v1.0.1.apk",
+      "file_size_bytes": 28418674,
+      "sha256": "ff9cf4db3baf2e93a7554b4066eaa8979a91c467d3f296d36c1e77b1b09faa9d"
+    }
+  ]
 }

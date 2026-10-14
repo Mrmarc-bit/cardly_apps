@@ -86,11 +86,11 @@
         <h3>A. Penyimpanan Lokal (On-Device First)</h3>
         <p>Data utama Anda diproses dan disimpan secara lokal di dalam database terstruktur <strong>SQLite</strong> di memori ponsel pintar Anda. Berkas fisik dokumen Anda dilindungi oleh sandbox sistem operasi perangkat keras Anda.</p>
 
-        <h3>B. Sinkronisasi Cloud Aman (Supabase)</h3>
+        <h3>B. Sinkronisasi Cloud Aman Terenkripsi</h3>
         <p>Jika Anda mengaktifkan fitur sinkronisasi cloud:</p>
         <ul>
           <li>Data dienkripsi saat transit menggunakan protokol TLS/HTTPS berstandar modern.</li>
-          <li>Data disimpan dalam basis data PostgreSQL Supabase yang dilindungi oleh <strong>Row Level Security (RLS)</strong>. Kebijakan ini secara matematis menjamin bahwa hanya token identitas unik Anda (<code>auth.uid()</code>) yang berhak membaca atau memodifikasi data Anda.</li>
+          <li>Data disimpan dalam basis data cloud privat yang dilindungi oleh <strong>Row Level Security (RLS)</strong>. Kebijakan ini secara matematis menjamin bahwa hanya token identitas unik akun Anda yang berhak membaca atau memodifikasi data Anda.</li>
         </ul>
 
         <h3>C. Keamanan Sesi Biometrik & PIN</h3>
@@ -107,7 +107,7 @@
         <p>Aplikasi kami menggunakan layanan infrastruktur pihak ketiga tepercaya berikut untuk mendukung fungsinya:</p>
         <ul>
           <li><strong>Google Identity Services:</strong> Untuk memfasilitasi autentikasi Google OAuth secara aman.</li>
-          <li><strong>Supabase:</strong> Untuk penyediaan otentikasi akun, penyimpanan cloud terenkripsi, dan basis data PostgreSQL dengan Row Level Security.</li>
+          <li><strong>Infrastruktur Cloud Privat Terenkripsi:</strong> Untuk penyediaan otentikasi akun, penyimpanan cloud terenkripsi, dan basis data dengan Row Level Security.</li>
           <li><strong>Cloudflare:</strong> Untuk penyediaan DNS, perlindungan DDoS, dan sertifikat enkripsi SSL/TLS pada domain web <code>cardly.suntree.my.id</code>.</li>
         </ul>
 

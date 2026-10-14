@@ -934,6 +934,168 @@ footer.site-footer {
   margin-top: 2px;
 }
 
+/* Dynamic Architecture Variants Section */
+.variants-container {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.variants-header {
+  margin-bottom: 16px;
+}
+
+.variants-title-wrap h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.variants-subtitle {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.variants-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.variant-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  transition: all 0.25s ease;
+}
+
+.variant-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.variant-card.recommended {
+  border-color: rgba(200, 244, 90, 0.4);
+  background: rgba(200, 244, 90, 0.03);
+  box-shadow: 0 4px 20px -4px rgba(200, 244, 90, 0.12);
+}
+
+.variant-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.variant-arch-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.variant-arch-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.variant-badge-match {
+  background: var(--lime);
+  color: var(--text-dark);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.variant-badge {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.variant-size {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--lime);
+}
+
+.variant-desc {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.variant-filename {
+  margin-bottom: 12px;
+}
+
+.variant-filename code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  word-break: break-all;
+}
+
+.variant-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-variant-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--lime);
+  color: var(--text-dark);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px var(--lime-glow);
+}
+
+.btn-variant-download:hover {
+  background: var(--lime-hover);
+  transform: translateY(-1px);
+}
+
+.btn-copy-hash {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-copy-hash:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
 /* QR Code Card */
 .download-qr-card {
   display: flex;
