@@ -1,0 +1,30 @@
+# GitHub Release Configuration
+# Referensi: https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
+
+changelog:
+  categories:
+    - title: "🚀 Fitur Baru"
+      labels:
+        - "enhancement"
+        - "feature"
+    - title: "🎨 Peningkatan UI & Desain"
+      labels:
+        - "ui"
+        - "design"
+        - "ux"
+    - title: "🔒 Keamanan & Privasi"
+      labels:
+        - "security"
+        - "privacy"
+    - title: "🐛 Perbaikan Bug"
+      labels:
+        - "bug"
+        - "fix"
+    - title: "⚡ Optimasi & Pemeliharaan"
+      labels:
+        - "chore"
+        - "refactor"
+        - "performance"
+  exclude:
+    labels:
+      - "ignore-for-release"
