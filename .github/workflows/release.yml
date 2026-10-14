@@ -107,6 +107,11 @@ jobs:
           DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ env.RELEASE_TAG }}/cardly-release-${{ env.RELEASE_TAG }}.apk"
           TODAY=$(date +%Y-%m-%d)
 
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout main
+          git pull origin main --rebase
+
           cat <<EOF > version.json
           {
             "latest_version": "${{ env.RELEASE_VERSION }}",
@@ -135,10 +140,6 @@ jobs:
           EOF
           cp version.json landing_page/version.json
 
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout main
-          git pull origin main --rebase
           git add version.json landing_page/version.json
           git commit -m "chore(release): auto-sync version.json to ${{ env.RELEASE_TAG }} [skip ci]" || echo "No changes to commit"
           git push origin main || echo "Auto-commit push failed, non-blocking"
