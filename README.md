@@ -16,6 +16,7 @@
   <a href="https://pages.cloudflare.com"><img src="https://img.shields.io/badge/Cloudflare_Pages-Deployment-F38020?logo=cloudflare&logoColor=white" alt="Cloudflare"></a>
   <a href="https://cardly.suntree.my.id/download"><img src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white" alt="Android"></a>
   <a href="https://github.com/Mrmarc-bit/cardly_apps/releases"><img src="https://img.shields.io/badge/Release-v1.0.0-C8F45A?logo=github&logoColor=black" alt="Release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
 </p>
 
 ---
@@ -194,7 +195,9 @@ Proyek ini mematuhi standar privasi yang ketat:
 
 ---
 
-## 📄 Hak Cipta & Pengembang
+## 📄 Lisensi & Hak Cipta
+
+Proyek ini dilisensikan di bawah lisensi terbuka [MIT License](LICENSE).
 
 Dikembangkan dan dikelola secara independen oleh **Ma'ruf Muchlisin** ([@Mrmarc-bit](https://github.com/Mrmarc-bit)).  
-Hak cipta dilindungi undang-undang &copy; 2026 Cardly.
+Hak cipta &copy; 2026 Cardly.
