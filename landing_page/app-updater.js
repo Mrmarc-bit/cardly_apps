@@ -64,10 +64,14 @@
   }
 
   /**
-   * Deteksi apakah pengguna membuka dari perangkat Android
+   * Deteksi platform perangkat pengguna secara akurat
    */
-  function isAndroidDevice() {
-    return /Android/i.test(navigator.userAgent || navigator.vendor || window.opera);
+  function getDeviceInfo() {
+    const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+    const isAndroid = /Android/i.test(ua);
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    const isMobile = isAndroid || isIOS || /Mobile|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    return { isAndroid, isIOS, isMobile };
   }
 
   /**
@@ -228,13 +232,23 @@
     });
 
     // Sesuaikan teks instruksi sesuai platform
-    const isAndroid = isAndroidDevice();
+    const device = getDeviceInfo();
     const platformBadges = document.querySelectorAll('[data-device-hint]');
     platformBadges.forEach(function (badge) {
-      if (isAndroid) {
+      if (device.isAndroid) {
         badge.innerHTML = `
           <span class="device-dot online"></span>
-          Terdeteksi: <strong>Perangkat Android</strong> — Unduhan langsung siap dipasang
+          Terdeteksi: <strong>Perangkat Android</strong> — Siap unduh & pasang langsung
+        `;
+      } else if (device.isIOS) {
+        badge.innerHTML = `
+          <span class="device-dot ios"></span>
+          Terdeteksi: <strong>Perangkat iOS (iPhone)</strong> — Berkas instalasi APK khusus Android
+        `;
+      } else if (device.isMobile) {
+        badge.innerHTML = `
+          <span class="device-dot online"></span>
+          Terdeteksi: <strong>Perangkat Seluler</strong> — Tautan unduhan APK siap
         `;
       } else {
         badge.innerHTML = `

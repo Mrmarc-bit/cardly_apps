@@ -668,543 +668,8 @@ footer.site-footer {
   gap: 16px;
 }
 
-/* Responsive Breakpoints - Mobile & Tablet */
-@media (max-width: 768px) {
-  .container {
-    padding: 0 18px;
-  }
-
-  /* Responsive Ambient Lighting for Mobile */
-  .ambient-glow {
-    height: 280px;
-    background: radial-gradient(circle at 50% 0%, var(--lime-glow) 0%, rgba(13, 13, 15, 0) 75%);
-  }
-
-  .ambient-glow-bottom {
-    height: 220px;
-    max-width: 320px;
-    background: radial-gradient(circle at 100% 100%, rgba(200, 244, 90, 0.06) 0%, rgba(13, 13, 15, 0) 70%);
-  }
-
-  header.site-header {
-    top: 10px;
-    margin-bottom: 28px;
-  }
-
-  .nav-shell {
-    padding: 10px 16px;
-    position: relative;
-  }
-
-  .nav-toggle {
-    display: inline-flex;
-  }
-
-  .nav-links {
-    display: none;
-  }
-
-  .nav-shell.menu-open .nav-links {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: calc(100% + 12px);
-    left: 0;
-    right: 0;
-    background: rgba(20, 20, 24, 0.96);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 20px;
-    padding: 16px;
-    gap: 8px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-    animation: menu-slide 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
-  @keyframes menu-slide {
-    from {
-      opacity: 0;
-      transform: translateY(-8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .nav-shell.menu-open .nav-links li {
-    width: 100%;
-  }
-
-  .nav-shell.menu-open .nav-links a {
-    display: block;
-    padding: 12px 16px;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    transition: all 0.2s ease;
-  }
-
-  .nav-shell.menu-open .nav-links a:hover {
-    background: rgba(200, 244, 90, 0.1);
-    color: var(--lime);
-    border-color: rgba(200, 244, 90, 0.3);
-  }
-
-  /* Hero Section */
-  .hero-section {
-    padding: 30px 0 45px;
-  }
-
-  .badge-pill {
-    font-size: 11px;
-    padding: 6px 14px;
-    max-width: 100%;
-    white-space: normal;
-    line-height: 1.4;
-    text-align: center;
-  }
-
-  .hero-title {
-    font-size: clamp(30px, 8vw, 44px);
-    line-height: 1.18;
-    margin-bottom: 14px;
-    letter-spacing: -1px;
-  }
-
-  .hero-subtitle {
-    font-size: 15px;
-    margin-bottom: 24px;
-    line-height: 1.6;
-    padding: 0 4px;
-  }
-
-  .hero-cta-group {
-    flex-direction: column;
-    width: 100%;
-    gap: 12px;
-    margin-bottom: 40px;
-  }
-
-  .hero-cta-group .btn-primary,
-  .hero-cta-group .btn-secondary {
-    width: 100%;
-    justify-content: center;
-    padding: 15px 20px;
-    font-size: 15px;
-  }
-
-  /* Showcase Stage */
-  .showcase-stage {
-    margin-bottom: 40px;
-    perspective: none;
-  }
-
-  .card-mockup-wrapper {
-    padding: 18px 16px;
-    border-radius: 20px;
-  }
-
-  .card-visual-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .sample-card {
-    padding: 18px 16px;
-    min-height: 135px;
-    border-radius: 14px;
-  }
-
-  .card-number {
-    font-size: 15px;
-    letter-spacing: 1.5px;
-    margin: 12px 0;
-  }
-
-  /* Features Grid */
-  .section-heading-wrap {
-    margin-bottom: 32px;
-  }
-
-  .section-title {
-    font-size: clamp(24px, 6vw, 32px);
-  }
-
-  .section-desc {
-    font-size: 14.5px;
-  }
-
-  .features-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    margin-bottom: 60px;
-  }
-
-  .feature-card {
-    padding: 24px 20px;
-    border-radius: 20px;
-  }
-
-  /* Security Banner */
-  .security-banner {
-    padding: 24px 18px;
-    border-radius: 20px;
-    margin-bottom: 40px;
-    flex-direction: column;
-    gap: 20px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .security-content {
-    min-width: 0;
-    width: 100%;
-  }
-
-  .security-badges {
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-  }
-
-  .badge-item {
-    width: 100%;
-    font-size: 13px;
-  }
-
-  .security-banner > div:last-child {
-    width: 100%;
-  }
-
-  .security-banner .btn-secondary {
-    width: 100%;
-    justify-content: center;
-  }
-
-  /* Steps Grid */
-  .steps-grid {
-    grid-template-columns: 1fr;
-    gap: 14px;
-    margin-top: 24px;
-  }
-
-  .step-card {
-    padding: 22px 18px;
-    border-radius: 18px;
-  }
-
-  .step-number {
-    font-size: 26px;
-    margin-bottom: 8px;
-  }
-
-  /* Legal Container */
-  .legal-container {
-    padding: 24px 18px;
-    border-radius: 20px;
-    margin-bottom: 40px;
-  }
-
-  .legal-header h1 {
-    font-size: clamp(22px, 6vw, 28px);
-  }
-
-  /* Footer */
-  footer.site-footer {
-    padding: 40px 0 24px;
-  }
-
-  .footer-grid {
-    grid-template-columns: 1fr;
-    gap: 28px;
-    margin-bottom: 28px;
-  }
-
-  .footer-bottom {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 10px;
-  }
-
-  /* Download Page */
-  .download-portal-hero {
-    padding: 20px 0 32px;
-  }
-
-  .download-hero-title {
-    font-size: clamp(24px, 7vw, 36px);
-    margin: 12px 0 10px;
-  }
-
-  .download-hero-subtitle {
-    font-size: 14.5px;
-    margin-bottom: 20px;
-    line-height: 1.55;
-  }
-
-  .device-detection-banner {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    padding: 8px 14px;
-    margin-bottom: 24px;
-    text-align: center;
-    line-height: 1.4;
-  }
-
-  .download-card-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .download-action-card,
-  .download-qr-card {
-    padding: 22px 18px;
-    border-radius: 20px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-  }
-
-  .card-brand-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 16px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .cardly-app-badge {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-    flex: 1 1 200px;
-  }
-
-  .app-avatar-img {
-    width: 50px;
-    height: 50px;
-    border-radius: 14px;
-    flex-shrink: 0;
-  }
-
-  .badge-text-meta {
-    min-width: 0;
-    overflow: hidden;
-  }
-
-  .app-title-main {
-    font-size: 17px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .app-package-sub {
-    font-size: 12px;
-    word-break: break-all;
-  }
-
-  .version-tag-pill {
-    padding: 4px 10px;
-    font-size: 12px;
-    white-space: nowrap;
-    align-self: flex-start;
-  }
-
-  .specs-pill-group {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    padding: 12px;
-    margin-bottom: 20px;
-    border-radius: 12px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .spec-chip {
-    min-width: 0;
-    overflow: hidden;
-  }
-
-  .spec-label {
-    font-size: 10.5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .spec-val {
-    font-size: 13px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .btn-download-giant {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 15px 16px;
-    font-size: 15px;
-    justify-content: center;
-    text-align: center;
-  }
-
-  .download-safety-notice {
-    font-size: 11.5px;
-    text-align: center;
-    line-height: 1.4;
-  }
-
-  .changelog-card-inner {
-    width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-  }
-
-  .changelog-item {
-    font-size: 13px;
-    word-break: break-word;
-  }
-
-  .qr-box-wrapper {
-    width: 100%;
-  }
-
-  .qr-caption {
-    font-size: 12.5px;
-    max-width: 100%;
-  }
-
-  .qr-code-frame {
-    padding: 10px;
-    border-radius: 16px;
-  }
-
-  .qr-image {
-    width: min(160px, 45vw);
-    height: min(160px, 45vw);
-  }
-
-  .qr-hint-pill {
-    font-size: 11.5px;
-    text-align: center;
-    line-height: 1.4;
-    justify-content: center;
-  }
-}
-
-/* Extra Small Devices (Galaxy Fold, Narrow 360px & below) */
-@media (max-width: 380px) {
-  .container {
-    padding: 0 12px;
-  }
-
-  .nav-shell {
-    padding: 6px 10px;
-  }
-
-  .brand-lockup {
-    gap: 6px;
-  }
-
-  .brand-name {
-    font-size: 16px;
-  }
-
-  .brand-logo-img {
-    width: 28px;
-    height: 28px;
-  }
-
-  .nav-btn {
-    padding: 6px 10px;
-    font-size: 11.5px;
-  }
-
-  .nav-btn svg {
-    display: none;
-  }
-
-  .nav-toggle {
-    width: 34px;
-    height: 34px;
-  }
-
-  .download-action-card,
-  .download-qr-card {
-    padding: 16px 12px;
-    border-radius: 16px;
-  }
-
-  .specs-pill-group {
-    gap: 6px;
-    padding: 8px;
-  }
-
-  .spec-label {
-    font-size: 9.5px;
-  }
-
-  .spec-val {
-    font-size: 12px;
-  }
-
-  .btn-download-giant {
-    padding: 13px 12px;
-    font-size: 13.5px;
-    gap: 6px;
-  }
-
-  .card-brand-header {
-    gap: 8px;
-  }
-
-  .app-avatar-img {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-  }
-
-  .app-title-main {
-    font-size: 15.5px;
-  }
-
-  .app-package-sub {
-    font-size: 11px;
-  }
-
-  .version-tag-pill {
-    font-size: 10.5px;
-    padding: 3px 8px;
-  }
-
-  .hero-title {
-    font-size: 26px;
-  }
-}
-
 /* ==========================================================================
-   DOWNLOAD PORTAL & REALTIME INTEGRATION STYLES
+   DOWNLOAD PORTAL & REALTIME INTEGRATION STYLES (BASE / DESKTOP)
    ========================================================================== */
 
 .download-portal-hero {
@@ -1270,6 +735,10 @@ footer.site-footer {
 .device-dot.desktop {
   background-color: #60a5fa;
   box-shadow: 0 0 8px #60a5fa;
+}
+.device-dot.ios {
+  background-color: #a855f7;
+  box-shadow: 0 0 8px #a855f7;
 }
 
 .download-card-grid {
@@ -1589,5 +1058,548 @@ footer.site-footer {
 .cardly-toast.visible {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS - MOBILE & TABLET (ALWAYS AT BOTTOM OF CSS CASCADE)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 18px;
+  }
+
+  /* Responsive Ambient Lighting for Mobile */
+  .ambient-glow {
+    height: 280px;
+    background: radial-gradient(circle at 50% 0%, var(--lime-glow) 0%, rgba(13, 13, 15, 0) 75%);
+  }
+
+  .ambient-glow-bottom {
+    height: 220px;
+    max-width: 320px;
+    background: radial-gradient(circle at 100% 100%, rgba(200, 244, 90, 0.06) 0%, rgba(13, 13, 15, 0) 70%);
+  }
+
+  header.site-header {
+    top: 10px;
+    margin-bottom: 28px;
+  }
+
+  .nav-shell {
+    padding: 10px 16px;
+    position: relative;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .nav-shell.menu-open .nav-links {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    right: 0;
+    background: rgba(20, 20, 24, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 16px;
+    gap: 8px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    animation: menu-slide 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes menu-slide {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .nav-shell.menu-open .nav-links li {
+    width: 100%;
+  }
+
+  .nav-shell.menu-open .nav-links a {
+    display: block;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transition: all 0.2s ease;
+  }
+
+  .nav-shell.menu-open .nav-links a:hover {
+    background: rgba(200, 244, 90, 0.1);
+    color: var(--lime);
+    border-color: rgba(200, 244, 90, 0.3);
+  }
+
+  /* Hero Section */
+  .hero-section {
+    padding: 30px 0 45px;
+  }
+
+  .badge-pill {
+    font-size: 11px;
+    padding: 6px 14px;
+    max-width: 100%;
+    white-space: normal;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .hero-title {
+    font-size: clamp(30px, 8vw, 44px);
+    line-height: 1.18;
+    margin-bottom: 14px;
+    letter-spacing: -1px;
+  }
+
+  .hero-subtitle {
+    font-size: 15px;
+    margin-bottom: 24px;
+    line-height: 1.6;
+    padding: 0 4px;
+  }
+
+  .hero-cta-group {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+
+  .hero-cta-group .btn-primary,
+  .hero-cta-group .btn-secondary {
+    width: 100%;
+    justify-content: center;
+    padding: 15px 20px;
+    font-size: 15px;
+  }
+
+  /* Showcase Stage */
+  .showcase-stage {
+    margin-bottom: 40px;
+    perspective: none;
+  }
+
+  .card-mockup-wrapper {
+    padding: 18px 16px;
+    border-radius: 20px;
+  }
+
+  .card-visual-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .sample-card {
+    padding: 18px 16px;
+    min-height: 135px;
+    border-radius: 14px;
+  }
+
+  .card-number {
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    margin: 12px 0;
+  }
+
+  /* Features Grid */
+  .section-heading-wrap {
+    margin-bottom: 32px;
+  }
+
+  .section-title {
+    font-size: clamp(24px, 6vw, 32px);
+  }
+
+  .section-desc {
+    font-size: 14.5px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 60px;
+  }
+
+  .feature-card {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+
+  /* Security Banner */
+  .security-banner {
+    padding: 24px 18px;
+    border-radius: 20px;
+    margin-bottom: 40px;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .security-content {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .security-badges {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .badge-item {
+    width: 100%;
+    font-size: 13px;
+  }
+
+  .security-banner > div:last-child {
+    width: 100%;
+  }
+
+  .security-banner .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Steps Grid */
+  .steps-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 24px;
+  }
+
+  .step-card {
+    padding: 22px 18px;
+    border-radius: 18px;
+  }
+
+  .step-number {
+    font-size: 26px;
+    margin-bottom: 8px;
+  }
+
+  /* Legal Container */
+  .legal-container {
+    padding: 24px 18px;
+    border-radius: 20px;
+    margin-bottom: 40px;
+  }
+
+  .legal-header h1 {
+    font-size: clamp(22px, 6vw, 28px);
+  }
+
+  /* Footer */
+  footer.site-footer {
+    padding: 40px 0 24px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    margin-bottom: 28px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+
+  /* Download Page Mobile Layout */
+  .download-portal-hero {
+    padding: 20px 0 32px;
+  }
+
+  .download-hero-title {
+    font-size: clamp(24px, 7vw, 36px);
+    margin: 12px 0 10px;
+  }
+
+  .download-hero-subtitle {
+    font-size: 14.5px;
+    margin-bottom: 20px;
+    line-height: 1.55;
+  }
+
+  .device-detection-banner {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    padding: 8px 14px;
+    margin-bottom: 24px;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .download-card-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .download-action-card,
+  .download-qr-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 22px 18px;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .card-brand-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .cardly-app-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    flex: 1 1 180px;
+  }
+
+  .app-avatar-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    flex-shrink: 0;
+  }
+
+  .badge-text-meta {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .app-title-main {
+    font-size: 17px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .app-package-sub {
+    font-size: 12px;
+    word-break: break-all;
+  }
+
+  .version-tag-pill {
+    padding: 4px 10px;
+    font-size: 12px;
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+
+  .specs-pill-group {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .spec-chip {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .spec-label {
+    font-size: 10.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .spec-val {
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .btn-download-giant {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 15px 16px;
+    font-size: 15px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .download-safety-notice {
+    font-size: 11.5px;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .changelog-card-inner {
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .changelog-item {
+    font-size: 13px;
+    word-break: break-word;
+  }
+
+  .qr-box-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .qr-caption {
+    font-size: 12.5px;
+    max-width: 100%;
+  }
+
+  .qr-code-frame {
+    padding: 10px;
+    border-radius: 16px;
+  }
+
+  .qr-image {
+    width: min(160px, 45vw);
+    height: min(160px, 45vw);
+  }
+
+  .qr-hint-pill {
+    font-size: 11.5px;
+    text-align: center;
+    line-height: 1.4;
+    justify-content: center;
+  }
+}
+
+/* Extra Small Devices (Galaxy Fold, Narrow 360px & below) */
+@media (max-width: 380px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .nav-shell {
+    padding: 6px 10px;
+  }
+
+  .brand-lockup {
+    gap: 6px;
+  }
+
+  .brand-name {
+    font-size: 16px;
+  }
+
+  .brand-logo-img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .nav-btn {
+    padding: 6px 10px;
+    font-size: 11.5px;
+  }
+
+  .nav-btn svg {
+    display: none;
+  }
+
+  .nav-toggle {
+    width: 34px;
+    height: 34px;
+  }
+
+  .download-action-card,
+  .download-qr-card {
+    padding: 16px 12px !important;
+    border-radius: 16px;
+  }
+
+  .specs-pill-group {
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .spec-label {
+    font-size: 9.5px;
+  }
+
+  .spec-val {
+    font-size: 12px;
+  }
+
+  .btn-download-giant {
+    padding: 13px 12px;
+    font-size: 13.5px;
+    gap: 6px;
+  }
+
+  .card-brand-header {
+    gap: 8px;
+  }
+
+  .app-avatar-img {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+  }
+
+  .app-title-main {
+    font-size: 15.5px;
+  }
+
+  .app-package-sub {
+    font-size: 11px;
+  }
+
+  .version-tag-pill {
+    font-size: 10.5px;
+    padding: 3px 8px;
+  }
+
+  .hero-title {
+    font-size: 26px;
+  }
 }
 
