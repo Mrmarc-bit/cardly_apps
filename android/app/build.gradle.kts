@@ -50,8 +50,6 @@ android {
                 keyPassword = keystoreProperties.getProperty("keyPassword")
                 storeFile = keystoreFile
                 storePassword = keystoreProperties.getProperty("storePassword")
-                v1SigningEnabled = true
-                v2SigningEnabled = true
             } else {
                 initWith(getByName("debug"))
             }
