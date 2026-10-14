@@ -181,7 +181,7 @@ class _HomeDashboardViewState extends ConsumerState<HomeDashboardView> {
                     children: [
                       // Tombol Lonceng dengan Badge Titik Lime
                       InkWell(
-                        onTap: () => context.push('/reminders'),
+                        onTap: () => _showNotificationSheet(context, isDark),
                         borderRadius: BorderRadius.circular(999.0),
                         child: Container(
                           width: 44.0,
@@ -201,46 +201,73 @@ class _HomeDashboardViewState extends ConsumerState<HomeDashboardView> {
                                 color: isDark ? AppColors.white : AppColors.ink,
                                 size: 22.0,
                               ),
-                              if (pendingReminders.isNotEmpty)
-                                Positioned(
-                                  top: 10.0,
-                                  right: 11.0,
-                                  child: Container(
-                                    width: 8.0,
-                                    height: 8.0,
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.lime,
-                                      shape: BoxShape.circle,
-                                    ),
+                              Positioned(
+                                top: 10.0,
+                                right: 11.0,
+                                child: Container(
+                                  width: 8.0,
+                                  height: 8.0,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.lime,
+                                    shape: BoxShape.circle,
                                   ),
                                 ),
+                              ),
                             ],
                           ),
                         ),
                       ),
                       const SizedBox(width: 10.0),
-                      // Avatar Inisial Bulat
+                      // Avatar Bulat (Foto Profil jika ada, fallback ke Inisial)
                       GestureDetector(
                         onTap: () => widget.onSwitchTab?.call(4), // Tab Profil
-                        child: Container(
-                          width: 44.0,
-                          height: 44.0,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? AppColors.charcoal
-                                : AppColors.softGray,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Text(
-                            user.fullName.isNotEmpty
-                                ? user.fullName[0].toUpperCase()
-                                : 'M',
-                            style: AppTypography.bodySemiBold.copyWith(
-                              fontSize: 16.0,
-                              color: isDark ? AppColors.white : AppColors.ink,
-                            ),
-                          ),
+                        child: Builder(
+                          builder: (context) {
+                            final hasAvatar =
+                                user.avatarPath.isNotEmpty &&
+                                File(user.avatarPath).existsSync();
+                            if (hasAvatar) {
+                              return Container(
+                                width: 44.0,
+                                height: 44.0,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: isDark
+                                        ? AppColors.lime
+                                        : AppColors.ink,
+                                    width: 1.5,
+                                  ),
+                                  image: DecorationImage(
+                                    image: FileImage(File(user.avatarPath)),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              );
+                            }
+                            return Container(
+                              width: 44.0,
+                              height: 44.0,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? AppColors.charcoal
+                                    : AppColors.softGray,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                user.fullName.isNotEmpty
+                                    ? user.fullName[0].toUpperCase()
+                                    : 'M',
+                                style: AppTypography.bodySemiBold.copyWith(
+                                  fontSize: 16.0,
+                                  color: isDark
+                                      ? AppColors.white
+                                      : AppColors.ink,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
@@ -724,6 +751,191 @@ class _HomeDashboardViewState extends ConsumerState<HomeDashboardView> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showNotificationSheet(BuildContext context, bool isDark) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? AppColors.charcoal : AppColors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 16.0,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 36.0,
+                    height: 4.0,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? AppColors.elevatedDark
+                          : AppColors.softGray,
+                      borderRadius: BorderRadius.circular(2.0),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Pemberitahuan & Aktivitas',
+                      style: AppTypography.sectionHeading.copyWith(
+                        color: isDark ? AppColors.white : AppColors.ink,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 4.0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.lime.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Text(
+                        'Terkini',
+                        style: AppTypography.caption.copyWith(
+                          color: isDark ? AppColors.lime : AppColors.ink,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16.0),
+                _buildNotificationItem(
+                  isDark: isDark,
+                  icon: Icons.system_update_rounded,
+                  title: 'Versi 1.0.1 Terpasang',
+                  desc: 'Aplikasi berjalan pada rilis terbaru dengan proteksi privasi mandiri.',
+                  time: 'Aktif',
+                ),
+                const SizedBox(height: 12.0),
+                _buildNotificationItem(
+                  isDark: isDark,
+                  icon: Icons.shield_outlined,
+                  title: 'Brankas Data Siap & Terkunci',
+                  desc: 'Seluruh kartu dan dokumen Anda disimpan secara terenkripsi di perangkat ini.',
+                  time: 'Hari ini',
+                ),
+                const SizedBox(height: 20.0),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: isDark
+                            ? AppColors.elevatedDark
+                            : AppColors.softGray,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.control),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14.0),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      context.push('/reminders');
+                    },
+                    child: Text(
+                      'Buka Pengingat Masa Berlaku',
+                      style: AppTypography.bodySmall.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? AppColors.white : AppColors.ink,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildNotificationItem({
+    required bool isDark,
+    required IconData icon,
+    required String title,
+    required String desc,
+    required String time,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.ink : AppColors.mist,
+        borderRadius: BorderRadius.circular(AppRadius.control),
+        border: Border.all(
+          color: isDark ? AppColors.elevatedDark : AppColors.softGray,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: AppColors.lime.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: isDark ? AppColors.lime : AppColors.ink,
+              size: 18.0,
+            ),
+          ),
+          const SizedBox(width: 12.0),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.0,
+                        color: isDark ? AppColors.white : AppColors.ink,
+                      ),
+                    ),
+                    Text(
+                      time,
+                      style: TextStyle(
+                        fontSize: 11.0,
+                        color: isDark ? AppColors.mediumGray : AppColors.muted,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2.0),
+                Text(
+                  desc,
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : AppColors.muted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

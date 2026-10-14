@@ -50,7 +50,8 @@ class LocalStorageService {
   Future<bool> setUserEmail(String email) =>
       _prefs.setString('cardly_user_email', email);
 
-  String get userAvatarPath => _prefs.getString('cardly_user_avatar_path') ?? '';
+  String get userAvatarPath =>
+      _prefs.getString('cardly_user_avatar_path') ?? '';
   Future<bool> setUserAvatarPath(String path) =>
       _prefs.setString('cardly_user_avatar_path', path);
 

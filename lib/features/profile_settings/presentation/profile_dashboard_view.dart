@@ -23,8 +23,6 @@ class ProfileDashboardView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final profile = ref.watch(userProfileProvider);
-    final cards = ref.watch(cardListProvider);
-    final documents = ref.watch(documentListProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profil & Pengaturan')),
@@ -67,7 +65,8 @@ class ProfileDashboardView extends ConsumerWidget {
                             ],
                           ),
                           child: ClipOval(
-                            child: (profile.avatarPath.isNotEmpty &&
+                            child:
+                                (profile.avatarPath.isNotEmpty &&
                                     File(profile.avatarPath).existsSync())
                                 ? Image.file(
                                     File(profile.avatarPath),
@@ -146,47 +145,6 @@ class ProfileDashboardView extends ConsumerWidget {
             ),
 
             const SizedBox(height: AppSpacing.lg),
-
-            // Local Vault Guarantee Banner
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.charcoal : AppColors.mist,
-                borderRadius: BorderRadius.circular(AppRadius.control),
-                border: Border.all(
-                  color: isDark ? AppColors.darkBorder : AppColors.softGray,
-                ),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.verified_outlined,
-                    color: AppColors.lime,
-                    size: 24,
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Data Berdaulat Penuh',
-                          style: AppTypography.titleSmall(context)
-                              .copyWith(fontWeight: FontWeight.w700),
-                        ),
-                        Text(
-                          '${cards.length} kartu & ${documents.length} dokumen tersimpan secara lokal tanpa server.',
-                          style: AppTypography.caption(context)
-                              .copyWith(color: AppColors.mutedText),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: AppSpacing.xl),
 
             // Menu Section: Pengaturan Aplikasi
             Text(
@@ -359,9 +317,8 @@ class ProfileDashboardView extends ConsumerWidget {
           const SizedBox(height: AppSpacing.xs),
           Text(
             'Pilih metode untuk memperbarui foto profil Cardly Anda',
-            style: AppTypography.bodySmall(context).copyWith(
-              color: AppColors.mutedText,
-            ),
+            style: AppTypography.bodySmall(context)
+                .copyWith(color: AppColors.mutedText),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -438,8 +395,8 @@ class ProfileDashboardView extends ConsumerWidget {
       }
 
       final fileName = 'avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final savedFile =
-          await File(xFile.path).copy('${avatarDir.path}/$fileName');
+      final savedFile = await File(xFile.path)
+          .copy('${avatarDir.path}/$fileName');
 
       ref.read(userProfileProvider.notifier).updateAvatar(savedFile.path);
 
@@ -493,9 +450,8 @@ class ProfileDashboardView extends ConsumerWidget {
           const SizedBox(height: AppSpacing.sm),
           Text(
             'Perbarui nama lengkap, alamat email, atau foto profil Anda',
-            style: AppTypography.bodySmall(context).copyWith(
-              color: AppColors.mutedText,
-            ),
+            style: AppTypography.bodySmall(context)
+                .copyWith(color: AppColors.mutedText),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -643,7 +599,9 @@ class ProfileDashboardView extends ConsumerWidget {
           CardlyPrimaryButton(
             text: 'Simpan Perubahan',
             onPressed: () {
-              ref.read(userProfileProvider.notifier).updateProfile(
+              ref
+                  .read(userProfileProvider.notifier)
+                  .updateProfile(
                     name: nameController.text.trim(),
                     email: emailController.text.trim(),
                   );
@@ -772,8 +730,9 @@ class _AvatarOptionTile extends StatelessWidget {
     final iconBg = isDestructive
         ? AppColors.error.withValues(alpha: 0.12)
         : AppColors.lime.withValues(alpha: isDark ? 0.2 : 0.25);
-    final iconColor =
-        isDestructive ? AppColors.error : (isDark ? AppColors.lime : AppColors.ink);
+    final iconColor = isDestructive
+        ? AppColors.error
+        : (isDark ? AppColors.lime : AppColors.ink);
 
     return Material(
       color: isDark ? AppColors.charcoal : AppColors.mist,
@@ -832,4 +791,3 @@ class _AvatarOptionTile extends StatelessWidget {
     );
   }
 }
-

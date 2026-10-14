@@ -57,7 +57,9 @@ void main() {
   testWidgets('CreateFolderView renders form fields and validates correctly', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const MaterialApp(home: CreateFolderView()));
+    await tester.pumpWidget(
+      const ProviderScope(child: MaterialApp(home: CreateFolderView())),
+    );
 
     await tester.pumpAndSettle();
 
@@ -75,6 +77,7 @@ void main() {
     // Tap submit button
     expect(find.byType(CardlyPrimaryButton), findsOneWidget);
     await tester.tap(find.byType(CardlyPrimaryButton));
-    await tester.pump();
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
   });
 }

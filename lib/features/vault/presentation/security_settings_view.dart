@@ -19,9 +19,7 @@ class SecuritySettingsView extends ConsumerStatefulWidget {
 }
 
 class _SecuritySettingsViewState extends ConsumerState<SecuritySettingsView> {
-  String _autoLockOption = '1 Menit';
   bool _useBiometrics = false;
-  bool _hideInAppSwitcher = true;
 
   @override
   void initState() {
@@ -40,6 +38,8 @@ class _SecuritySettingsViewState extends ConsumerState<SecuritySettingsView> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final secSettings = ref.watch(securitySettingsProvider);
+    final secNotifier = ref.read(securitySettingsProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Keamanan & Privasi')),
@@ -74,9 +74,12 @@ class _SecuritySettingsViewState extends ConsumerState<SecuritySettingsView> {
                 children: [
                   ListTile(
                     title: const Text('Batas Waktu Kunci Otomatis'),
-                    subtitle: Text('Terkunci setelah: $_autoLockOption'),
+                    subtitle: Text(
+                      'Terkunci setelah: ${secSettings.autoLockOption}',
+                    ),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () => _showAutoLockPicker(),
+                    onTap: () =>
+                        _showAutoLockPicker(secSettings.autoLockOption),
                   ),
                   const Divider(height: 1),
                   SwitchListTile.adaptive(
@@ -154,11 +157,11 @@ class _SecuritySettingsViewState extends ConsumerState<SecuritySettingsView> {
                     subtitle: const Text(
                       'Cegah intipan saat berpindah aplikasi di perangkat',
                     ),
-                    value: _hideInAppSwitcher,
+                    value: secSettings.hideInAppSwitcher,
                     activeThumbColor: AppColors.lime,
                     activeTrackColor: AppColors.ink,
                     onChanged: (val) {
-                      setState(() => _hideInAppSwitcher = val);
+                      secNotifier.setHideInAppSwitcher(val);
                     },
                   ),
                 ],
@@ -246,7 +249,8 @@ class _SecuritySettingsViewState extends ConsumerState<SecuritySettingsView> {
     );
   }
 
-  void _showAutoLockPicker() {
+  void _showAutoLockPicker(String currentOpt) {
+    final secNotifier = ref.read(securitySettingsProvider.notifier);
     showModalBottomSheet(
       context: context,
       builder: (ctx) => SafeArea(
@@ -263,11 +267,11 @@ class _SecuritySettingsViewState extends ConsumerState<SecuritySettingsView> {
             ...['Segera', '30 Detik', '1 Menit', '5 Menit'].map((opt) {
               return ListTile(
                 title: Text(opt),
-                trailing: _autoLockOption == opt
+                trailing: currentOpt == opt
                     ? const Icon(Icons.check, color: AppColors.ink)
                     : null,
                 onTap: () {
-                  setState(() => _autoLockOption = opt);
+                  secNotifier.setAutoLockOption(opt);
                   Navigator.pop(ctx);
                 },
               );

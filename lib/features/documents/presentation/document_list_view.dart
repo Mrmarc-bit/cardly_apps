@@ -64,18 +64,90 @@ class _DocumentListViewState extends ConsumerState<DocumentListView> {
         actions: [
           IconButton(
             tooltip: 'Cari Dokumen',
-            icon: const Icon(Icons.search),
-            onPressed: () => context.push('/search'),
-          ),
-          IconButton(
-            tooltip: 'Tambah Dokumen',
-            icon: const Icon(Icons.add_circle_outline),
-            onPressed: () => context.push('/documents/create'),
+            icon: Icon(
+              _searchQuery.isNotEmpty ? Icons.search_off : Icons.search,
+            ),
+            onPressed: () {
+              if (_searchQuery.isNotEmpty) {
+                _searchController.clear();
+                setState(() => _searchQuery = '');
+              }
+            },
           ),
         ],
       ),
       body: Column(
         children: [
+          // Minimalist Search Input
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.screenInset,
+              vertical: 8.0,
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.charcoal : AppColors.white,
+                borderRadius: AppRadius.inputRadius,
+                border: Border.all(
+                  color: isDark
+                      ? AppColors.elevatedDark
+                      : const Color(0xFFE5E5E2),
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14.0,
+                vertical: 10.0,
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.search,
+                    size: 20.0,
+                    color: isDark ? AppColors.mediumGray : AppColors.muted,
+                  ),
+                  const SizedBox(width: 10.0),
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      style: AppTypography.body.copyWith(
+                        color: isDark ? AppColors.white : AppColors.ink,
+                        fontSize: 14.5,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Cari judul, nomor, atau penerbit...',
+                        isDense: true,
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
+                        hintStyle: AppTypography.body.copyWith(
+                          color: isDark
+                              ? AppColors.textSecondaryDark.withValues(
+                                  alpha: 0.6,
+                                )
+                              : AppColors.muted.withValues(alpha: 0.7),
+                          fontSize: 14.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (_searchQuery.isNotEmpty)
+                    GestureDetector(
+                      onTap: () {
+                        _searchController.clear();
+                        setState(() => _searchQuery = '');
+                      },
+                      child: Icon(
+                        Icons.close,
+                        size: 18.0,
+                        color: isDark ? AppColors.mediumGray : AppColors.muted,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+
           // Category chips bar
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -137,17 +209,20 @@ class _DocumentListViewState extends ConsumerState<DocumentListView> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/documents/create'),
-        backgroundColor: AppColors.lime,
-        foregroundColor: AppColors.ink,
-        icon: const Icon(Icons.add),
-        label: Text(
-          'Tambah',
-          style: AppTypography.titleSmall(context)
-              .copyWith(fontWeight: FontWeight.w700, color: AppColors.ink),
-        ),
-      ),
+      floatingActionButton: filteredDocs.isEmpty
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () => context.push('/documents/create'),
+              backgroundColor: AppColors.lime,
+              foregroundColor: AppColors.ink,
+              icon: const Icon(Icons.add),
+              label: Text(
+                'Tambah',
+                style: AppTypography.titleSmall(
+                  context,
+                ).copyWith(fontWeight: FontWeight.w700, color: AppColors.ink),
+              ),
+            ),
     );
   }
 

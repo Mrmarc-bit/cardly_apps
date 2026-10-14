@@ -449,12 +449,18 @@ class _AppUpdateModalState extends ConsumerState<AppUpdateModal> {
                       const SizedBox(height: 10.0),
                       OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: isDark ? AppColors.white : AppColors.ink,
+                          foregroundColor: isDark
+                              ? AppColors.white
+                              : AppColors.ink,
                           side: BorderSide(
-                            color: isDark ? AppColors.border : AppColors.mediumGray,
+                            color: isDark
+                                ? AppColors.border
+                                : AppColors.mediumGray,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppRadius.control),
+                            borderRadius: BorderRadius.circular(
+                              AppRadius.control,
+                            ),
                           ),
                         ),
                         icon: const Icon(Icons.settings_rounded, size: 16.0),

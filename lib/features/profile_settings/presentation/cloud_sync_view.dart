@@ -78,7 +78,6 @@ class _CloudSyncViewState extends ConsumerState<CloudSyncView> {
     final lastSync = syncService.lastSyncTime;
     final lastSyncFormatted = Formatters.formatDateTime(lastSync);
 
-    final isConnected = supabase.isInitialized;
     final currentUser = supabase.currentUser;
 
     return Scaffold(
@@ -108,65 +107,6 @@ class _CloudSyncViewState extends ConsumerState<CloudSyncView> {
           ),
           physics: const BouncingScrollPhysics(),
           children: [
-            // Status Card Cloud Sync
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.charcoal : AppColors.white,
-                borderRadius: BorderRadius.circular(AppRadius.card),
-                border: Border.all(
-                  color: isDark ? AppColors.darkBorder : AppColors.softGray,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12.0),
-                    decoration: BoxDecoration(
-                      color: AppColors.lime.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(
-                        AppRadius.control,
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.cloud_done_rounded,
-                      color: isDark ? AppColors.lime : AppColors.ink,
-                      size: 28,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Penyimpanan Cloud Terenkripsi',
-                          style: AppTypography.bodyStyle.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: isDark ? AppColors.white : AppColors.ink,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          isConnected
-                              ? 'Cadangan Cloud Siap & Terhubung'
-                              : 'Mode Cadangan Lokal (Offline)',
-                          style: AppTypography.caption(context).copyWith(
-                            color: isConnected
-                                ? Colors.green
-                                : AppColors.muted,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: AppSpacing.lg),
-
             // Info Akun & Sesi
             Container(
               padding: const EdgeInsets.all(AppSpacing.lg),
@@ -249,7 +189,7 @@ class _CloudSyncViewState extends ConsumerState<CloudSyncView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Data Lokal Siap Sinkron (SQLite)',
+                    'Data Siap Sinkron',
                     style: AppTypography.bodySmall(context).copyWith(
                       fontWeight: FontWeight.w700,
                       color: isDark ? AppColors.white : AppColors.ink,

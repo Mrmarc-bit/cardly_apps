@@ -11,9 +11,13 @@ import '../core/sync/cloud_sync_service.dart';
 import '../features/cards/data/card_repository.dart';
 import '../features/cards/domain/card_model.dart';
 import '../features/documents/data/document_repository.dart';
+import '../features/documents/data/folder_repository.dart';
 import '../features/documents/domain/document_model.dart';
+import '../features/documents/domain/folder_model.dart';
 import '../features/reminders/data/reminder_repository.dart';
 import '../features/reminders/domain/reminder_model.dart';
+
+import 'package:flutter/services.dart';
 
 // --- Global Storage & Repository Providers ---
 
@@ -53,6 +57,11 @@ final documentRepositoryProvider = Provider<DocumentRepository>((ref) {
 final reminderRepositoryProvider = Provider<ReminderRepository>((ref) {
   final db = ref.watch(appDatabaseProvider);
   return ReminderRepository(db);
+});
+
+final folderRepositoryProvider = Provider<FolderRepository>((ref) {
+  final db = ref.watch(appDatabaseProvider);
+  return FolderRepository(db);
 });
 
 // --- Theme Mode State Notifier ---
@@ -151,7 +160,11 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
       );
 
   void updateProfile({String? name, String? email, String? avatarPath}) {
-    state = state.copyWith(fullName: name, email: email, avatarPath: avatarPath);
+    state = state.copyWith(
+      fullName: name,
+      email: email,
+      avatarPath: avatarPath,
+    );
     if (name != null) _storage.setUserName(name);
     if (email != null) _storage.setUserEmail(email);
     if (avatarPath != null) _storage.setUserAvatarPath(avatarPath);
@@ -359,3 +372,109 @@ final cloudSyncServiceProvider = Provider<CloudSyncService>((ref) {
   }
   return CloudSyncService(database: db, supabase: supabase, prefs: prefs);
 });
+
+// --- Folder List Provider ---
+
+final folderListProvider =
+    StateNotifierProvider<FolderListNotifier, List<FolderItem>>((ref) {
+      final repo = ref.watch(folderRepositoryProvider);
+      return FolderListNotifier(repo);
+    });
+
+class FolderListNotifier extends StateNotifier<List<FolderItem>> {
+  final FolderRepository _repo;
+
+  FolderListNotifier(this._repo) : super(_repo.getAllFolders()) {
+    _initLoad();
+  }
+
+  Future<void> _initLoad() async {
+    final list = await _repo.loadFolders();
+    state = list;
+  }
+
+  Future<void> refresh() async {
+    final list = await _repo.loadFolders();
+    state = list;
+  }
+
+  Future<void> createFolder(FolderItem folder) async {
+    await _repo.addFolder(folder);
+    state = _repo.getAllFolders();
+  }
+
+  Future<void> deleteFolder(String id) async {
+    await _repo.deleteFolder(id);
+    state = _repo.getAllFolders();
+  }
+}
+
+// --- Security Settings Provider (Auto-Lock & App Switcher Shield) ---
+
+class SecuritySettingsState {
+  final String
+  autoLockOption; // 'Segera', '30 Detik', '1 Menit', '5 Menit', 'Tidak Pernah'
+  final bool hideInAppSwitcher;
+
+  const SecuritySettingsState({
+    this.autoLockOption = 'Segera',
+    this.hideInAppSwitcher = false,
+  });
+
+  SecuritySettingsState copyWith({
+    String? autoLockOption,
+    bool? hideInAppSwitcher,
+  }) {
+    return SecuritySettingsState(
+      autoLockOption: autoLockOption ?? this.autoLockOption,
+      hideInAppSwitcher: hideInAppSwitcher ?? this.hideInAppSwitcher,
+    );
+  }
+}
+
+final securitySettingsProvider =
+    StateNotifierProvider<SecuritySettingsNotifier, SecuritySettingsState>((
+      ref,
+    ) {
+      SharedPreferences? prefs;
+      try {
+        prefs = ref.watch(sharedPreferencesProvider);
+      } catch (_) {}
+      return SecuritySettingsNotifier(prefs);
+    });
+
+class SecuritySettingsNotifier extends StateNotifier<SecuritySettingsState> {
+  final SharedPreferences? _prefs;
+  static const _channel = MethodChannel('com.cardly.app/security');
+
+  SecuritySettingsNotifier(this._prefs)
+    : super(
+        SecuritySettingsState(
+          autoLockOption:
+              _prefs?.getString('cardly_auto_lock_option') ?? 'Segera',
+          hideInAppSwitcher:
+              _prefs?.getBool('cardly_hide_in_app_switcher') ?? false,
+        ),
+      ) {
+    if (state.hideInAppSwitcher) {
+      _applySecureFlag(true);
+    }
+  }
+
+  Future<void> setAutoLockOption(String option) async {
+    state = state.copyWith(autoLockOption: option);
+    await _prefs?.setString('cardly_auto_lock_option', option);
+  }
+
+  Future<void> setHideInAppSwitcher(bool value) async {
+    state = state.copyWith(hideInAppSwitcher: value);
+    await _prefs?.setBool('cardly_hide_in_app_switcher', value);
+    await _applySecureFlag(value);
+  }
+
+  Future<void> _applySecureFlag(bool enabled) async {
+    try {
+      await _channel.invokeMethod('setSecureFlag', {'enabled': enabled});
+    } catch (_) {}
+  }
+}

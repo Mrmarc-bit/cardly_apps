@@ -18,11 +18,51 @@ class CardlyApp extends ConsumerStatefulWidget {
 
 class _CardlyAppState extends ConsumerState<CardlyApp> {
   StreamSubscription<AuthState>? _authSubscription;
+  late final AppLifecycleListener _lifecycleListener;
+  DateTime? _lastBackgroundTimestamp;
 
   @override
   void initState() {
     super.initState();
     _setupSupabaseAuthListener();
+    _setupLifecycleListener();
+  }
+
+  void _setupLifecycleListener() {
+    _lifecycleListener = AppLifecycleListener(
+      onPause: () {
+        _lastBackgroundTimestamp = DateTime.now();
+      },
+      onResume: () {
+        final last = _lastBackgroundTimestamp;
+        if (last == null) return;
+        final elapsedSeconds = DateTime.now().difference(last).inSeconds;
+        _lastBackgroundTimestamp = null;
+
+        final secSettings = ref.read(securitySettingsProvider);
+        int threshold = 0;
+        switch (secSettings.autoLockOption) {
+          case 'Segera':
+            threshold = 0;
+            break;
+          case '30 Detik':
+            threshold = 30;
+            break;
+          case '1 Menit':
+            threshold = 60;
+            break;
+          case '5 Menit':
+            threshold = 300;
+            break;
+          default:
+            return;
+        }
+
+        if (elapsedSeconds >= threshold) {
+          ref.read(vaultLockedProvider.notifier).lock();
+        }
+      },
+    );
   }
 
   void _setupSupabaseAuthListener() {
@@ -55,6 +95,7 @@ class _CardlyAppState extends ConsumerState<CardlyApp> {
 
   @override
   void dispose() {
+    _lifecycleListener.dispose();
     _authSubscription?.cancel();
     super.dispose();
   }

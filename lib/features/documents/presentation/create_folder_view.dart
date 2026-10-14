@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/widgets/cardly_buttons.dart';
+import '../../../core/widgets/cardly_toast.dart';
+import '../domain/folder_model.dart';
 
 /// Halaman / Bottom sheet Buat Folder Cardly sesuai docs/5. Home/58 Buat folder.png & 58 Buat folder • Gelap.png
-class CreateFolderView extends StatefulWidget {
+class CreateFolderView extends ConsumerStatefulWidget {
   const CreateFolderView({super.key});
 
   @override
-  State<CreateFolderView> createState() => _CreateFolderViewState();
+  ConsumerState<CreateFolderView> createState() => _CreateFolderViewState();
 }
 
-class _CreateFolderViewState extends State<CreateFolderView> {
+class _CreateFolderViewState extends ConsumerState<CreateFolderView> {
   final _nameController = TextEditingController(text: 'Identitas pribadi');
   String _selectedLocation = 'Brankas';
   bool _isPrivate = true;
@@ -138,14 +142,18 @@ class _CreateFolderViewState extends State<CreateFolderView> {
     final folderName = _nameController.text.trim();
     if (folderName.isEmpty) return;
 
-    HapticFeedback.mediumImpact();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Folder "$folderName" berhasil dibuat.'),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AppColors.ink,
-      ),
+    final newFolder = FolderItem(
+      id: 'folder_${DateTime.now().millisecondsSinceEpoch}',
+      name: folderName,
+      location: _selectedLocation,
+      isPrivate: _isPrivate,
+      iconName: _selectedLocation == 'Brankas' ? 'lock' : 'folder',
+      colorHex: '#C8F45A',
+      createdAt: DateTime.now(),
     );
+
+    ref.read(folderListProvider.notifier).createFolder(newFolder);
+    CardlyToast.showSuccess(context, 'Folder "$folderName" berhasil dibuat.');
     Navigator.of(context).pop();
   }
 

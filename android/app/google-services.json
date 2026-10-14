@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "203753360919",
+    "project_id": "cardly-333ff",
+    "storage_bucket": "cardly-333ff.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:203753360919:android:7846b15612ede92d8e5652",
+        "android_client_info": {
+          "package_name": "com.cardly.cardly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0IGmlqV2OpRDSjBp_IajCAUyezPYbgho"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

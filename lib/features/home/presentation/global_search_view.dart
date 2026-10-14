@@ -142,41 +142,26 @@ class _GlobalSearchViewState extends ConsumerState<GlobalSearchView> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Cari di Cardly',
-                            style: AppTypography.caption.copyWith(
-                              fontSize: 11.5,
-                              color: isDark
-                                  ? AppColors.textSecondaryDark
-                                  : AppColors.muted,
-                            ),
+                      child: TextField(
+                        controller: _searchController,
+                        style: AppTypography.compactBodyMedium.copyWith(
+                          fontSize: 15.5,
+                          fontWeight: FontWeight.w500,
+                          color: isDark ? AppColors.white : AppColors.ink,
+                        ),
+                        decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                          hintText: 'Cari kartu, dokumen, atau kategori...',
+                          hintStyle: AppTypography.compactBody.copyWith(
+                            color: isDark
+                                ? AppColors.mediumGray
+                                : AppColors.muted,
                           ),
-                          const SizedBox(height: 2.0),
-                          TextField(
-                            controller: _searchController,
-                            style: AppTypography.compactBodyMedium.copyWith(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w500,
-                              color: isDark ? AppColors.white : AppColors.ink,
-                            ),
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.zero,
-                              hintText: 'Nama, kategori, atau tag',
-                              hintStyle: AppTypography.compactBody.copyWith(
-                                color: isDark
-                                    ? AppColors.mediumGray
-                                    : AppColors.muted,
-                              ),
-                              border: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                            ),
-                          ),
-                        ],
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                        ),
                       ),
                     ),
                     if (_query.isNotEmpty)

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
@@ -80,7 +81,10 @@ class CardlyBottomNavBar extends StatelessWidget {
 
               return Expanded(
                 child: InkWell(
-                  onTap: () => onItemSelected(index),
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    onItemSelected(index);
+                  },
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   child: Center(
@@ -93,9 +97,11 @@ class CardlyBottomNavBar extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14.0,
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 240),
+                            curve: Curves.easeOutBack,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isSelected ? 16.0 : 12.0,
                               vertical: 4.0,
                             ),
                             decoration: BoxDecoration(
@@ -104,22 +110,26 @@ class CardlyBottomNavBar extends StatelessWidget {
                                   : Colors.transparent,
                               borderRadius: AppRadius.pillRadius,
                             ),
-                            child: Icon(
-                              isSelected ? item.activeIcon : item.icon,
-                              size: 22.0,
-                              color: isSelected
-                                  ? AppColors.ink
-                                  : (isDark
-                                        ? AppColors.mediumGray
-                                        : AppColors.muted),
+                            child: AnimatedScale(
+                              scale: isSelected ? 1.06 : 1.0,
+                              duration: const Duration(milliseconds: 200),
+                              child: Icon(
+                                isSelected ? item.activeIcon : item.icon,
+                                size: 22.0,
+                                color: isSelected
+                                    ? AppColors.ink
+                                    : (isDark
+                                          ? AppColors.mediumGray
+                                          : AppColors.muted),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 2.0),
-                          Text(
-                            item.label,
+                          AnimatedDefaultTextStyle(
+                            duration: const Duration(milliseconds: 200),
                             style: AppTypography.tinyLabel.copyWith(
                               fontWeight: isSelected
-                                  ? FontWeight.w600
+                                  ? FontWeight.w700
                                   : FontWeight.w400,
                               color: isSelected
                                   ? (isDark ? AppColors.white : AppColors.ink)
@@ -127,6 +137,7 @@ class CardlyBottomNavBar extends StatelessWidget {
                                         ? AppColors.mediumGray
                                         : AppColors.muted),
                             ),
+                            child: Text(item.label),
                           ),
                         ],
                       ),

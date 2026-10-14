@@ -62,6 +62,7 @@ class _CardListViewState extends ConsumerState<CardListView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Top Bar (Sesuai 12 Kartu Saya.png: "Kartu Saya" & "Data contoh")
+            // Top Bar
             Padding(
               padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 12.0),
               child: Row(
@@ -75,19 +76,11 @@ class _CardListViewState extends ConsumerState<CardListView> {
                       fontSize: 26.0,
                     ),
                   ),
-                  Text(
-                    'Data contoh',
-                    style: AppTypography.caption.copyWith(
-                      color: isDark
-                          ? AppColors.textSecondaryDark
-                          : AppColors.muted,
-                    ),
-                  ),
                 ],
               ),
             ),
 
-            // Search Bar (Sesuai 12 Kartu Saya.png: Label Cari kartu + Ikon search di kanan)
+            // Minimalist Unified Search Bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Container(
@@ -101,76 +94,60 @@ class _CardListViewState extends ConsumerState<CardListView> {
                   ),
                 ),
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 12.0,
+                  horizontal: 14.0,
+                  vertical: 10.0,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    Text(
-                      'Cari kartu',
-                      style: AppTypography.captionMedium.copyWith(
-                        fontSize: 12.0,
-                        color: isDark
-                            ? AppColors.textSecondaryDark
-                            : AppColors.muted,
-                        fontWeight: FontWeight.w600,
+                    Icon(
+                      Icons.search,
+                      size: 20.0,
+                      color: isDark ? AppColors.mediumGray : AppColors.muted,
+                    ),
+                    const SizedBox(width: 10.0),
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: (val) => setState(() => _searchQuery = val),
+                        style: AppTypography.body.copyWith(
+                          color: isDark ? AppColors.white : AppColors.ink,
+                          fontSize: 14.5,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Cari kartu atau penerbit...',
+                          isDense: true,
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
+                          hintStyle: AppTypography.body.copyWith(
+                            color: isDark
+                                ? AppColors.textSecondaryDark.withValues(
+                                    alpha: 0.6,
+                                  )
+                                : AppColors.muted.withValues(alpha: 0.7),
+                            fontSize: 14.5,
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 2.0),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: (val) =>
-                                setState(() => _searchQuery = val),
-                            style: AppTypography.body.copyWith(
-                              color: isDark ? AppColors.white : AppColors.ink,
-                              fontSize: 14.5,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: 'Nama, penerbit, atau kategori',
-                              isDense: true,
-                              border: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
-                              hintStyle: AppTypography.body.copyWith(
-                                color: isDark
-                                    ? AppColors.textSecondaryDark.withValues(
-                                        alpha: 0.6,
-                                      )
-                                    : AppColors.muted.withValues(alpha: 0.7),
-                                fontSize: 14.5,
-                              ),
-                            ),
+                    if (_searchQuery.isNotEmpty)
+                      GestureDetector(
+                        onTap: () {
+                          _searchController.clear();
+                          setState(() => _searchQuery = '');
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Icon(
+                            Icons.close,
+                            size: 18.0,
+                            color: isDark
+                                ? AppColors.mediumGray
+                                : AppColors.muted,
                           ),
                         ),
-                        if (_searchQuery.isNotEmpty)
-                          GestureDetector(
-                            onTap: () {
-                              _searchController.clear();
-                              setState(() => _searchQuery = '');
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Icon(
-                                Icons.close,
-                                size: 18.0,
-                                color: isDark
-                                    ? AppColors.mediumGray
-                                    : AppColors.muted,
-                              ),
-                            ),
-                          ),
-                        Icon(
-                          Icons.search,
-                          size: 22.0,
-                          color: isDark ? AppColors.white : AppColors.ink,
-                        ),
-                      ],
-                    ),
+                      ),
                   ],
                 ),
               ),
@@ -322,14 +299,16 @@ class _CardListViewState extends ConsumerState<CardListView> {
           ],
         ),
       ),
-      bottomSheet: Container(
-        color: isDark ? AppColors.ink : AppColors.mist,
-        padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 16.0),
-        child: CardlyPrimaryButton(
-          text: 'Tambah Kartu',
-          onPressed: () => context.push('/cards/create'),
-        ),
-      ),
+      bottomSheet: filtered.isEmpty
+          ? null
+          : Container(
+              color: isDark ? AppColors.ink : AppColors.mist,
+              padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 16.0),
+              child: CardlyPrimaryButton(
+                text: 'Tambah Kartu',
+                onPressed: () => context.push('/cards/create'),
+              ),
+            ),
     );
   }
 

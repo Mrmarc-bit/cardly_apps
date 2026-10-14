@@ -80,7 +80,10 @@ class AppUpdateService {
       if (response != null) {
         final supabaseInfo = AppUpdateInfo.fromJson(response);
         if (bestUpdate == null ||
-            isNewerVersion(supabaseInfo.latestVersion, bestUpdate.latestVersion) ||
+            isNewerVersion(
+              supabaseInfo.latestVersion,
+              bestUpdate.latestVersion,
+            ) ||
             (supabaseInfo.latestVersion == bestUpdate.latestVersion &&
                 supabaseInfo.buildNumber > bestUpdate.buildNumber)) {
           bestUpdate = supabaseInfo;
@@ -267,7 +270,9 @@ class AppUpdateService {
   Future<bool> canRequestPackageInstalls() async {
     if (!Platform.isAndroid) return true;
     try {
-      final result = await _updaterChannel.invokeMethod<bool>('canRequestPackageInstalls');
+      final result = await _updaterChannel.invokeMethod<bool>(
+        'canRequestPackageInstalls',
+      );
       return result ?? true;
     } catch (_) {
       return true;
@@ -278,7 +283,9 @@ class AppUpdateService {
   Future<bool> openInstallPermissionSettings() async {
     if (!Platform.isAndroid) return false;
     try {
-      final result = await _updaterChannel.invokeMethod<bool>('openInstallPermissionSettings');
+      final result = await _updaterChannel.invokeMethod<bool>(
+        'openInstallPermissionSettings',
+      );
       return result ?? false;
     } catch (_) {
       return false;

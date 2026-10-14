@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
@@ -207,7 +208,11 @@ class _CardCreateWizardViewState extends ConsumerState<CardCreateWizardView> {
               final isSelected = _category == cat;
               return InkWell(
                 onTap: () {
-                  setState(() => _category = cat);
+                  HapticFeedback.lightImpact();
+                  setState(() {
+                    _category = cat;
+                    _currentStep = 2;
+                  });
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(

@@ -34,16 +34,7 @@ class _ReminderListViewState extends ConsumerState<ReminderListView> {
     }).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pengingat Masa Berlaku'),
-        actions: [
-          IconButton(
-            tooltip: 'Tambah Pengingat',
-            icon: const Icon(Icons.add_alert_outlined),
-            onPressed: () => context.push('/reminders/create'),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Pengingat Masa Berlaku')),
       body: Column(
         children: [
           // Filter Tabs
@@ -211,17 +202,20 @@ class _ReminderListViewState extends ConsumerState<ReminderListView> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/reminders/create'),
-        backgroundColor: AppColors.lime,
-        foregroundColor: AppColors.ink,
-        icon: const Icon(Icons.add),
-        label: Text(
-          'Tambah',
-          style: AppTypography.titleSmall(context)
-              .copyWith(fontWeight: FontWeight.w700, color: AppColors.ink),
-        ),
-      ),
+      floatingActionButton: filteredReminders.isEmpty
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () => context.push('/reminders/create'),
+              backgroundColor: AppColors.lime,
+              foregroundColor: AppColors.ink,
+              icon: const Icon(Icons.add),
+              label: Text(
+                'Tambah',
+                style: AppTypography.titleSmall(
+                  context,
+                ).copyWith(fontWeight: FontWeight.w700, color: AppColors.ink),
+              ),
+            ),
     );
   }
 
