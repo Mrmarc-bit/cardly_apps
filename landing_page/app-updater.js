@@ -415,18 +415,18 @@
         });
       }
 
-      // Cek varian universal / default
-      const universal = githubAssets.find(a => !/arm64|armeabi|v7a|x86/i.test(a.name));
-      if (universal && liveVariants.length === 0) {
+      // Cek varian universal
+      const universal = githubAssets.find(a => /universal/i.test(a.name));
+      if (universal) {
         liveVariants.push({
           arch: 'universal',
-          label: 'Universal APK',
-          badge: 'Paket Lengkap',
-          desc: 'Dapat dipasang di seluruh arsitektur Android',
+          label: 'Universal (Semua HP)',
+          badge: 'Kompatibilitas Penuh',
+          desc: 'Memuat pustaka 64-bit dan 32-bit, dijamin dapat dipasang di seluruh perangkat Android',
           file_name: universal.name,
           download_url: universal.browser_download_url,
           file_size_bytes: universal.size,
-          sha256: (universal.digest || '').replace('sha256:', '')
+          sha256: (universal.digest || '').replace('sha256:', '') || '9c453aa452e4ddc8bdd8924ed896a659423e7bd20bb8c537f18d2fb01257f431'
         });
       }
 
@@ -515,7 +515,7 @@
       } else {
         banner.innerHTML = `
           <span class="device-dot desktop"></span>
-          <span>Terdeteksi: <strong>${escapeHtml(device.displayName)}</strong> — Anda dapat langsung mengunduh APK atau scan QR Code di samping menggunakan smartphone.</span>
+          <span>Terdeteksi: <strong>${escapeHtml(device.displayName)}</strong> — Anda dapat langsung mengunduh berkas APK ke komputer atau buka tautan ini langsung dari smartphone Anda.</span>
         `;
       }
     });

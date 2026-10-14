@@ -28,6 +28,7 @@
         <ul class="nav-links">
           <li><a href="/">Home</a></li>
           <li><a href="/download" style="color: var(--lime); font-weight: 600;">Download</a></li>
+          <li><a href="/download#changelog">Changelog</a></li>
           <li><a href="/privacy">Privasi</a></li>
           <li><a href="/terms">Ketentuan</a></li>
         </ul>
@@ -111,48 +112,70 @@
             </p>
           </div>
 
-          <!-- Changelog Section (Auto-populated by app-updater.js) -->
-          <div class="changelog-card-inner">
-            <div class="changelog-header-row">
-              <h4>Yang Baru di Versi Ini</h4>
-              <span class="changelog-badge-new">Changelog</span>
-            </div>
-            <ul class="changelog-bullet-list" data-cardly-changelog>
-              <li class="changelog-item">
-                <svg class="changelog-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                <span>Fitur unggah dan ganti foto profil avatar (kamera, galeri, dan hapus foto)</span>
-              </li>
-              <li class="changelog-item">
-                <svg class="changelog-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                <span>Anonimitas total penyimpanan cloud (perlindungan data privat tanpa ekspos vendor)</span>
-              </li>
-              <li class="changelog-item">
-                <svg class="changelog-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                <span>Optimasi antarmuka responsif mobile portal web & pendeteksi perangkat cerdas</span>
-              </li>
-            </ul>
-          </div>
-
           <!-- Architecture Variants (Auto-populated by app-updater.js) -->
           <div class="variants-container" data-cardly-variants></div>
         </div>
+      </div>
+    </section>
 
-        <!-- Card Kanan: QR Code Scanner & Android Steps -->
-        <div class="download-qr-card">
-          <div class="qr-box-wrapper">
-            <h3 class="qr-heading">Scan dari Ponsel</h3>
-            <p class="qr-caption">Arahkan kamera smartphone Anda ke QR code ini untuk langsung mengunduh ke perangkat Anda:</p>
-            
-            <div class="qr-code-frame">
-              <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&color=17-17-17&bgcolor=200-244-90&data=https%3A%2F%2Fgithub.com%2FMrmarc-bit%2Fcardly_apps%2Freleases%2Fdownload%2Fv1.0.1%2Fcardly-release-v1.0.1.apk" alt="Cardly APK QR Code" class="qr-image" data-cardly-qr>
-            </div>
+    <!-- Changelog Timeline Section (Inspired by shadcn/ui Changelog1) -->
+    <section class="changelog-timeline-section" id="changelog">
+      <div class="changelog-header-block">
+        <span class="section-tag">Riwayat Rilis</span>
+        <h2 class="changelog-timeline-title">Catatan Pembaruan (Changelog)</h2>
+        <p class="changelog-timeline-desc">Pantau perkembangan fitur baru, optimasi performa, dan peningkatan privasi Cardly di setiap versi rilis.</p>
+      </div>
 
-            <div class="qr-hint-pill">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              Tautan otomatis terintegrasi ke rilis terbaru
+      <div class="changelog-entries-container" data-cardly-timeline-entries>
+        <!-- Entry 1: Version 1.0.1 (Latest) -->
+        <article class="changelog-entry">
+          <div class="changelog-meta-col">
+            <span class="badge-version-pill current">Version 1.0.1</span>
+            <time class="changelog-date" datetime="2026-10-14">14 Oktober 2026</time>
+          </div>
+          <div class="changelog-content-col">
+            <h3 class="changelog-entry-title">Foto Profil Avatar, Kompresi 64% & Privasi Cloud Penuh</h3>
+            <p class="changelog-entry-desc">Pembaruan besar yang menghadirkan kustomisasi avatar pengguna, penghapusan ketergantungan nama vendor untuk keamanan privasi, kompresi ukuran berkas APK hingga 33.6 MB, dan auto-updater cerdas.</p>
+            <ul class="changelog-entry-list">
+              <li><strong>Manajemen Foto Profil Avatar:</strong> Ambil foto langsung dengan kamera, pilih dari galeri foto, atau hapus foto profil untuk kembali ke inisial nama dengan modal dialog modern.</li>
+              <li><strong>Anonimitas Total Penyimpanan Cloud:</strong> Pembersihan seluruh jejak vendor backend dari antarmuka pengguna demi privasi berdaulat penuh.</li>
+              <li><strong>Kompresi Ukuran APK 64% Lebih Ramping (33.6 MB):</strong> Optimalisasi R8 Minifier dan pemisahan arsitektur CPU (ARM64 & ARMv7) mengurangi ukuran unduhan secara drastis.</li>
+              <li><strong>Pendeteksi Perangkat Cerdas & Multi-Arsitektur:</strong> Portal web secara otomatis mendeteksi spesifikasi ponsel pengunjung dan merekomendasikan varian APK yang paling sesuai.</li>
+              <li><strong>Perbaikan State Persistensi SQLite:</strong> Penanganan inisialisasi asynchronous database lokal saat pembaruan aplikasi agar data kartu dan dokumen tidak hilang.</li>
+            </ul>
+            <div class="changelog-entry-footer">
+              <a href="https://github.com/Mrmarc-bit/cardly_apps/releases/tag/v1.0.1" target="_blank" rel="noopener noreferrer" class="changelog-link-btn">
+                <span>Catatan Rilis di GitHub</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              </a>
             </div>
           </div>
-        </div>
+        </article>
+
+        <!-- Entry 2: Version 1.0.0 (Initial Release) -->
+        <article class="changelog-entry">
+          <div class="changelog-meta-col">
+            <span class="badge-version-pill">Version 1.0.0</span>
+            <time class="changelog-date" datetime="2026-10-14">14 Oktober 2026</time>
+          </div>
+          <div class="changelog-content-col">
+            <h3 class="changelog-entry-title">Peluncuran Perdana Cardly Mobile (Official Initial Release)</h3>
+            <p class="changelog-entry-desc">Rilis perdana Cardly sebagai Personal Organizer & Private Space untuk kartu pembayaran, dokumen identitas resmi, dan pengingat masa berlaku.</p>
+            <ul class="changelog-entry-list">
+              <li><strong>Pemindai Kartu Berstandar ISO ID-1:</strong> Deteksi kontur kartu otomatis dengan panduan laser dan sudut membulat presisi.</li>
+              <li><strong>Ekstraksi Teks OCR On-Device:</strong> Membaca data e-KTP dan nomor kartu bank langsung di perangkat ponsel tanpa internet.</li>
+              <li><strong>Protokol Privasi Zero Full-Card Retention:</strong> Hanya mencatat 4 digit terakhir nomor kartu; tidak pernah meminta CVV atau PIN perbankan.</li>
+              <li><strong>Brankas Lokal SQLite & Kunci Biometrik:</strong> Penyimpanan terenkripsi dengan otentikasi sensor sidik jari (Fingerprint / Face ID) dan PIN 6-digit.</li>
+              <li><strong>Sistem Pembaruan Otomatis In-App (OTA):</strong> Mendukung pengecekan dan penginstalan pembaruan langsung tanpa melalui Google Play Store.</li>
+            </ul>
+            <div class="changelog-entry-footer">
+              <a href="https://github.com/Mrmarc-bit/cardly_apps/releases/tag/v1.0.0" target="_blank" rel="noopener noreferrer" class="changelog-link-btn">
+                <span>Catatan Rilis di GitHub</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
       </div>
     </section>
 

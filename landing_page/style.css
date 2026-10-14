@@ -742,16 +742,15 @@ footer.site-footer {
 }
 
 .download-card-grid {
-  display: grid;
-  grid-template-columns: 1.6fr 1fr;
-  gap: 28px;
-  text-align: left;
-  max-width: 1060px;
+  display: flex;
+  justify-content: center;
+  max-width: 840px;
   margin: 0 auto;
+  text-align: left;
 }
 
-.download-action-card,
-.download-qr-card {
+.download-action-card {
+  width: 100%;
   background: var(--ink-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -1253,6 +1252,158 @@ footer.site-footer {
 .cardly-toast.visible {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+/* ==========================================================================
+   CHANGELOG TIMELINE SECTION (Inspired by shadcn/ui Changelog-1)
+   ========================================================================== */
+
+.changelog-timeline-section {
+  margin-top: 88px;
+  margin-bottom: 72px;
+  text-align: left;
+}
+
+.changelog-header-block {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 56px auto;
+}
+
+.changelog-timeline-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 10px 0 12px 0;
+  letter-spacing: -0.6px;
+}
+
+.changelog-timeline-desc {
+  font-size: 15.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.changelog-entries-container {
+  max-width: 840px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 52px;
+}
+
+.changelog-entry {
+  display: flex;
+  gap: 48px;
+  position: relative;
+  padding-bottom: 52px;
+  border-bottom: 1px solid var(--border);
+}
+
+.changelog-entry:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.changelog-meta-col {
+  width: 200px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 96px;
+  height: min-content;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.badge-version-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  letter-spacing: 0.3px;
+}
+
+.badge-version-pill.current {
+  background: rgba(200, 244, 90, 0.15);
+  color: var(--lime);
+  border-color: rgba(200, 244, 90, 0.35);
+}
+
+.changelog-date {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.changelog-content-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.changelog-entry-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  line-height: 1.35;
+}
+
+.changelog-entry-desc {
+  font-size: 14.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.changelog-entry-list {
+  list-style: disc;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 18px;
+}
+
+.changelog-entry-list li::marker {
+  color: var(--lime);
+}
+
+.changelog-entry-list strong {
+  color: var(--text-primary);
+}
+
+.changelog-entry-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 6px;
+}
+
+.changelog-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--lime);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.changelog-link-btn:hover {
+  color: var(--lime-hover);
+  transform: translateX(3px);
 }
 
 /* ==========================================================================
