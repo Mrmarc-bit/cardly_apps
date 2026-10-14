@@ -252,6 +252,34 @@
   }
 
   /**
+   * Pengatur interaksi menu navigasi mobile
+   */
+  function setupMobileNav() {
+    const shell = document.querySelector('.nav-shell');
+    const toggle = document.querySelector('.nav-toggle');
+    if (!shell) return;
+
+    if (toggle) {
+      toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        shell.classList.toggle('menu-open');
+      });
+    }
+
+    document.querySelectorAll('.nav-links a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        shell.classList.remove('menu-open');
+      });
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!shell.contains(e.target)) {
+        shell.classList.remove('menu-open');
+      }
+    });
+  }
+
+  /**
    * Notifikasi toast kecil saat unduhan diklik
    */
   function setupDownloadToasts() {
@@ -285,6 +313,7 @@
   }
 
   async function init() {
+    setupMobileNav();
     setupDownloadToasts();
     try {
       const releaseData = await fetchLatestRelease();
