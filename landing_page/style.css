@@ -634,4 +634,405 @@ footer.site-footer {
   .legal-container {
     padding: 30px 20px;
   }
+
+  .download-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .specs-pill-group {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
 }
+
+/* ==========================================================================
+   DOWNLOAD PORTAL & REALTIME INTEGRATION STYLES
+   ========================================================================== */
+
+.download-portal-hero {
+  padding: 40px 0 60px;
+  text-align: center;
+}
+
+.download-hero-title {
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 800;
+  letter-spacing: -1.2px;
+  line-height: 1.15;
+  margin: 16px 0 14px;
+  color: var(--text-primary);
+}
+
+.download-hero-subtitle {
+  font-size: clamp(16px, 2vw, 18px);
+  color: var(--text-secondary);
+  max-width: 640px;
+  margin: 0 auto 28px;
+  line-height: 1.6;
+}
+
+.pulse-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--lime);
+  margin-right: 6px;
+  box-shadow: 0 0 10px var(--lime);
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.device-detection-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 8px 18px;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin-bottom: 36px;
+}
+
+.device-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.device-dot.online {
+  background-color: var(--lime);
+  box-shadow: 0 0 8px var(--lime);
+}
+.device-dot.desktop {
+  background-color: #60a5fa;
+  box-shadow: 0 0 8px #60a5fa;
+}
+
+.download-card-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 28px;
+  text-align: left;
+  max-width: 1060px;
+  margin: 0 auto;
+}
+
+.download-action-card,
+.download-qr-card {
+  background: var(--ink-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.download-action-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--lime), rgba(200, 244, 90, 0.2));
+}
+
+.card-brand-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.cardly-app-badge {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.app-avatar-img {
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.badge-text-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-title-main {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.app-package-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.version-tag-pill {
+  background: rgba(200, 244, 90, 0.15);
+  color: var(--lime);
+  border: 1px solid rgba(200, 244, 90, 0.35);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.specs-pill-group {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.spec-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.spec-label {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.spec-val {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.download-cta-block {
+  margin-bottom: 28px;
+}
+
+.btn-download-giant {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 28px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 30px -5px var(--lime-glow-strong);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.btn-download-giant:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px -4px var(--lime-glow-strong);
+}
+
+.download-safety-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-top: 10px;
+}
+
+.download-safety-notice svg {
+  color: var(--lime);
+}
+
+.changelog-card-inner {
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+
+.changelog-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.changelog-header-row h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.changelog-badge-new {
+  font-size: 11px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+}
+
+.changelog-bullet-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.changelog-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.changelog-icon {
+  color: var(--lime);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* QR Code Card */
+.download-qr-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.qr-box-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.qr-heading {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.qr-caption {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  max-width: 240px;
+}
+
+.qr-code-frame {
+  background: var(--lime);
+  padding: 14px;
+  border-radius: 20px;
+  box-shadow: 0 12px 32px -8px var(--lime-glow-strong);
+  margin-bottom: 18px;
+}
+
+.qr-image {
+  display: block;
+  width: 190px;
+  height: 190px;
+  border-radius: 10px;
+}
+
+.qr-hint-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Installation Guide Steps */
+.install-guide-section {
+  padding: 60px 0 20px;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 36px;
+}
+
+.step-card {
+  background: var(--ink-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  position: relative;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-active);
+}
+
+.step-number {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--lime);
+  line-height: 1;
+  margin-bottom: 14px;
+  opacity: 0.85;
+}
+
+.step-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.step-desc {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Toast Notification */
+.cardly-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--charcoal);
+  border: 1px solid var(--lime);
+  color: var(--text-primary);
+  padding: 14px 24px;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+  font-size: 13.5px;
+  font-weight: 500;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cardly-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
