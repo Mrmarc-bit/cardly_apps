@@ -112,6 +112,7 @@ class AppUpdateService {
     final client = HttpClient();
     client.connectionTimeout = const Duration(seconds: 8);
 
+    AppUpdateInfo? rawInfo;
     try {
       // Coba raw version.json terlebih dahulu dengan timestamp anti-cache
       final request = await client.getUrl(
@@ -122,14 +123,23 @@ class AppUpdateService {
       if (response.statusCode == 200) {
         final body = await response.transform(utf8.decoder).join();
         final jsonMap = jsonDecode(body) as Map<String, dynamic>;
-        return AppUpdateInfo.fromJson(jsonMap);
+        rawInfo = AppUpdateInfo.fromJson(jsonMap);
       }
     } catch (_) {
       // Abaikan dan lanjut ke GitHub Releases API
     }
 
+    // Jika raw version.json sudah memiliki versi yang lebih tinggi dari aplikasi lokal,
+    // langsung gunakan info dari version.json tersebut.
+    if (rawInfo != null &&
+        (isNewerVersion(rawInfo.latestVersion, currentVersion) ||
+            rawInfo.buildNumber > currentBuildNumber)) {
+      client.close();
+      return rawInfo;
+    }
+
     try {
-      // Coba GitHub Releases API resmi
+      // Coba GitHub Releases API resmi sebagai sumber rilis real-time
       final req = await client.getUrl(Uri.parse(githubReleasesApiUrl));
       req.headers.set('User-Agent', 'Cardly-App');
       final res = await req.close();
@@ -182,7 +192,7 @@ class AppUpdateService {
       client.close();
     }
 
-    return null;
+    return rawInfo;
   }
 
   /// Membandingkan dua string versi semantik (e.g. '1.0.1' > '1.0.0')

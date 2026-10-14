@@ -12,28 +12,8 @@
     "Proteksi privasi penyamaran layar sistem (FLAG_SECURE) dan auto-lock timeout latar belakang",
     "Animasi navigasi pegas dinamis dan penanganan tombol kembali Android cerdas"
   ],
-  "file_size_bytes": 35203072,
+  "file_size_bytes": 97399575,
   "variants": [
-    {
-      "arch": "arm64-v8a",
-      "label": "ARM64 (64-bit)",
-      "badge": "Rekomendasi Utama",
-      "desc": "Optimal untuk smartphone Android modern (Samsung, Xiaomi, Oppo, Vivo, Pixel, dll)",
-      "file_name": "cardly-arm64-v8a-v1.0.2.apk",
-      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.2/cardly-arm64-v8a-v1.0.2.apk",
-      "file_size_bytes": 35203072,
-      "sha256": ""
-    },
-    {
-      "arch": "armeabi-v7a",
-      "label": "ARMv7 (32-bit)",
-      "badge": "Ponsel Lawas / Helio 32-bit",
-      "desc": "Untuk ponsel Android 32-bit (Infinix Hot/Smart Helio, smartphone lawas)",
-      "file_name": "cardly-armeabi-v7a-v1.0.2.apk",
-      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.2/cardly-armeabi-v7a-v1.0.2.apk",
-      "file_size_bytes": 28418674,
-      "sha256": ""
-    },
     {
       "arch": "universal",
       "label": "Universal (Semua HP)",
@@ -41,8 +21,8 @@
       "desc": "Memuat pustaka 64-bit dan 32-bit, dijamin dapat dipasang di seluruh perangkat Android",
       "file_name": "cardly-release-v1.0.2.apk",
       "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.2/cardly-release-v1.0.2.apk",
-      "file_size_bytes": 92600000,
-      "sha256": ""
+      "file_size_bytes": 97399575,
+      "sha256": "1389c839298d02a6f0ee5ddf3ba5c5a36a4722c643fef854b098eda590f33187"
     }
   ]
 }
