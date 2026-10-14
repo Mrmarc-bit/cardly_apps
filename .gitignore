@@ -57,4 +57,8 @@ key.properties
 *.apk
 *.aab
 
+# Google Services / Firebase Credentials
+google-services.json
+**/google-services.json
+
 
