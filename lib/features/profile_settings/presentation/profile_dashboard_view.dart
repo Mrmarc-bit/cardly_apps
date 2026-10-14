@@ -736,8 +736,10 @@ class ProfileDashboardView extends ConsumerWidget {
       AppUpdateModal.show(context, info);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cardly sudah menggunakan versi terbaru (v1.0.0)!'),
+        SnackBar(
+          content: Text(
+            'Cardly sudah menggunakan versi terbaru (v${AppUpdateService.currentVersion})!',
+          ),
           backgroundColor: AppColors.ink,
         ),
       );

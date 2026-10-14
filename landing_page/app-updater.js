@@ -14,24 +14,23 @@
     supabaseAnonKey: 'sb_publishable_L8AGlfFIeB0E4rXvHt7tUg_V-1nrga1',
     supabaseEndpoint: 'https://tsmdqyqftxriqgfurrae.supabase.co/rest/v1/app_versions?select=*&order=build_number.desc&limit=1',
 
-    // Fallback GitHub
+    // Sumber Data Rilis
     repoOwner: 'Mrmarc-bit',
     repoName: 'cardly_apps',
     rawVersionUrl: 'https://raw.githubusercontent.com/Mrmarc-bit/cardly_apps/main/version.json',
     githubApiUrl: 'https://api.github.com/repos/Mrmarc-bit/cardly_apps/releases/latest',
-    defaultDownloadUrl: 'https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.0/cardly-release-v1.0.0.apk',
+    defaultDownloadUrl: 'https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.1/cardly-release-v1.0.1.apk',
     fallbackData: {
-      latest_version: '1.0.0',
-      build_number: 1,
-      download_url: 'https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.0/cardly-release-v1.0.0.apk',
+      latest_version: '1.0.1',
+      build_number: 2,
+      download_url: 'https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.1/cardly-release-v1.0.1.apk',
       release_date: '14 Oktober 2026',
-      file_size_bytes: 97517568,
+      file_size_bytes: 97184891,
       changelog: [
-        'Pemindai kartu & dokumen otomatis berstandar ISO ID-1 (rounded corners)',
-        'Ekstraksi teks OCR e-KTP dan kartu bank on-device otomatis & presisi',
-        'Pencegahan kebocoran data sensitif (Zero Full-Card Retention)',
-        'Pembaruan otomatis in-app tanpa Google Play Store',
-        'Penandatanganan rilis Keystore resmi konsisten'
+        'Fitur unggah dan ganti foto profil avatar (kamera, galeri, dan hapus foto)',
+        'Anonimitas total penyimpanan cloud (perlindungan data privat tanpa ekspos vendor)',
+        'Optimasi antarmuka responsif mobile portal web',
+        'Perbaikan kestabilan performa dan keamanan data lokal'
       ]
     }
   };
@@ -64,6 +63,37 @@
   }
 
   /**
+   * Membandingkan dua string semantik versi (contoh: '1.0.1' > '1.0.0')
+   */
+  function compareVersions(v1, v2) {
+    if (!v1 && !v2) return 0;
+    if (!v1) return -1;
+    if (!v2) return 1;
+    const p1 = String(v1).replace(/^v/, '').split('.').map(function (n) { return parseInt(n, 10) || 0; });
+    const p2 = String(v2).replace(/^v/, '').split('.').map(function (n) { return parseInt(n, 10) || 0; });
+    const len = Math.max(p1.length, p2.length);
+    for (let i = 0; i < len; i++) {
+      const a = p1[i] || 0;
+      const b = p2[i] || 0;
+      if (a > b) return 1;
+      if (a < b) return -1;
+    }
+    return 0;
+  }
+
+  /**
+   * Menentukan apakah kandidat rilis lebih baru daripada rilis saat ini
+   */
+  function isBetterCandidate(candidate, current) {
+    if (!candidate || !candidate.latest_version) return false;
+    if (!current || !current.latest_version) return true;
+    const vCmp = compareVersions(candidate.latest_version, current.latest_version);
+    if (vCmp > 0) return true;
+    if (vCmp < 0) return false;
+    return (candidate.build_number || 0) > (current.build_number || 0);
+  }
+
+  /**
    * Deteksi platform perangkat pengguna secara akurat
    */
   function getDeviceInfo() {
@@ -75,12 +105,83 @@
   }
 
   /**
-   * Ambil data versi terbaru secara otomatis
+   * Ambil data versi terbaru secara otomatis dari multi-sumber:
+   * 1. GitHub Releases API (live rilis publik yang baru diunggah)
+   * 2. GitHub Raw version.json (CDN Fastly tanpa limit)
+   * 3. Supabase Database app_versions
+   * Mengambil versi/build number tertinggi secara otomatis.
    */
   async function fetchLatestRelease() {
-    let release = null;
+    let bestRelease = null;
 
-    // 1. Prioritas Utama: Ambil langsung dari Supabase Database (Tabel app_versions)
+    // 1. Coba ambil dari GitHub Releases API publik (sumber rilis utama)
+    try {
+      const res = await fetch(CONFIG.githubApiUrl, { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        const apkAsset = (json.assets || []).find(function (a) {
+          return a.name && a.name.endsWith('.apk');
+        });
+        const rawVersion = (json.tag_name || '1.0.0').replace(/^v/, '');
+
+        let changelogList = [];
+        if (json.body) {
+          changelogList = json.body
+            .split('\n')
+            .map(function (line) {
+              return line.replace(/^[\*\-\d\.\s#]+/, '').trim();
+            })
+            .filter(function (line) {
+              return line.length > 3 && !line.startsWith('![') && !line.startsWith('<');
+            });
+        }
+
+        const candidate = {
+          latest_version: rawVersion,
+          build_number: 2, // Tag v1.0.1 bersesuaian dengan build 2
+          download_url: apkAsset ? apkAsset.browser_download_url : (CONFIG.defaultDownloadUrl),
+          release_date: formatDate(json.published_at),
+          file_size_bytes: apkAsset ? apkAsset.size : (CONFIG.fallbackData.file_size_bytes),
+          changelog: changelogList.length > 0 ? changelogList.slice(0, 5) : CONFIG.fallbackData.changelog
+        };
+
+        if (isBetterCandidate(candidate, bestRelease)) {
+          bestRelease = candidate;
+        }
+      }
+    } catch (e) {
+      console.warn('[CardlyUpdater] GitHub Releases API fetch skipped:', e);
+    }
+
+    // 2. Coba ambil dari version.json di repo GitHub (cepat & tanpa limit API)
+    try {
+      const res = await fetch(`${CONFIG.rawVersionUrl}?_t=${Date.now()}`, {
+        cache: 'no-store'
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.latest_version) {
+          const candidate = {
+            latest_version: json.latest_version,
+            build_number: json.build_number || 1,
+            download_url: json.download_url || CONFIG.defaultDownloadUrl,
+            release_date: formatDate(json.release_date),
+            file_size_bytes: json.file_size_bytes || CONFIG.fallbackData.file_size_bytes,
+            changelog: Array.isArray(json.changelog) && json.changelog.length > 0
+              ? json.changelog
+              : CONFIG.fallbackData.changelog
+          };
+
+          if (isBetterCandidate(candidate, bestRelease)) {
+            bestRelease = candidate;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[CardlyUpdater] Fetch from version.json skipped:', e);
+    }
+
+    // 3. Fallback / Alternatif: Coba ambil dari Supabase Database (Tabel app_versions)
     try {
       const res = await fetch(CONFIG.supabaseEndpoint, {
         headers: {
@@ -93,87 +194,28 @@
         const rows = await res.json();
         if (Array.isArray(rows) && rows.length > 0) {
           const row = rows[0];
-          release = {
+          const candidate = {
             latest_version: row.latest_version,
             build_number: row.build_number || 1,
             download_url: row.download_url || CONFIG.defaultDownloadUrl,
             release_date: formatDate(row.release_date),
-            file_size_bytes: row.file_size_bytes || 97517568,
+            file_size_bytes: row.file_size_bytes || CONFIG.fallbackData.file_size_bytes,
             changelog: Array.isArray(row.changelog) && row.changelog.length > 0
               ? row.changelog
               : CONFIG.fallbackData.changelog
           };
+
+          if (isBetterCandidate(candidate, bestRelease)) {
+            bestRelease = candidate;
+          }
         }
       }
     } catch (e) {
       console.warn('[CardlyUpdater] Fetch from Supabase skipped:', e);
     }
 
-    // 2. Fallback: Coba ambil dari version.json di repo GitHub
-    if (!release) {
-      try {
-        const res = await fetch(`${CONFIG.rawVersionUrl}?_t=${Date.now()}`, {
-          cache: 'no-store'
-        });
-        if (res.ok) {
-          const json = await res.json();
-          if (json && json.latest_version) {
-            release = {
-              latest_version: json.latest_version,
-              build_number: json.build_number || 1,
-              download_url: json.download_url || CONFIG.defaultDownloadUrl,
-              release_date: formatDate(json.release_date),
-              file_size_bytes: json.file_size_bytes || 97517568,
-              changelog: Array.isArray(json.changelog) && json.changelog.length > 0
-                ? json.changelog
-                : CONFIG.fallbackData.changelog
-            };
-          }
-        }
-      } catch (e) {
-        console.warn('[CardlyUpdater] Fetch from version.json skipped:', e);
-      }
-    }
-
-    // 3. Fallback: Coba ambil dari GitHub Releases API publik
-    if (!release) {
-      try {
-        const res = await fetch(CONFIG.githubApiUrl);
-        if (res.ok) {
-          const json = await res.json();
-          const apkAsset = (json.assets || []).find(function (a) {
-            return a.name && a.name.endsWith('.apk');
-          });
-          const rawVersion = (json.tag_name || '1.0.0').replace(/^v/, '');
-          
-          let changelogList = [];
-          if (json.body) {
-            changelogList = json.body
-              .split('\n')
-              .map(function (line) {
-                return line.replace(/^[\*\-\d\.\s#]+/, '').trim();
-              })
-              .filter(function (line) {
-                return line.length > 3;
-              });
-          }
-
-          release = {
-            latest_version: rawVersion,
-            build_number: 1,
-            download_url: apkAsset ? apkAsset.browser_download_url : json.html_url,
-            release_date: formatDate(json.published_at),
-            file_size_bytes: apkAsset ? apkAsset.size : 97517568,
-            changelog: changelogList.length > 0 ? changelogList : CONFIG.fallbackData.changelog
-          };
-        }
-      } catch (e) {
-        console.warn('[CardlyUpdater] Fetch from GitHub Releases API skipped:', e);
-      }
-    }
-
-    // 3. Fallback terakhir: gunakan data bawaan resmi
-    return release || CONFIG.fallbackData;
+    // 4. Fallback final: gunakan fallback bawaan (v1.0.1)
+    return bestRelease || CONFIG.fallbackData;
   }
 
   /**

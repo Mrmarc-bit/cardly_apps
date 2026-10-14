@@ -47,6 +47,45 @@ class _HomeDashboardViewState extends ConsumerState<HomeDashboardView> {
       final updateService = ref.read(appUpdateServiceProvider);
       final info = await updateService.checkForUpdate();
       if (info != null && mounted) {
+        // Tampilkan toast snackbar pemberitahuan pembaruan
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(
+                  Icons.system_update_rounded,
+                  color: AppColors.lime,
+                  size: 20,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Pembaruan Cardly v${info.latestVersion} tersedia!',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: AppColors.ink,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadius.control),
+            ),
+            duration: const Duration(seconds: 4),
+            action: SnackBarAction(
+              label: 'Lihat',
+              textColor: AppColors.lime,
+              onPressed: () {
+                AppUpdateModal.show(context, info);
+              },
+            ),
+          ),
+        );
+
+        // Buka modal bottom sheet rilis
         AppUpdateModal.show(context, info);
       }
     } catch (_) {}

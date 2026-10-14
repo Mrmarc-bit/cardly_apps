@@ -34,10 +34,10 @@ final appUpdateServiceProvider = Provider<AppUpdateService>((ref) {
   return AppUpdateService();
 });
 
-/// Layanan In-App Updater & Dual-Source Update Checker (Supabase & GitHub)
+/// Layanan In-App Updater & Multi-Source Update Checker (GitHub & Supabase)
 class AppUpdateService {
-  static const String currentVersion = '1.0.0';
-  static const int currentBuildNumber = 1;
+  static const String currentVersion = '1.0.1';
+  static const int currentBuildNumber = 2;
 
   static const String githubRawUrl =
       'https://raw.githubusercontent.com/Mrmarc-bit/cardly_apps/main/version.json';
@@ -48,18 +48,26 @@ class AppUpdateService {
     'com.cardly.app/updater',
   );
 
-  /// Memeriksa ketersediaan versi baru dengan mekanisme Dual-Source:
-  /// 1. Prioritas Utama: Supabase Backend (Tabel `app_versions`)
-  /// 2. Fallback Otomatis: GitHub Repository (raw `version.json` atau Releases API)
+  /// Memeriksa ketersediaan versi baru dengan mekanisme Multi-Source:
+  /// Mengambil data dari GitHub (version.json & Releases API) dan Supabase (app_versions),
+  /// lalu memilih kandidat versi/build number tertinggi secara otomatis.
   Future<AppUpdateInfo?> checkForUpdate() async {
     // Mode testing headless
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       return null;
     }
 
-    AppUpdateInfo? updateInfo;
+    AppUpdateInfo? bestUpdate;
 
-    // 1. Coba periksa melalui Supabase
+    // 1. Ambil dari GitHub (version.json dan Releases API publik)
+    try {
+      final githubInfo = await _fetchFromGitHub();
+      if (githubInfo != null) {
+        bestUpdate = githubInfo;
+      }
+    } catch (_) {}
+
+    // 2. Ambil dari Supabase Database (Tabel app_versions)
     try {
       final supabase = Supabase.instance.client;
       final response = await supabase
@@ -70,24 +78,27 @@ class AppUpdateService {
           .maybeSingle();
 
       if (response != null) {
-        updateInfo = AppUpdateInfo.fromJson(response);
+        final supabaseInfo = AppUpdateInfo.fromJson(response);
+        if (bestUpdate == null ||
+            isNewerVersion(supabaseInfo.latestVersion, bestUpdate.latestVersion) ||
+            (supabaseInfo.latestVersion == bestUpdate.latestVersion &&
+                supabaseInfo.buildNumber > bestUpdate.buildNumber)) {
+          bestUpdate = supabaseInfo;
+        }
       }
     } catch (_) {
-      // Supabase table belum dibuat atau offline, lanjutkan ke fallback GitHub
+      // Supabase table belum dibuat atau offline, gunakan data dari GitHub
     }
 
-    // 2. Fallback ke GitHub jika Supabase belum ada data atau gagal koneksi
-    updateInfo ??= await _fetchFromGitHub();
-
-    if (updateInfo == null) return null;
+    if (bestUpdate == null) return null;
 
     // Bandingkan apakah versi remote lebih tinggi dari versi saat ini
     final hasNewVersion =
-        isNewerVersion(updateInfo.latestVersion, currentVersion) ||
-        updateInfo.buildNumber > currentBuildNumber;
+        isNewerVersion(bestUpdate.latestVersion, currentVersion) ||
+        bestUpdate.buildNumber > currentBuildNumber;
 
     if (hasNewVersion) {
-      return updateInfo;
+      return bestUpdate;
     }
 
     return null;
@@ -99,8 +110,10 @@ class AppUpdateService {
     client.connectionTimeout = const Duration(seconds: 8);
 
     try {
-      // Coba raw version.json terlebih dahulu
-      final request = await client.getUrl(Uri.parse(githubRawUrl));
+      // Coba raw version.json terlebih dahulu dengan timestamp anti-cache
+      final request = await client.getUrl(
+        Uri.parse('$githubRawUrl?_t=${DateTime.now().millisecondsSinceEpoch}'),
+      );
       final response = await request.close();
 
       if (response.statusCode == 200) {
