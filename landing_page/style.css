@@ -1197,6 +1197,39 @@ footer.site-footer {
   line-height: 1.6;
 }
 
+/* Install Guide Brand Tip (Infinix/Xiaomi/WPS) */
+.install-tip-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: rgba(200, 244, 90, 0.05);
+  border: 1px solid rgba(200, 244, 90, 0.25);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-top: 24px;
+  text-align: left;
+}
+
+.install-tip-icon {
+  color: var(--lime);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.install-tip-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.install-tip-text strong {
+  color: var(--text-primary);
+  font-size: 13.5px;
+}
+
 /* Toast Notification */
 .cardly-toast {
   position: fixed;
