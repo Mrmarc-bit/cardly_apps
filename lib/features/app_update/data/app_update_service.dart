@@ -36,8 +36,8 @@ final appUpdateServiceProvider = Provider<AppUpdateService>((ref) {
 
 /// Layanan In-App Updater & Multi-Source Update Checker (GitHub & Supabase)
 class AppUpdateService {
-  static const String currentVersion = '1.0.3';
-  static const int currentBuildNumber = 4;
+  static const String currentVersion = '1.0.4';
+  static const int currentBuildNumber = 5;
 
   /// Membaca versi semantik yang aktif dari sistem operasi secara dinamis
   Future<String> getLocalVersion() async {
@@ -165,12 +165,29 @@ class AppUpdateService {
         }
 
         final rawTag = (releaseJson['tag_name'] as String?) ?? '1.0.0';
-        final cleanVersion = rawTag.replaceAll('v', '').trim();
+        String cleanVersion = rawTag.replaceAll('v', '').trim();
+        int buildNum = 0;
+        if (cleanVersion.contains('+')) {
+          final parts = cleanVersion.split('+');
+          cleanVersion = parts[0];
+          buildNum = int.tryParse(parts[1]) ?? 0;
+        }
+
+        if (buildNum == 0) {
+          final bodyText = (releaseJson['body'] as String?) ?? '';
+          final match = RegExp(
+            r'build[\s\-_:]*(\d+)',
+            caseSensitive: false,
+          ).firstMatch(bodyText);
+          if (match != null) {
+            buildNum = int.tryParse(match.group(1) ?? '0') ?? 0;
+          }
+        }
 
         client.close();
         return AppUpdateInfo(
           latestVersion: cleanVersion,
-          buildNumber: 99,
+          buildNumber: buildNum,
           downloadUrl: apkDownloadUrl,
           changelog:
               (releaseJson['body'] as String?)
@@ -221,6 +238,19 @@ class AppUpdateService {
     } catch (_) {
       return false;
     }
+  }
+
+  /// Menampilkan notifikasi pembaruan di status bar / drawer sistem Android/iOS
+  Future<void> showSystemNotification({
+    required String version,
+    required String changelog,
+  }) async {
+    try {
+      await _updaterChannel.invokeMethod('showUpdateNotification', {
+        'version': version,
+        'changelog': changelog,
+      });
+    } catch (_) {}
   }
 
   /// Mengunduh file APK secara stream in-app dengan progress real-time (Pendekatan B)

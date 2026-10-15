@@ -29,8 +29,8 @@ final packageInfoProvider = FutureProvider<PackageInfo>((ref) async {
     return PackageInfo(
       appName: 'Cardly',
       packageName: 'com.cardly.app',
-      version: '1.0.3',
-      buildNumber: '4',
+      version: '1.0.4',
+      buildNumber: '5',
     );
   }
 });
@@ -229,6 +229,29 @@ class VaultLockNotifier extends StateNotifier<bool> {
   void unlock() => state = false;
   void lock() => state = true;
   void toggle() => state = !state;
+}
+
+// --- Global App Session Lock State Notifier ---
+
+final appLockedProvider = StateNotifierProvider<AppLockNotifier, bool>((ref) {
+  final storage = ref.watch(localStorageServiceProvider);
+  return AppLockNotifier(storage);
+});
+
+class AppLockNotifier extends StateNotifier<bool> {
+  final LocalStorageService _storage;
+
+  AppLockNotifier(this._storage) : super(_storage.isLoggedIn);
+
+  void lock() {
+    if (_storage.isLoggedIn) {
+      state = true;
+    }
+  }
+
+  void unlock() {
+    state = false;
+  }
 }
 
 // --- Reactive Card List Notifier ---

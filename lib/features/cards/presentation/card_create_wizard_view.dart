@@ -97,51 +97,63 @@ class _CardCreateWizardViewState extends ConsumerState<CardCreateWizardView> {
       return _buildSuccessScreen(isDark);
     }
 
-    return Scaffold(
-      backgroundColor: isDark ? AppColors.ink : AppColors.mist,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (_currentStep > 1) {
-              setState(() => _currentStep -= 1);
-            } else {
-              context.pop();
-            }
-          },
-        ),
-        title: Text(_getAppBarTitle()),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16.0),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10.0,
-              vertical: 4.0,
-            ),
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.charcoal : AppColors.softGray,
-              borderRadius: AppRadius.pillRadius,
-            ),
-            child: Text(
-              'LANGKAH $_currentStep DARI 4',
-              style: AppTypography.tinyLabel.copyWith(
-                color: isDark ? AppColors.textSecondaryDark : AppColors.muted,
-                fontWeight: FontWeight.w600,
+    return PopScope(
+      canPop: _currentStep == 1,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_currentStep > 1) {
+          setState(() => _currentStep -= 1);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: isDark ? AppColors.ink : AppColors.mist,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              if (_currentStep > 1) {
+                setState(() => _currentStep -= 1);
+              } else {
+                context.pop();
+              }
+            },
+          ),
+          title: Text(_getAppBarTitle()),
+          actions: [
+            Container(
+              margin: const EdgeInsets.only(right: 16.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10.0,
+                vertical: 4.0,
+              ),
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.charcoal : AppColors.softGray,
+                borderRadius: AppRadius.pillRadius,
+              ),
+              child: Text(
+                'LANGKAH $_currentStep DARI 4',
+                style: AppTypography.tinyLabel.copyWith(
+                  color: isDark ? AppColors.textSecondaryDark : AppColors.muted,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-          child: _buildStepContent(isDark),
+          ],
         ),
-      ),
-      bottomSheet: Container(
-        color: isDark ? AppColors.ink : AppColors.mist,
-        padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 16.0),
-        child: _buildBottomButton(),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 16.0,
+            ),
+            child: _buildStepContent(isDark),
+          ),
+        ),
+        bottomSheet: Container(
+          color: isDark ? AppColors.ink : AppColors.mist,
+          padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 16.0),
+          child: _buildBottomButton(),
+        ),
       ),
     );
   }
@@ -550,73 +562,83 @@ class _CardCreateWizardViewState extends ConsumerState<CardCreateWizardView> {
 
   // --- STEP 5: Layar Sukses (45 Kartu tersimpan) ---
   Widget _buildSuccessScreen(bool isDark) {
-    return Scaffold(
-      backgroundColor: isDark ? AppColors.ink : AppColors.mist,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                children: [
-                  const SizedBox(height: 48.0),
-                  Container(
-                    width: 80.0,
-                    height: 80.0,
-                    decoration: const BoxDecoration(
-                      color: AppColors.lime,
-                      shape: BoxShape.circle,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        context.pop();
+      },
+      child: Scaffold(
+        backgroundColor: isDark ? AppColors.ink : AppColors.mist,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 24.0,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    const SizedBox(height: 48.0),
+                    Container(
+                      width: 80.0,
+                      height: 80.0,
+                      decoration: const BoxDecoration(
+                        color: AppColors.lime,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check,
+                        size: 44.0,
+                        color: AppColors.ink,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.check,
-                      size: 44.0,
-                      color: AppColors.ink,
+                    const SizedBox(height: 24.0),
+                    Text(
+                      '${_nicknameController.text} siap ditemukan.',
+                      style: AppTypography.largeHeading.copyWith(
+                        color: isDark ? AppColors.white : AppColors.ink,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  const SizedBox(height: 24.0),
-                  Text(
-                    '${_nicknameController.text} siap ditemukan.',
-                    style: AppTypography.largeHeading.copyWith(
-                      color: isDark ? AppColors.white : AppColors.ink,
+                    const SizedBox(height: 8.0),
+                    Text(
+                      'Metadata kartu berhasil disimpan ke dompet Anda.',
+                      style: AppTypography.body.copyWith(
+                        color: isDark
+                            ? AppColors.textSecondaryDark
+                            : AppColors.muted,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8.0),
-                  Text(
-                    'Metadata kartu berhasil disimpan ke dompet Anda.',
-                    style: AppTypography.body.copyWith(
-                      color: isDark
-                          ? AppColors.textSecondaryDark
-                          : AppColors.muted,
+                    const SizedBox(height: 32.0),
+                    CardlyVisualCard(
+                      nickname: _nicknameController.text,
+                      issuer: _issuerController.text,
+                      lastFourDigits: _digitsController.text,
+                      category: _category.label,
+                      network: _network,
+                      colorTheme: _colorTheme,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32.0),
-                  CardlyVisualCard(
-                    nickname: _nicknameController.text,
-                    issuer: _issuerController.text,
-                    lastFourDigits: _digitsController.text,
-                    category: _category.label,
-                    network: _network,
-                    colorTheme: _colorTheme,
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  CardlyPrimaryButton(
-                    text: 'Lihat kartu',
-                    onPressed: () => context.pop(),
-                  ),
-                  const SizedBox(height: 12.0),
-                  CardlySecondaryButton(
-                    text: 'Kembali ke Beranda',
-                    onPressed: () => context.go('/shell'),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+                Column(
+                  children: [
+                    CardlyPrimaryButton(
+                      text: 'Lihat kartu',
+                      onPressed: () => context.pop(),
+                    ),
+                    const SizedBox(height: 12.0),
+                    CardlySecondaryButton(
+                      text: 'Kembali ke Beranda',
+                      onPressed: () => context.go('/shell'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

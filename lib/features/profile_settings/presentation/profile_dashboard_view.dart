@@ -13,6 +13,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/cardly_bottom_sheet.dart';
 import '../../../core/widgets/cardly_buttons.dart';
+import '../../../core/widgets/cardly_toast.dart';
 import '../../app_update/data/app_update_service.dart';
 import '../../app_update/presentation/app_update_modal.dart';
 
@@ -26,22 +27,23 @@ class ProfileDashboardView extends ConsumerWidget {
     final packageInfoAsync = ref.watch(packageInfoProvider);
     final versionStr = packageInfoAsync.when(
       data: (info) => 'v${info.version}',
-      loading: () => 'v1.0.3',
-      error: (_, _) => 'v1.0.3',
+      loading: () => 'v1.0.4',
+      error: (_, _) => 'v1.0.4',
     );
     final fullVersionStr = packageInfoAsync.when(
       data: (info) =>
           'Cardly v${info.version} (Build ${info.buildNumber}) • Indonesia',
-      loading: () => 'Cardly v1.0.3 (Build 4) • Indonesia',
-      error: (_, _) => 'Cardly v1.0.3 (Build 4) • Indonesia',
+      loading: () => 'Cardly v1.0.4 (Build 5) • Indonesia',
+      error: (_, _) => 'Cardly v1.0.4 (Build 5) • Indonesia',
     );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profil & Pengaturan')),
       body: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.screenInset,
-          vertical: AppSpacing.md,
+          vertical: AppSpacing.sm,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -252,7 +254,7 @@ class ProfileDashboardView extends ConsumerWidget {
               ),
             ),
 
-            const SizedBox(height: AppSpacing.xxl),
+            const SizedBox(height: AppSpacing.md),
           ],
         ),
       ),
@@ -690,12 +692,7 @@ class ProfileDashboardView extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Memeriksa ketersediaan versi terbaru...'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+    CardlyToast.showInfo(context, 'Memeriksa ketersediaan versi terbaru...');
 
     final updateService = ref.read(appUpdateServiceProvider);
     final info = await updateService.checkForUpdate();
@@ -705,13 +702,11 @@ class ProfileDashboardView extends ConsumerWidget {
     if (info != null) {
       AppUpdateModal.show(context, info);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Cardly sudah menggunakan versi terbaru (v${AppUpdateService.currentVersion})!',
-          ),
-          backgroundColor: AppColors.ink,
-        ),
+      final localVer = await updateService.getLocalVersion();
+      if (!context.mounted) return;
+      CardlyToast.showSuccess(
+        context,
+        'Cardly sudah menggunakan versi terbaru (v$localVer)!',
       );
     }
   }

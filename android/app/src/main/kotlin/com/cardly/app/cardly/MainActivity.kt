@@ -1,8 +1,13 @@
 package com.cardly.app.cardly
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -88,6 +93,52 @@ class MainActivity : FlutterFragmentActivity() {
                             result.success(true)
                         } catch (e: Exception) {
                             result.error("INSTALL_ERROR", e.localizedMessage, null)
+                        }
+                    }
+                    "showUpdateNotification" -> {
+                        val version = call.argument<String>("version") ?: "Terbaru"
+                        val changelog = call.argument<String>("changelog") ?: "Pembaruan versi baru Cardly telah tersedia."
+                        try {
+                            val channelId = "cardly_app_updates"
+                            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                val channel = NotificationChannel(
+                                    channelId,
+                                    "Pembaruan Cardly",
+                                    NotificationManager.IMPORTANCE_HIGH
+                                ).apply {
+                                    description = "Notifikasi ketersediaan versi rilis Cardly terbaru"
+                                    enableVibration(true)
+                                }
+                                notificationManager.createNotificationChannel(channel)
+                            }
+
+                            val launchIntent = packageManager.getLaunchIntentForPackage(packageName)?.apply {
+                                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            }
+                            val pendingIntent = PendingIntent.getActivity(
+                                this@MainActivity,
+                                2001,
+                                launchIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT or (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0)
+                            )
+
+                            val iconRes = applicationInfo.icon.takeIf { it != 0 } ?: android.R.drawable.stat_sys_download_done
+
+                            val notification = NotificationCompat.Builder(this@MainActivity, channelId)
+                                .setSmallIcon(iconRes)
+                                .setContentTitle("Pembaruan Cardly v$version Tersedia!")
+                                .setContentText(changelog)
+                                .setStyle(NotificationCompat.BigTextStyle().bigText(changelog))
+                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                .setAutoCancel(true)
+                                .setContentIntent(pendingIntent)
+                                .build()
+
+                            notificationManager.notify(9001, notification)
+                            result.success(true)
+                        } catch (e: Exception) {
+                            result.error("NOTIFICATION_ERROR", e.localizedMessage, null)
                         }
                     }
                     else -> {

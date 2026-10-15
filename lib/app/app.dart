@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/network/supabase_service.dart';
 import '../core/theme/app_theme.dart';
+import '../features/vault/presentation/app_lock_gate.dart';
 import 'app_router.dart';
 import 'providers.dart';
 
@@ -60,6 +61,7 @@ class _CardlyAppState extends ConsumerState<CardlyApp> {
 
         if (elapsedSeconds >= threshold) {
           ref.read(vaultLockedProvider.notifier).lock();
+          ref.read(appLockedProvider.notifier).lock();
         }
       },
     );
@@ -81,6 +83,7 @@ class _CardlyAppState extends ConsumerState<CardlyApp> {
               (email.isNotEmpty ? email.split('@').first : 'Pengguna Cardly');
 
           ref.read(userProfileProvider.notifier).login(fullName, email);
+          ref.read(appLockedProvider.notifier).unlock();
 
           // Jika user masuk melalui alur OAuth (Google dll), arahkan ke beranda
           try {
@@ -88,6 +91,7 @@ class _CardlyAppState extends ConsumerState<CardlyApp> {
           } catch (_) {}
         } else if (event == AuthChangeEvent.signedOut) {
           ref.read(userProfileProvider.notifier).logout();
+          ref.read(appLockedProvider.notifier).unlock();
         }
       });
     }
@@ -111,6 +115,9 @@ class _CardlyAppState extends ConsumerState<CardlyApp> {
       themeMode: themeMode,
       routerConfig: appRouter,
       debugShowCheckedModeBanner: false,
+      builder: (context, child) {
+        return AppLockGate(child: child ?? const SizedBox.shrink());
+      },
     );
   }
 }
