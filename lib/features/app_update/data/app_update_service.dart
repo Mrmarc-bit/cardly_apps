@@ -36,16 +36,13 @@ final appUpdateServiceProvider = Provider<AppUpdateService>((ref) {
 
 /// Layanan In-App Updater & Multi-Source Update Checker (GitHub & Supabase)
 class AppUpdateService {
-  static const String currentVersion = '1.0.4';
-  static const int currentBuildNumber = 5;
-
   /// Membaca versi semantik yang aktif dari sistem operasi secara dinamis
   Future<String> getLocalVersion() async {
     try {
       final info = await PackageInfo.fromPlatform();
       if (info.version.isNotEmpty) return info.version;
     } catch (_) {}
-    return currentVersion;
+    return '1.0.0';
   }
 
   /// Membaca build number yang aktif dari sistem operasi secara dinamis
@@ -55,7 +52,7 @@ class AppUpdateService {
       final parsed = int.tryParse(info.buildNumber);
       if (parsed != null) return parsed;
     } catch (_) {}
-    return currentBuildNumber;
+    return 1;
   }
 
   static const String githubRawUrl =

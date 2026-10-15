@@ -107,15 +107,15 @@ jobs:
           DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ env.RELEASE_TAG }}/cardly-release-${{ env.RELEASE_TAG }}.apk"
           TODAY=$(date +%Y-%m-%d)
 
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout main
-          git pull origin main --rebase
+          BUILD_NUM=$(grep -E '^version:' pubspec.yaml | sed -E 's/.*\\+([0-9]+)/\1/')
+          if [ -z "$BUILD_NUM" ] || [ "$BUILD_NUM" = "pubspec.yaml" ]; then
+            BUILD_NUM=${{ github.run_number }}
+          fi
 
           cat <<EOF > version.json
           {
             "latest_version": "${{ env.RELEASE_VERSION }}",
-            "build_number": ${{ github.run_number }},
+            "build_number": $BUILD_NUM,
             "is_force_update": false,
             "download_url": "$DOWNLOAD_URL",
             "release_date": "$TODAY",
@@ -148,8 +148,12 @@ jobs:
         run: |
           DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ env.RELEASE_TAG }}/cardly-release-${{ env.RELEASE_TAG }}.apk"
           TODAY=$(date +%Y-%m-%d)
+          BUILD_NUM=$(grep -E '^version:' pubspec.yaml | sed -E 's/.*\\+([0-9]+)/\1/')
+          if [ -z "$BUILD_NUM" ] || [ "$BUILD_NUM" = "pubspec.yaml" ]; then
+            BUILD_NUM=${{ github.run_number }}
+          fi
           
-          echo "Syncing version ${{ env.RELEASE_VERSION }} to Supabase app_versions..."
+          echo "Syncing version ${{ env.RELEASE_VERSION }} (build $BUILD_NUM) to Supabase app_versions..."
           
           AUTH_KEY="${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_ANON_KEY || 'sb_publishable_L8AGlfFIeB0E4rXvHt7tUg_V-1nrga1' }}"
           
@@ -160,7 +164,7 @@ jobs:
             -H "Prefer: resolution=merge-duplicates" \
             -d "{
               \"latest_version\": \"${{ env.RELEASE_VERSION }}\",
-              \"build_number\": ${{ github.run_number }},
+              \"build_number\": $BUILD_NUM,
               \"download_url\": \"$DOWNLOAD_URL\",
               \"changelog\": [
                 \"Pembaruan rilis resmi otomatis Cardly ${{ env.RELEASE_TAG }}\",

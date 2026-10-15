@@ -28,9 +28,9 @@ final packageInfoProvider = FutureProvider<PackageInfo>((ref) async {
   } catch (_) {
     return PackageInfo(
       appName: 'Cardly',
-      packageName: 'com.cardly.app',
-      version: '1.0.4',
-      buildNumber: '5',
+      packageName: 'com.cardly.cardly',
+      version: '1.0.0',
+      buildNumber: '1',
     );
   }
 });
