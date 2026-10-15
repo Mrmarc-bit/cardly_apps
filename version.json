@@ -1,17 +1,14 @@
 {
   "latest_version": "1.0.4",
-  "build_number": 5,
+  "build_number": 9,
   "is_force_update": false,
   "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.4/cardly-release-v1.0.4.apk",
   "release_date": "2026-10-15",
   "changelog": [
-    "Sistem Kunci Sesi Global & Biometrik otomatis saat beralih aplikasi atau batas waktu kunci segera tercapai",
-    "Navigasi tumpukan riwayat tab kembali (back stack) dan perbaikan tombol back pada wizard kartu",
-    "Header Beranda Sticky Navigation Bar yang tetap terpantau saat daftar kartu dan berkas digulir",
-    "Notifikasi pembaruan aplikasi native langsung di notification drawer / status bar sistem HP",
-    "Konsistensi feedback CardlyToast resmi dan perbaikan deteksi pembaruan versi real-time"
+    "Pembaruan rilis resmi otomatis Cardly v1.0.4",
+    "Peningkatan kestabilan, performa, dan sinkronisasi data privat"
   ],
-  "file_size_bytes": 97982983,
+  "file_size_bytes": 97982967,
   "variants": [
     {
       "arch": "universal",
@@ -20,8 +17,8 @@
       "desc": "Memuat pustaka 64-bit dan 32-bit, dijamin dapat dipasang di seluruh perangkat Android",
       "file_name": "cardly-release-v1.0.4.apk",
       "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.4/cardly-release-v1.0.4.apk",
-      "file_size_bytes": 97982983,
-      "sha256": "0c941028944c95be0b4db99a1c2b873d3069561d358cac6726e70be7cefc64fd"
+      "file_size_bytes": 97982967,
+      "sha256": "ed3948aa552d1bd1abc3610f0c70c1c0382faab928111ca3eaa64c947509bfc9"
     }
   ]
 }

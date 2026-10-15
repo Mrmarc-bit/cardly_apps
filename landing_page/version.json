@@ -1,25 +1,24 @@
 {
-  "latest_version": "1.0.3",
-  "build_number": 4,
+  "latest_version": "1.0.4",
+  "build_number": 9,
   "is_force_update": false,
-  "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.3/cardly-release-v1.0.3.apk",
+  "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.4/cardly-release-v1.0.4.apk",
   "release_date": "2026-10-15",
   "changelog": [
-    "Perbaikan integrasi Google OAuth via peluncuran browser sistem resmi (kebijakan keamanan Google)",
-    "Penambahan aturan Proguard/R8 pelindung dependensi Google Play Services SDK pada mode release",
-    "Konfigurasi penandatanganan rilis APK v2 terverifikasi untuk pembaruan instan tanpa konflik signature"
+    "Pembaruan rilis resmi otomatis Cardly v1.0.4",
+    "Peningkatan kestabilan, performa, dan sinkronisasi data privat"
   ],
-  "file_size_bytes": 97917423,
+  "file_size_bytes": 97982967,
   "variants": [
     {
       "arch": "universal",
       "label": "Universal (Semua HP)",
       "badge": "Kompatibilitas Penuh",
       "desc": "Memuat pustaka 64-bit dan 32-bit, dijamin dapat dipasang di seluruh perangkat Android",
-      "file_name": "cardly-release-v1.0.3.apk",
-      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.3/cardly-release-v1.0.3.apk",
-      "file_size_bytes": 97917423,
-      "sha256": "f4f54bee6a51d248466553c2ced71d8a580d4ba01cec4f16ce7f931f6793fc56"
+      "file_name": "cardly-release-v1.0.4.apk",
+      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.4/cardly-release-v1.0.4.apk",
+      "file_size_bytes": 97982967,
+      "sha256": "ed3948aa552d1bd1abc3610f0c70c1c0382faab928111ca3eaa64c947509bfc9"
     }
   ]
 }
