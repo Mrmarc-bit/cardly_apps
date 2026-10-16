@@ -52,7 +52,10 @@ class AppLockGate extends ConsumerWidget {
     } catch (_) {}
 
     // Jangan kunci jika splash belum selesai, belum login, sesi tidak terkunci, atau di rute publik
-    if (!isSplashDone || !user.isLoggedIn || !isLocked || isPublicRoute(currentPath)) {
+    if (!isSplashDone ||
+        !user.isLoggedIn ||
+        !isLocked ||
+        isPublicRoute(currentPath)) {
       return child;
     }
 

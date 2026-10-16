@@ -55,6 +55,17 @@ class LocalStorageService {
   Future<bool> setUserAvatarPath(String path) =>
       _prefs.setString('cardly_user_avatar_path', path);
 
+  static const String _keyLastAppVersion = 'cardly_last_app_version';
+  static const String _keyLastBuildNumber = 'cardly_last_build_number';
+
+  String get lastAppVersion => _prefs.getString(_keyLastAppVersion) ?? '';
+  Future<bool> setLastAppVersion(String v) =>
+      _prefs.setString(_keyLastAppVersion, v);
+
+  int get lastBuildNumber => _prefs.getInt(_keyLastBuildNumber) ?? 0;
+  Future<bool> setLastBuildNumber(int b) =>
+      _prefs.setInt(_keyLastBuildNumber, b);
+
   /// Menghapus seluruh preferensi tersimpan (digunakan saat Hapus Data Lokal)
   Future<bool> clearAll() => _prefs.clear();
 }

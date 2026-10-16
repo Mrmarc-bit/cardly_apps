@@ -39,7 +39,8 @@ class _CardlyAppState extends ConsumerState<CardlyApp> {
         // jangan kunci sesi agar data hasil scan tidak hilang.
         final isExternal = ref.read(isExternalOperationInProgressProvider);
         if (isExternal) {
-          ref.read(isExternalOperationInProgressProvider.notifier).state = false;
+          ref.read(isExternalOperationInProgressProvider.notifier).state =
+              false;
           _lastBackgroundTimestamp = null;
           return;
         }

@@ -269,7 +269,10 @@ class DocumentScanService {
         upperText.contains('STATUS PERKAWINAN') ||
         upperText.contains('SEUMUR HIDUP') ||
         RegExp(r'\b[1-9]\d{15}\b').hasMatch(rawText) ||
-        lines.any((l) => _cleanDigits(l).length == 16 && !_cleanDigits(l).startsWith('0'));
+        lines.any(
+          (l) =>
+              _cleanDigits(l).length == 16 && !_cleanDigits(l).startsWith('0'),
+        );
 
     final hasSimClues =
         upperText.contains('SURAT IZIN MENGEMUDI') ||
@@ -368,7 +371,8 @@ class DocumentScanService {
 
       // Prioritas 3: Pola 16 digit murni di mana pun
       if (documentNumber.isEmpty) {
-        final standAloneMatch = RegExp(r'\b([1-9]\d{15})\b').firstMatch(rawText);
+        final standAloneMatch = RegExp(r'\b([1-9]\d{15})\b')
+            .firstMatch(rawText);
         if (standAloneMatch != null) {
           documentNumber = standAloneMatch.group(1)!;
         }
@@ -413,7 +417,9 @@ class DocumentScanService {
             break;
           }
         } else {
-          final stripped = lineUpper.replaceFirst(RegExp(r'^NAMA\s*'), '').trim();
+          final stripped = lineUpper
+              .replaceFirst(RegExp(r'^NAMA\s*'), '')
+              .trim();
           final sanitized = _sanitizeName(stripped);
           if (sanitized.length >= 3 && !_isStopWord(sanitized)) {
             fullName = sanitized;

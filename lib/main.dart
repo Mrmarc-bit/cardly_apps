@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app/app.dart';
 import 'app/providers.dart';
 import 'core/network/supabase_service.dart';
+import 'core/storage/app_upgrade_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +23,9 @@ void main() async {
 
   final sharedPreferences = await SharedPreferences.getInstance();
   await SupabaseService.initialize();
+
+  // Bersihkan cache dan jalankan migrasi versi otomatis pasca-update
+  await AppUpgradeHandler.handleUpgradeIfNeeded(sharedPreferences);
 
   runApp(
     ProviderScope(

@@ -414,17 +414,11 @@ class ProfileDashboardView extends ConsumerWidget {
 
       if (context.mounted) {
         Navigator.pop(context);
-        CardlyToast.showSuccess(
-          context,
-          'Foto profil berhasil diperbarui!',
-        );
+        CardlyToast.showSuccess(context, 'Foto profil berhasil diperbarui!');
       }
     } catch (e) {
       if (context.mounted) {
-        CardlyToast.showError(
-          context,
-          'Gagal memperbarui foto profil: $e',
-        );
+        CardlyToast.showError(context, 'Gagal memperbarui foto profil: $e');
       }
     } finally {
       ref.read(isExternalOperationInProgressProvider.notifier).state = false;
@@ -615,10 +609,7 @@ class ProfileDashboardView extends ConsumerWidget {
                     email: emailController.text.trim(),
                   );
               Navigator.pop(context);
-              CardlyToast.showSuccess(
-                context,
-                'Profil berhasil diperbarui.',
-              );
+              CardlyToast.showSuccess(context, 'Profil berhasil diperbarui.');
             },
           ),
           const SizedBox(height: AppSpacing.sm),

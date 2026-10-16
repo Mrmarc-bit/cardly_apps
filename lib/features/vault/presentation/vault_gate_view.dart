@@ -106,8 +106,7 @@ class _VaultGateViewState extends ConsumerState<VaultGateView> {
                   HapticFeedback.vibrate();
                   CardlyToast.showError(
                     context,
-                    authRes.errorMessage ??
-                        'Verifikasi biometrik tidak cocok.',
+                    authRes.errorMessage ?? 'Verifikasi biometrik tidak cocok.',
                   );
                 }
               },

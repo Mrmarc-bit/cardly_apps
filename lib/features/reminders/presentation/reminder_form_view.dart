@@ -96,9 +96,7 @@ class _ReminderFormViewState extends ConsumerState<ReminderFormView> {
     if (mounted) {
       CardlyToast.showSuccess(
         context,
-        isEdit
-            ? 'Pengingat berhasil diperbarui'
-            : 'Pengingat berhasil dibuat',
+        isEdit ? 'Pengingat berhasil diperbarui' : 'Pengingat berhasil dibuat',
       );
       context.pop();
     }

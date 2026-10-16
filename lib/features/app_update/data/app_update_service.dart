@@ -264,11 +264,41 @@ class AppUpdateService {
     } catch (_) {}
   }
 
+  /// Membersihkan berkas APK usang di temporary directory untuk menghemat disk (~30-60 MB)
+  /// dan mencegah instalasi paket APK lama yang tersisa dari pembaruan sebelumnya.
+  Future<void> cleanStaleUpdateApks({String? keepFilePath}) async {
+    try {
+      final tempDir = await getTemporaryDirectory();
+      if (!tempDir.existsSync()) return;
+
+      final list = tempDir.listSync();
+      for (final entity in list) {
+        if (entity is File && entity.path.toLowerCase().endsWith('.apk')) {
+          if (keepFilePath != null && entity.path == keepFilePath) {
+            continue;
+          }
+          try {
+            entity.deleteSync();
+          } catch (_) {}
+        }
+      }
+    } catch (_) {}
+  }
+
   /// Mengunduh file APK secara stream in-app dengan progress real-time (Pendekatan B)
   Stream<DownloadProgress> downloadApk({
     required String downloadUrl,
     required String savePath,
   }) async* {
+    // Bersihkan berkas APK usang lain dan hapus file partial sebelumnya jika ada
+    await cleanStaleUpdateApks(keepFilePath: savePath);
+    try {
+      final existingFile = File(savePath);
+      if (existingFile.existsSync()) {
+        existingFile.deleteSync();
+      }
+    } catch (_) {}
+
     final client = HttpClient();
     client.autoUncompress = true;
 
@@ -307,7 +337,7 @@ class AppUpdateService {
     }
   }
 
-  /// Mendapatkan path file sementara untuk menyimpan berkas APK unduhan
+  /// Mendapatkan path file sementara untuk menyimpan berkas APK unduhan dengan penamaan versi eksplisit
   Future<String> getApkDestinationPath({AppUpdateInfo? info}) async {
     final tempDir = await getTemporaryDirectory();
     if (info != null) {
@@ -315,9 +345,9 @@ class AppUpdateService {
         RegExp(r'[^a-zA-Z0-9_\.]'),
         '_',
       );
-      return '${tempDir.path}/cardly_${safeVer}_${info.buildNumber}.apk';
+      return '${tempDir.path}/cardly_v${safeVer}_b${info.buildNumber}.apk';
     }
-    return '${tempDir.path}/cardly_update.apk';
+    return '${tempDir.path}/cardly_latest_update.apk';
   }
 
   /// Memeriksa apakah berkas APK versi ini sudah berhasil diunduh secara lokal dan valid
@@ -328,22 +358,16 @@ class AppUpdateService {
       if (file.existsSync()) {
         final length = file.lengthSync();
         if (length > 0) {
+          // Jika ukuran byte rilis ada di metadata, pastikan integritas berkas utuh
           if (info.fileSizeBytes > 0 &&
               (length - info.fileSizeBytes).abs() > 4096) {
+            // Berkas corrupt atau tidak utuh, hapus agar diunduh ulang bersih
+            try {
+              file.deleteSync();
+            } catch (_) {}
             return null;
           }
           return path;
-        }
-      }
-
-      final legacyTempDir = await getTemporaryDirectory();
-      final legacyFile = File('${legacyTempDir.path}/cardly_update.apk');
-      if (legacyFile.existsSync()) {
-        final length = legacyFile.lengthSync();
-        if (length > 0 &&
-            (info.fileSizeBytes <= 0 ||
-                (length - info.fileSizeBytes).abs() <= 4096)) {
-          return legacyFile.path;
         }
       }
     } catch (_) {}

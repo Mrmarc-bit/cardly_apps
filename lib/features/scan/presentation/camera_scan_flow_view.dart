@@ -980,10 +980,7 @@ class _CameraScanFlowViewState extends ConsumerState<CameraScanFlowView> {
     }
 
     if (!mounted) return;
-    CardlyToast.showSuccess(
-      context,
-      '$docTitle berhasil disimpan ke Dokumen!',
-    );
+    CardlyToast.showSuccess(context, '$docTitle berhasil disimpan ke Dokumen!');
     _handleClose();
   }
 
@@ -1064,10 +1061,7 @@ class _CameraScanFlowViewState extends ConsumerState<CameraScanFlowView> {
       case ScanStep.permissionDenied:
         return CameraPermissionView(
           onOpenSettings: () {
-            CardlyToast.showInfo(
-              context,
-              'Membuka Pengaturan Aplikasi...',
-            );
+            CardlyToast.showInfo(context, 'Membuka Pengaturan Aplikasi...');
           },
           onImportFallback: _handlePickGallery,
           onClose: _handleClose,

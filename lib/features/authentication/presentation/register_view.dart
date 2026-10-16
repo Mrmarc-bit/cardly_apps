@@ -181,10 +181,7 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
       }
 
       if (result.isCancelled) {
-        CardlyToast.showInfo(
-          context,
-          'Pendaftaran dengan Google dibatalkan.',
-        );
+        CardlyToast.showInfo(context, 'Pendaftaran dengan Google dibatalkan.');
         return;
       }
 

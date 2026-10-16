@@ -358,14 +358,24 @@ class _OcrReviewFormState extends State<OcrReviewForm> {
   Widget _buildDocumentTypeSelector(bool isDark) {
     final types = [
       (RecognizedDocumentType.ktp, 'e-KTP', Icons.badge_outlined),
-      (RecognizedDocumentType.bankCard, 'Kartu Bank', Icons.credit_card_outlined),
-      (RecognizedDocumentType.generalDocument, 'Dokumen Umum', Icons.description_outlined),
+      (
+        RecognizedDocumentType.bankCard,
+        'Kartu Bank',
+        Icons.credit_card_outlined,
+      ),
+      (
+        RecognizedDocumentType.generalDocument,
+        'Dokumen Umum',
+        Icons.description_outlined,
+      ),
     ];
 
     return Container(
       padding: const EdgeInsets.all(4.0),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.charcoal : AppColors.softGray.withValues(alpha: 0.6),
+        color: isDark
+            ? AppColors.charcoal
+            : AppColors.softGray.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(AppRadius.control),
       ),
       child: Row(
@@ -412,10 +422,14 @@ class _OcrReviewFormState extends State<OcrReviewForm> {
                       item.$2,
                       style: TextStyle(
                         fontSize: 12.0,
-                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
                         color: isSelected
                             ? (isDark ? AppColors.ink : AppColors.white)
-                            : (isDark ? AppColors.white.withValues(alpha: 0.8) : AppColors.ink),
+                            : (isDark
+                                  ? AppColors.white.withValues(alpha: 0.8)
+                                  : AppColors.ink),
                       ),
                     ),
                   ],
