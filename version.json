@@ -1,24 +1,24 @@
 {
-  "latest_version": "1.0.7",
-  "build_number": 8,
+  "latest_version": "1.0.8",
+  "build_number": 9,
   "is_force_update": false,
-  "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.7/cardly-release-v1.0.7.apk",
+  "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.8/cardly-release-v1.0.8.apk",
   "release_date": "2026-10-16",
   "changelog": [
     "Pembaruan rilis resmi otomatis Cardly v1.0.4",
     "Peningkatan kestabilan, performa, dan sinkronisasi data privat"
   ],
-  "file_size_bytes": 42488955,
+  "file_size_bytes": 42502459,
   "variants": [
     {
       "arch": "universal",
       "label": "Universal (Semua HP)",
       "badge": "Kompatibilitas Penuh",
       "desc": "Memuat pustaka 64-bit dan 32-bit, dijamin dapat dipasang di seluruh perangkat Android",
-      "file_name": "cardly-release-v1.0.7.apk",
-      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.7/cardly-release-v1.0.7.apk",
-      "file_size_bytes": 42488955,
-      "sha256": "3c9747ca99c5d13be0575a307278a67e3efaa8f4f843117ffb73850ca94187ca"
+      "file_name": "cardly-release-v1.0.8.apk",
+      "download_url": "https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.8/cardly-release-v1.0.8.apk",
+      "file_size_bytes": 42502459,
+      "sha256": "cc645e6909edcdee33c903d0d6e0bc986323eebdd9a45b96e9a287e23a2fb8f3"
     }
   ]
 }

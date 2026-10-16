@@ -76,7 +76,7 @@ jobs:
           fi
 
       - name: Build Android Release APK
-        run: flutter build apk --release
+        run: flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols
 
       - name: Prepare Release APK Artifact
         id: prepare_apk
