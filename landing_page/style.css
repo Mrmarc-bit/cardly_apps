@@ -283,8 +283,8 @@ header.site-header {
 .btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 28px;
+  gap: 12px;
+  padding: 12px 24px;
   background: var(--lime);
   color: var(--text-dark);
   font-weight: 700;
@@ -305,11 +305,11 @@ header.site-header {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 26px;
+  padding: 13px 24px;
   background: var(--charcoal);
   color: var(--text-primary);
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14.5px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   text-decoration: none;
@@ -319,6 +319,34 @@ header.site-header {
 .btn-secondary:hover {
   background: var(--charcoal-hover);
   border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary .btn-icon,
+.btn-secondary .btn-icon {
+  flex-shrink: 0;
+}
+
+.btn-label-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  line-height: 1.25;
+}
+
+.btn-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-dark);
+  letter-spacing: -0.2px;
+}
+
+.btn-meta {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(18, 18, 20, 0.72);
+  margin-top: 1px;
+  letter-spacing: 0.1px;
 }
 
 /* Floating Interactive Card Showcase */
@@ -718,15 +746,21 @@ footer.site-footer {
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
   padding: 8px 18px;
-  font-size: 13.5px;
+  font-size: 13px;
   color: var(--text-secondary);
-  margin-bottom: 36px;
+  margin-bottom: 32px;
+  max-width: 100%;
 }
 
 .device-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.device-hint-text {
+  line-height: 1.5;
 }
 .device-dot.online {
   background-color: var(--lime);
@@ -855,9 +889,7 @@ footer.site-footer {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  padding: 16px 28px;
-  font-size: 16px;
-  font-weight: 700;
+  padding: 14px 24px;
   border-radius: var(--radius-md);
   box-shadow: 0 10px 30px -5px var(--lime-glow-strong);
   cursor: pointer;
@@ -875,13 +907,16 @@ footer.site-footer {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--text-muted);
-  margin-top: 10px;
+  line-height: 1.45;
+  margin-top: 12px;
+  text-align: center;
 }
 
 .download-safety-notice svg {
   color: var(--lime);
+  flex-shrink: 0;
 }
 
 .changelog-card-inner {
@@ -985,6 +1020,8 @@ footer.site-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
   margin-bottom: 6px;
 }
 
@@ -992,6 +1029,8 @@ footer.site-footer {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .variant-arch-name {
@@ -1555,18 +1594,23 @@ footer.site-footer {
   }
 
   .hero-cta-group {
+    display: flex;
     flex-direction: column;
     width: 100%;
+    max-width: 360px;
+    margin: 0 auto 36px;
     gap: 12px;
-    margin-bottom: 40px;
   }
 
   .hero-cta-group .btn-primary,
   .hero-cta-group .btn-secondary {
     width: 100%;
+    box-sizing: border-box;
     justify-content: center;
-    padding: 15px 20px;
-    font-size: 15px;
+    padding: 11px 18px;
+    min-height: 52px;
+    border-radius: 14px;
+    font-size: 14.5px;
   }
 
   /* Showcase Stage */
@@ -1723,15 +1767,20 @@ footer.site-footer {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    padding: 8px 14px;
-    margin-bottom: 24px;
-    text-align: center;
-    line-height: 1.4;
+    display: flex;
+    border-radius: 14px;
+    align-items: flex-start;
+    text-align: left;
+    gap: 10px;
+    font-size: 12.5px;
+    padding: 10px 14px;
+    margin-bottom: 22px;
+    line-height: 1.5;
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .device-detection-banner .device-dot {
+    margin-top: 4px;
   }
 
   .download-card-grid {
@@ -1837,16 +1886,184 @@ footer.site-footer {
   .btn-download-giant {
     width: 100% !important;
     box-sizing: border-box !important;
-    padding: 15px 16px;
-    font-size: 15px;
+    padding: 12px 18px;
+    min-height: 54px;
+    border-radius: 14px;
     justify-content: center;
     text-align: center;
   }
 
-  .download-safety-notice {
+  .btn-download-giant .btn-title {
+    font-size: 15px;
+  }
+
+  .btn-download-giant .btn-meta {
     font-size: 11.5px;
-    text-align: center;
-    line-height: 1.4;
+  }
+
+  .download-safety-notice {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 7px;
+    font-size: 11.5px;
+    text-align: left;
+    max-width: 320px;
+    margin: 12px auto 0;
+    line-height: 1.45;
+  }
+
+  .download-safety-notice svg {
+    margin-top: 2px;
+  }
+
+  .variant-card {
+    padding: 15px 14px;
+    border-radius: 14px;
+  }
+
+  .variant-top-row {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .variant-arch-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .variant-arch-name {
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .variant-badge-match {
+    font-size: 9.5px;
+    padding: 2px 7px;
+    margin-top: 2px;
+  }
+
+  .variant-size {
+    font-size: 13px;
+    align-self: flex-start;
+  }
+
+  .variant-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .btn-variant-download {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 9px 14px;
+    font-size: 12.5px;
+    border-radius: 10px;
+  }
+
+  .btn-copy-hash {
+    flex: 0 0 auto;
+    padding: 9px 12px;
+    font-size: 12px;
+    border-radius: 10px;
+  }
+
+  /* Changelog Timeline Mobile Responsiveness */
+  .changelog-timeline-section {
+    margin-top: 20px !important;
+  }
+
+  .changelog-header-block {
+    margin-bottom: 28px;
+    text-align: left;
+  }
+
+  .changelog-timeline-title {
+    font-size: clamp(24px, 6.5vw, 32px);
+    margin: 8px 0 10px;
+  }
+
+  .changelog-timeline-desc {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .changelog-entries-container {
+    gap: 32px;
+  }
+
+  .changelog-entry {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .changelog-meta-col {
+    width: 100%;
+    position: static;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .badge-version-pill {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  .changelog-date {
+    font-size: 12.5px;
+  }
+
+  .changelog-content-col {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .changelog-entry-title {
+    font-size: 18px;
+    line-height: 1.35;
+    margin-bottom: 8px;
+  }
+
+  .changelog-entry-desc {
+    font-size: 13.5px;
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+
+  .changelog-entry-list {
+    padding-left: 18px;
+    gap: 8px;
+  }
+
+  .changelog-entry-list li {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+
+  .changelog-entry-footer {
+    margin-top: 14px;
+  }
+
+  .changelog-link-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 14px;
+    font-size: 13px;
+    box-sizing: border-box;
   }
 
   .changelog-card-inner {
@@ -1945,9 +2162,31 @@ footer.site-footer {
   }
 
   .btn-download-giant {
-    padding: 13px 12px;
-    font-size: 13.5px;
-    gap: 6px;
+    padding: 11px 12px;
+    min-height: 50px;
+    gap: 8px;
+  }
+
+  .btn-download-giant .btn-title {
+    font-size: 14px;
+  }
+
+  .btn-download-giant .btn-meta {
+    font-size: 11px;
+  }
+
+  .hero-cta-group .btn-primary,
+  .hero-cta-group .btn-secondary {
+    padding: 10px 14px;
+    min-height: 48px;
+  }
+
+  .hero-cta-group .btn-title {
+    font-size: 14px;
+  }
+
+  .hero-cta-group .btn-meta {
+    font-size: 11px;
   }
 
   .card-brand-header {

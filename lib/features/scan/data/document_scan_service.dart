@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../documents/domain/document_model.dart';
 import '../presentation/widgets/pre_scan_sheet.dart';
+import '../../../app/providers.dart';
 
 /// Klasifikasi tipe berkas resmi yang berhasil diidentifikasi oleh On-Device OCR
 enum RecognizedDocumentType {
@@ -83,12 +84,15 @@ class OcrScanResult {
 
 /// Provider resmi untuk DocumentScanService
 final documentScanServiceProvider = Provider<DocumentScanService>((ref) {
-  return DocumentScanService();
+  return DocumentScanService(ref);
 });
 
 /// Layanan Pemindai Dokumen Standar Industri (Google Play Services ML Kit Document Scanner & On-Device OCR)
 class DocumentScanService {
+  final Ref? _ref;
   final ImagePicker _imagePicker = ImagePicker();
+
+  DocumentScanService([this._ref]);
 
   /// Membuka pemindai dokumen native Google Play Services (Auto Edge Detection & Crop persis Google Wallet)
   /// dengan parameter dinamis berdasarkan jenis berkas yang dipilih pengguna di Panduan Memindai.
@@ -99,6 +103,7 @@ class DocumentScanService {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       return null;
     }
+    _ref?.read(isExternalOperationInProgressProvider.notifier).state = true;
     try {
       // Jika dokumen fisik A4: dukung pemindaian multi-halaman (hingga 10 halaman)
       // Jika kartu identitas atau kartu bank: fokus 1 halaman tunggal berbingkai presisi
@@ -113,6 +118,8 @@ class DocumentScanService {
       return null;
     } catch (_) {
       return null;
+    } finally {
+      _ref?.read(isExternalOperationInProgressProvider.notifier).state = false;
     }
   }
 
@@ -121,6 +128,7 @@ class DocumentScanService {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       return null;
     }
+    _ref?.read(isExternalOperationInProgressProvider.notifier).state = true;
     try {
       final xFile = await _imagePicker.pickImage(
         source: ImageSource.gallery,
@@ -129,6 +137,8 @@ class DocumentScanService {
       return xFile?.path;
     } catch (_) {
       return null;
+    } finally {
+      _ref?.read(isExternalOperationInProgressProvider.notifier).state = false;
     }
   }
 
@@ -137,6 +147,7 @@ class DocumentScanService {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       return null;
     }
+    _ref?.read(isExternalOperationInProgressProvider.notifier).state = true;
     try {
       final xFile = await _imagePicker.pickImage(
         source: ImageSource.camera,
@@ -145,6 +156,8 @@ class DocumentScanService {
       return xFile?.path;
     } catch (_) {
       return null;
+    } finally {
+      _ref?.read(isExternalOperationInProgressProvider.notifier).state = false;
     }
   }
 
@@ -234,17 +247,29 @@ class DocumentScanService {
     String cardNetwork = '';
     String last4Digits = '';
 
-    // 1. Identifikasi Jenis Dokumen
+    // 1. Identifikasi Jenis Dokumen Cerdas & Toleran OCR Noise
     final hasKtpClues =
         upperText.contains('KARTU TANDA PENDUDUK') ||
         upperText.contains('REPUBLIK INDONESIA') ||
+        upperText.contains('PENDUDUK') ||
         upperText.contains('NIK') ||
+        upperText.contains('N1K') ||
         upperText.contains('PROVINSI') ||
+        upperText.contains('PROVINS1') ||
         upperText.contains('KABUPATEN') ||
         upperText.contains('KECAMATAN') ||
         upperText.contains('GOL. DARAH') ||
         upperText.contains('GOL DARAH') ||
-        RegExp(r'\b[1-9]\d{15}\b').hasMatch(rawText);
+        upperText.contains('TEMPAT/TGL') ||
+        upperText.contains('TGL LAHIR') ||
+        upperText.contains('JENIS KELAMIN') ||
+        upperText.contains('ALAMAT') ||
+        upperText.contains('RT/RW') ||
+        upperText.contains('KEL/DESA') ||
+        upperText.contains('STATUS PERKAWINAN') ||
+        upperText.contains('SEUMUR HIDUP') ||
+        RegExp(r'\b[1-9]\d{15}\b').hasMatch(rawText) ||
+        lines.any((l) => _cleanDigits(l).length == 16 && !_cleanDigits(l).startsWith('0'));
 
     final hasSimClues =
         upperText.contains('SURAT IZIN MENGEMUDI') ||
@@ -280,16 +305,16 @@ class DocumentScanService {
                 upperText.contains('JENIUS') ||
                 upperText.contains('SEABANK'));
 
-    if (hasKtpClues && documentType != ScanDocumentType.paymentCard) {
-      recognizedType = RecognizedDocumentType.ktp;
-      title = 'KTP Republik Indonesia';
-      issuer = _extractKtpIssuer(lines);
-      category = DocumentCategory.identity;
-    } else if (hasSimClues && documentType != ScanDocumentType.paymentCard) {
+    if (hasSimClues && documentType != ScanDocumentType.paymentCard) {
       recognizedType = RecognizedDocumentType.sim;
       title = 'Surat Izin Mengemudi (SIM)';
       issuer = 'Korlantas Polri';
       category = DocumentCategory.vehicle;
+    } else if (hasKtpClues && documentType != ScanDocumentType.paymentCard) {
+      recognizedType = RecognizedDocumentType.ktp;
+      title = 'KTP Republik Indonesia';
+      issuer = _extractKtpIssuer(lines);
+      category = DocumentCategory.identity;
     } else if (hasBpjsClues) {
       recognizedType = RecognizedDocumentType.bpjs;
       title = 'Kartu BPJS Kesehatan';
@@ -316,15 +341,37 @@ class DocumentScanService {
       category = DocumentCategory.identity;
     }
 
-    // 2. Ekstraksi Nomor Dokumen & Masking
+    // 2. Ekstraksi Nomor Dokumen & Masking Berdaya Tahan Tinggi
     if (recognizedType == RecognizedDocumentType.ktp) {
-      // Prioritas: NIK 16 digit angka presisi
-      final nikMatch =
-          RegExp(r'(?:NIK|Nomor)?[\s:.]*([1-9][0-9OIl]{15})')
-              .firstMatch(rawText) ??
-          RegExp(r'\b([1-9]\d{15})\b').firstMatch(rawText);
-      if (nikMatch != null) {
-        documentNumber = _cleanDigits(nikMatch.group(1)!);
+      // Prioritas 1: NIK dengan awalan label NIK/N1K/Nomor
+      final nikWithLabelMatch = RegExp(
+        r'(?:NIK|N1K|NlK|Nomor|NO)?[\s:.]*([1-9][0-9OIlDbB\s\.\-]{15,22})',
+        caseSensitive: false,
+      ).firstMatch(rawText);
+      if (nikWithLabelMatch != null) {
+        final cleaned = _cleanDigits(nikWithLabelMatch.group(1)!);
+        if (cleaned.length >= 16) {
+          documentNumber = cleaned.substring(0, 16);
+        }
+      }
+
+      // Prioritas 2: Cari baris berisikan 16 digit angka bersih
+      if (documentNumber.isEmpty) {
+        for (final line in lines) {
+          final cleaned = _cleanDigits(line);
+          if (cleaned.length == 16 && !cleaned.startsWith('0')) {
+            documentNumber = cleaned;
+            break;
+          }
+        }
+      }
+
+      // Prioritas 3: Pola 16 digit murni di mana pun
+      if (documentNumber.isEmpty) {
+        final standAloneMatch = RegExp(r'\b([1-9]\d{15})\b').firstMatch(rawText);
+        if (standAloneMatch != null) {
+          documentNumber = standAloneMatch.group(1)!;
+        }
       }
     } else if (recognizedType == RecognizedDocumentType.bankCard) {
       // Cari 4 digit terakhir kartu (PRD & AGENTS.md Bagian 10: Dilarang keras simpan 16 digit penuh)
@@ -336,7 +383,6 @@ class DocumentScanService {
         last4Digits = cardMatch.group(1)!;
         documentNumber = '•••• •••• •••• $last4Digits';
       } else {
-        // Cari angka 4 digit mandiri di area kartu
         final fourDigitMatch = RegExp(r'\b(\d{4})\b').firstMatch(rawText);
         if (fourDigitMatch != null) {
           last4Digits = fourDigitMatch.group(1)!;
@@ -351,51 +397,92 @@ class DocumentScanService {
       }
     }
 
-    // 3. Ekstraksi Nama Pemilik
+    // 3. Ekstraksi Nama Pemilik (Multi-line Lookahead & Pemisahan Kolom Spasial)
     for (int i = 0; i < lines.length; i++) {
       final line = lines[i];
       final lineUpper = line.toUpperCase();
 
       if (lineUpper.contains('NAMA') || lineUpper.contains('NAME')) {
+        // Cek teks setelah titik dua pada baris yang sama
         if (line.contains(':')) {
           final parts = line.split(':');
-          if (parts.length > 1 && parts[1].trim().isNotEmpty) {
-            fullName = _sanitizeName(parts[1].trim());
+          final afterColon = parts.sublist(1).join(':').trim();
+          final sanitized = _sanitizeName(afterColon);
+          if (sanitized.length >= 3 && !_isStopWord(sanitized)) {
+            fullName = sanitized;
+            break;
+          }
+        } else {
+          final stripped = lineUpper.replaceFirst(RegExp(r'^NAMA\s*'), '').trim();
+          final sanitized = _sanitizeName(stripped);
+          if (sanitized.length >= 3 && !_isStopWord(sanitized)) {
+            fullName = sanitized;
             break;
           }
         }
-        if (i + 1 < lines.length) {
-          fullName = _sanitizeName(lines[i + 1]);
-          break;
+
+        // Jika baris kosong/hanya label, cari di baris berikutnya
+        for (int j = i + 1; j < lines.length && j <= i + 3; j++) {
+          final candidate = lines[j].trim();
+          final sanitized = _sanitizeName(candidate);
+          if (sanitized.length >= 3 &&
+              !_isStopWord(candidate) &&
+              !candidate.contains(':') &&
+              !RegExp(r'\d{4,}').hasMatch(candidate)) {
+            fullName = sanitized;
+            break;
+          }
         }
+        if (fullName.isNotEmpty) break;
       }
     }
 
+    // Fallback: Cari baris teks huruf kapital yang menyerupai nama orang
     if (fullName.isEmpty) {
       for (final line in lines) {
         final clean = _sanitizeName(line);
-        if (clean.length > 3 &&
-            !_isStopWord(clean.toUpperCase()) &&
-            RegExp(r'^[A-Z\s\.]+$').hasMatch(clean)) {
+        final upper = clean.toUpperCase();
+        if (clean.length >= 4 &&
+            clean.length <= 35 &&
+            !_isStopWord(upper) &&
+            !upper.contains('PROVINSI') &&
+            !upper.contains('KABUPATEN') &&
+            !upper.contains('KOTA') &&
+            !upper.contains('KECAMATAN') &&
+            !upper.contains('DESA') &&
+            RegExp(r'^[A-Z\s\.\,]+$').hasMatch(upper)) {
           fullName = clean;
           break;
         }
       }
     }
 
-    // 4. Ekstraksi Spesifik KTP (Detail Lengkap Sesuai Permintaan Pengguna)
+    // 4. Ekstraksi Spesifik KTP
     if (recognizedType == RecognizedDocumentType.ktp) {
       // Tempat/Tgl Lahir
       final birthMatch = RegExp(
-        r'(?:TEMPAT|TMPT)[/\s]*(?:TGL|TANGGAL)[\s]*(?:LAHIR)?[\s:.]+([^\n]+)',
+        r'(?:TEMPAT|TMPT)[/\s]*(?:TGL|TANGGAL)?[/\s]*(?:LAHIR)?[\s:.]+([^\n\r]+)',
         caseSensitive: false,
       ).firstMatch(rawText);
-      if (birthMatch != null) {
-        birthPlaceDate = birthMatch.group(1)!.trim();
+      if (birthMatch != null &&
+          birthMatch.group(1)!.trim().isNotEmpty &&
+          !_isStopWord(birthMatch.group(1)!.trim())) {
+        birthPlaceDate = _cleanLabel(birthMatch.group(1)!);
+      } else {
+        // Fallback pola KOTA, DD-MM-YYYY
+        final cityDateMatch = RegExp(
+          r'([A-Za-z\s]{3,20})[,\s]+([0-3]?[0-9][\s\-\/\.][0-1]?[0-9][\s\-\/\.](?:19|20)\d{2})',
+        ).firstMatch(rawText);
+        if (cityDateMatch != null) {
+          birthPlaceDate =
+              '${cityDateMatch.group(1)!.trim()}, ${cityDateMatch.group(2)!.trim()}';
+        }
       }
 
       // Jenis Kelamin
-      if (upperText.contains('LAKI-LAKI') || upperText.contains('PRIA')) {
+      if (upperText.contains('LAKI-LAKI') ||
+          upperText.contains('LAKI - LAKI') ||
+          upperText.contains('LAKI')) {
         gender = 'LAKI-LAKI';
       } else if (upperText.contains('PEREMPUAN') ||
           upperText.contains('WANITA')) {
@@ -404,29 +491,49 @@ class DocumentScanService {
 
       // Golongan Darah
       final bloodMatch = RegExp(
-        r'(?:GOL|DARAH)[\s:.]*([ABO\-\+]{1,2})',
+        r'(?:GOL|DARAH|GOL\.)[\s:.]*([ABO\-\+]{1,2})\b',
         caseSensitive: false,
-      ).firstMatch(rawText);
+      ).firstMatch(upperText);
       if (bloodMatch != null) {
         bloodType = bloodMatch.group(1)!.toUpperCase();
       }
 
       // Alamat Lengkap
       final addrMatch = RegExp(
-        r'ALAMAT[\s:.]+([^\n]+)',
+        r'ALAMAT[\s:.]+([^\n\r]+)',
         caseSensitive: false,
       ).firstMatch(rawText);
-      if (addrMatch != null) {
-        address = addrMatch.group(1)!.trim();
+      if (addrMatch != null && addrMatch.group(1)!.trim().isNotEmpty) {
+        final cand = addrMatch.group(1)!.trim();
+        if (!_isStopWord(cand)) {
+          address = cand;
+        }
+      }
+      if (address.isEmpty) {
+        for (int i = 0; i < lines.length; i++) {
+          final l = lines[i].toUpperCase();
+          if (l == 'ALAMAT' || l == 'ALAMAT:' || l.startsWith('ALAMAT')) {
+            if (i + 1 < lines.length) {
+              final next = lines[i + 1].trim();
+              if (!_isStopWord(next)) {
+                address = next;
+                break;
+              }
+            }
+          }
+        }
       }
 
       // RT/RW
       final rtRwMatch = RegExp(
-        r'RT[/\s]*RW[\s:.]+([0-9]{1,3}\s*[/-]\s*[0-9]{1,3})',
+        r'RT[/\s]*RW[\s:.]*([0-9OIl]{1,3}\s*[/-]\s*[0-9OIl]{1,3})',
         caseSensitive: false,
       ).firstMatch(rawText);
       if (rtRwMatch != null) {
-        rtRw = rtRwMatch.group(1)!.replaceAll(' ', '');
+        final parts = rtRwMatch.group(1)!.split(RegExp(r'[/\\-]'));
+        if (parts.length >= 2) {
+          rtRw = '${_cleanDigits(parts[0])}/${_cleanDigits(parts[1])}';
+        }
       }
 
       // Kelurahan / Desa
@@ -434,7 +541,7 @@ class DocumentScanService {
         r'(?:KEL[/\s]*DESA|KELURAHAN|DESA)[\s:.]+([^\r\n]+)',
         caseSensitive: false,
       ).firstMatch(rawText);
-      if (kelMatch != null) {
+      if (kelMatch != null && !_isStopWord(kelMatch.group(1)!.trim())) {
         kelDesa = _cleanLabel(kelMatch.group(1)!);
       }
 
@@ -443,7 +550,7 @@ class DocumentScanService {
         r'KECAMATAN[\s:.]+([^\r\n]+)',
         caseSensitive: false,
       ).firstMatch(rawText);
-      if (kecMatch != null) {
+      if (kecMatch != null && !_isStopWord(kecMatch.group(1)!.trim())) {
         kecamatan = _cleanLabel(kecMatch.group(1)!);
       }
 
@@ -470,8 +577,31 @@ class DocumentScanService {
         r'PEKERJAAN[\s:.]+([^\r\n]+)',
         caseSensitive: false,
       ).firstMatch(rawText);
-      if (occMatch != null) {
+      if (occMatch != null && !_isStopWord(occMatch.group(1)!.trim())) {
         occupation = _cleanLabel(occMatch.group(1)!);
+      } else {
+        for (final occ in [
+          'KARYAWAN SWASTA',
+          'PEGAWAI NEGERI SIPIL',
+          'PNS',
+          'WIRASWASTA',
+          'PELAJAR/MAHASISWA',
+          'PELAJAR',
+          'MAHASISWA',
+          'BURUH',
+          'IBU RUMAH TANGGA',
+          'TIDAK/BELUM BEKERJA',
+          'TNI',
+          'POLRI',
+          'GURU',
+          'DOKTER',
+          'PEDAGANG',
+        ]) {
+          if (upperText.contains(occ)) {
+            occupation = occ;
+            break;
+          }
+        }
       }
 
       // Kewarganegaraan
@@ -549,13 +679,16 @@ class DocumentScanService {
     return raw
         .replaceAll('O', '0')
         .replaceAll('o', '0')
+        .replaceAll('D', '0')
         .replaceAll('I', '1')
         .replaceAll('l', '1')
+        .replaceAll('|', '1')
+        .replaceAll('B', '8')
         .replaceAll(RegExp(r'\D'), '');
   }
 
   String _cleanLabel(String raw) {
-    return raw.replaceAll(RegExp(r'[^a-zA-Z0-9\s\.\-]'), '').trim();
+    return raw.replaceAll(RegExp(r'[^a-zA-Z0-9\s\.\,\-]'), '').trim();
   }
 
   String _extractKtpIssuer(List<String> lines) {
@@ -650,6 +783,7 @@ class DocumentScanService {
   }
 
   bool _isStopWord(String text) {
+    final clean = text.toUpperCase().trim();
     const stopWords = {
       'PROVINSI',
       'KABUPATEN',
@@ -663,20 +797,38 @@ class DocumentScanService {
       'IZIN',
       'MENGEMUDI',
       'NIK',
+      'N1K',
+      'NLK',
+      'NAMA',
+      'NAME',
+      'TEMPAT/TGL LAHIR',
+      'TEMPAT/TGL',
+      'TGL LAHIR',
+      'JENIS KELAMIN',
+      'GOL. DARAH',
+      'GOL DARAH',
+      'GOL',
+      'DARAH',
+      'ALAMAT',
+      'RT/RW',
+      'RT',
+      'RW',
+      'KEL/DESA',
+      'KELURAHAN',
+      'DESA',
+      'KECAMATAN',
       'AGAMA',
+      'STATUS PERKAWINAN',
       'STATUS',
       'PERKAWINAN',
       'PEKERJAAN',
       'KEWARGANEGARAAN',
+      'BERLAKU HINGGA',
       'BERLAKU',
       'HINGGA',
-      'GOLONGAN',
-      'DARAH',
-      'ALAMAT',
-      'RT/RW',
-      'KEL/DESA',
-      'KECAMATAN',
+      'SEUMUR HIDUP',
+      'DISDUKCAPIL',
     };
-    return stopWords.contains(text);
+    return stopWords.contains(clean);
   }
 }

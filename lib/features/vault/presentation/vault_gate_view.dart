@@ -11,6 +11,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/cardly_bottom_sheet.dart';
 import '../../../core/widgets/cardly_buttons.dart';
+import '../../../core/widgets/cardly_toast.dart';
 import '../../documents/domain/document_model.dart';
 
 import 'pin_screen.dart';
@@ -39,11 +40,9 @@ class _VaultGateViewState extends ConsumerState<VaultGateView> {
       );
       if (created == true && mounted) {
         ref.read(vaultLockedProvider.notifier).unlock();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('PIN dibuat & Brankas berhasil dibuka!'),
-            backgroundColor: AppColors.ink,
-          ),
+        CardlyToast.showSuccess(
+          context,
+          'PIN dibuat & Brankas berhasil dibuka!',
         );
       }
       return;
@@ -99,22 +98,16 @@ class _VaultGateViewState extends ConsumerState<VaultGateView> {
                   HapticFeedback.mediumImpact();
                   Navigator.pop(context);
                   ref.read(vaultLockedProvider.notifier).unlock();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Brankas berhasil dibuka dengan biometrik'),
-                      backgroundColor: AppColors.ink,
-                    ),
+                  CardlyToast.showSuccess(
+                    context,
+                    'Brankas berhasil dibuka dengan biometrik',
                   );
                 } else {
                   HapticFeedback.vibrate();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        authRes.errorMessage ??
-                            'Verifikasi biometrik tidak cocok.',
-                      ),
-                      backgroundColor: AppColors.error,
-                    ),
+                  CardlyToast.showError(
+                    context,
+                    authRes.errorMessage ??
+                        'Verifikasi biometrik tidak cocok.',
                   );
                 }
               },
@@ -153,12 +146,7 @@ class _VaultGateViewState extends ConsumerState<VaultGateView> {
 
     if (success == true && mounted) {
       ref.read(vaultLockedProvider.notifier).unlock();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Brankas berhasil dibuka'),
-          backgroundColor: AppColors.ink,
-        ),
-      );
+      CardlyToast.showSuccess(context, 'Brankas berhasil dibuka');
     }
   }
 
@@ -178,10 +166,9 @@ class _VaultGateViewState extends ConsumerState<VaultGateView> {
             TextButton.icon(
               onPressed: () {
                 ref.read(vaultLockedProvider.notifier).lock();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Brankas berhasil dikunci kembali'),
-                  ),
+                CardlyToast.showSuccess(
+                  context,
+                  'Brankas berhasil dikunci kembali',
                 );
               },
               icon: const Icon(Icons.lock, size: 18, color: AppColors.error),
@@ -398,9 +385,7 @@ class _VaultGateViewState extends ConsumerState<VaultGateView> {
             icon: Icons.lock_outline,
             onPressed: () {
               ref.read(vaultLockedProvider.notifier).lock();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Brankas berhasil dikunci')),
-              );
+              CardlyToast.showSuccess(context, 'Brankas berhasil dikunci');
             },
           ),
 

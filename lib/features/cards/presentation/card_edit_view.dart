@@ -12,6 +12,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/cardly_bottom_sheet.dart';
 import '../../../core/widgets/cardly_buttons.dart';
 import '../../../core/widgets/cardly_text_field.dart';
+import '../../../core/widgets/cardly_toast.dart';
 import '../../../core/widgets/cardly_visual_card.dart';
 import '../domain/card_model.dart';
 
@@ -152,9 +153,7 @@ class _CardEditViewState extends ConsumerState<CardEditView> {
     await ref.read(cardListProvider.notifier).updateCard(updatedCard);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Perubahan kartu berhasil disimpan')),
-      );
+      CardlyToast.showSuccess(context, 'Perubahan kartu berhasil disimpan');
       context.pop();
     }
   }

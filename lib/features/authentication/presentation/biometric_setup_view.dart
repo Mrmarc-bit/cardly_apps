@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/widgets/cardly_buttons.dart';
+import '../../../core/widgets/cardly_toast.dart';
 import '../../../app/providers.dart';
 import 'widgets/auth_security_card.dart';
 
@@ -49,13 +50,10 @@ class _BiometricSetupViewState extends ConsumerState<BiometricSetupView> {
     if (authResult.isNotEnrolled) {
       _showNotEnrolledDialog();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            authResult.errorMessage ??
-                'Verifikasi biometrik belum berhasil. Coba lagi atau lewati.',
-          ),
-        ),
+      CardlyToast.showError(
+        context,
+        authResult.errorMessage ??
+            'Verifikasi biometrik belum berhasil. Coba lagi atau lewati.',
       );
     }
   }

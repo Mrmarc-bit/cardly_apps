@@ -8,6 +8,7 @@ import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../app/providers.dart';
+import '../../../core/widgets/cardly_toast.dart';
 import 'pin_screen.dart';
 
 class SecuritySettingsView extends ConsumerStatefulWidget {
@@ -101,12 +102,9 @@ class _SecuritySettingsViewState extends ConsumerState<SecuritySettingsView> {
                             .canCheckBiometrics();
                         if (!canCheck) {
                           if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Sensor biometrik tidak tersedia di perangkat ini.',
-                              ),
-                            ),
+                          CardlyToast.showError(
+                            context,
+                            'Sensor biometrik tidak tersedia di perangkat ini.',
                           );
                           return;
                         }
@@ -118,12 +116,9 @@ class _SecuritySettingsViewState extends ConsumerState<SecuritySettingsView> {
 
                         if (!authRes.success) {
                           if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                authRes.errorMessage ?? 'Verifikasi biometrik dibatalkan. Pengaturan tidak diubah.',
-                              ),
-                            ),
+                          CardlyToast.showError(
+                            context,
+                            authRes.errorMessage ?? 'Verifikasi biometrik dibatalkan. Pengaturan tidak diubah.',
                           );
                           return;
                         }
@@ -140,14 +135,11 @@ class _SecuritySettingsViewState extends ConsumerState<SecuritySettingsView> {
 
                       if (!context.mounted) return;
                       HapticFeedback.mediumImpact();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            val
-                                ? 'Biometrik berhasil diverifikasi dan diaktifkan!'
-                                : 'Biometrik dinonaktifkan',
-                          ),
-                        ),
+                      CardlyToast.showSuccess(
+                        context,
+                        val
+                            ? 'Biometrik berhasil diverifikasi dan diaktifkan!'
+                            : 'Biometrik dinonaktifkan',
                       );
                     },
                   ),

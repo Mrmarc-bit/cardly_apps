@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../app/providers.dart';
@@ -10,6 +14,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/cardly_buttons.dart';
 import '../../../core/widgets/cardly_text_field.dart';
+import '../../../core/widgets/cardly_toast.dart';
 import '../domain/document_model.dart';
 
 class AddDocumentSourceView extends ConsumerStatefulWidget {
@@ -31,6 +36,7 @@ class _AddDocumentSourceViewState extends ConsumerState<AddDocumentSourceView> {
   bool _isVaultProtected = true;
   String _simulatedFileName = 'ktp_digital_scan.pdf';
   int _simulatedFileSize = 1450000;
+  String? _realFilePath;
 
   @override
   void dispose() {
@@ -38,6 +44,56 @@ class _AddDocumentSourceViewState extends ConsumerState<AddDocumentSourceView> {
     _docNumberController.dispose();
     _issuerController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickFromGallery() async {
+    ref.read(isExternalOperationInProgressProvider.notifier).state = true;
+    try {
+      final picker = ImagePicker();
+      final xFile = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 95,
+      );
+      if (xFile == null) return;
+
+      final appDocs = await getApplicationDocumentsDirectory();
+      final docDir = Directory('${appDocs.path}/documents');
+      if (!docDir.existsSync()) {
+        docDir.createSync(recursive: true);
+      }
+
+      final safeName = '${DateTime.now().millisecondsSinceEpoch}_${xFile.name}';
+      final savedFile = await File(xFile.path).copy('${docDir.path}/$safeName');
+      final size = await savedFile.length();
+
+      setState(() {
+        _realFilePath = savedFile.path;
+        _simulatedFileName = xFile.name;
+        _simulatedFileSize = size;
+        _selectedFileType = DocumentFileType.jpg;
+        if (_titleController.text.isEmpty) {
+          _titleController.text = xFile.name
+              .split('.')
+              .first
+              .replaceAll('_', ' ')
+              .replaceAll('-', ' ')
+              .toUpperCase();
+        }
+      });
+
+      if (mounted) {
+        CardlyToast.showSuccess(
+          context,
+          'Foto dokumen berhasil dipilih dari galeri',
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        CardlyToast.showError(context, 'Gagal memilih dokumen: $e');
+      }
+    } finally {
+      ref.read(isExternalOperationInProgressProvider.notifier).state = false;
+    }
   }
 
   void _chooseSource(
@@ -59,12 +115,7 @@ class _AddDocumentSourceViewState extends ConsumerState<AddDocumentSourceView> {
       }
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('File dipilih dari $sourceName: $dummyName'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    CardlyToast.showInfo(context, 'Sumber dipilih: $dummyName ($sourceName)');
   }
 
   void _saveDocument() async {
@@ -75,7 +126,7 @@ class _AddDocumentSourceViewState extends ConsumerState<AddDocumentSourceView> {
       title: _titleController.text.trim(),
       category: _selectedCategory,
       fileType: _selectedFileType,
-      filePath: 'app_secure_storage/$_simulatedFileName',
+      filePath: _realFilePath ?? 'app_secure_storage/$_simulatedFileName',
       fileSizeBytes: _simulatedFileSize,
       documentNumber: _docNumberController.text.trim().isEmpty
           ? null
@@ -90,8 +141,9 @@ class _AddDocumentSourceViewState extends ConsumerState<AddDocumentSourceView> {
     await ref.read(documentListProvider.notifier).addDocument(newDoc);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Dokumen berhasil ditambahkan ke Cardly')),
+      CardlyToast.showSuccess(
+        context,
+        'Dokumen berhasil disimpan secara aman di Cardly',
       );
       context.pop();
     }
@@ -143,12 +195,7 @@ class _AddDocumentSourceViewState extends ConsumerState<AddDocumentSourceView> {
                       context,
                       icon: Icons.photo_library_outlined,
                       label: 'Galeri Foto',
-                      onTap: () => _chooseSource(
-                        'Galeri',
-                        DocumentFileType.jpg,
-                        'foto_dokumen.jpg',
-                        840000,
-                      ),
+                      onTap: _pickFromGallery,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),

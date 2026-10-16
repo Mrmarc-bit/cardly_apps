@@ -11,6 +11,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/cardly_buttons.dart';
 import '../../../core/widgets/cardly_text_field.dart';
+import '../../../core/widgets/cardly_toast.dart';
 import '../domain/reminder_model.dart';
 
 class ReminderFormView extends ConsumerStatefulWidget {
@@ -93,14 +94,11 @@ class _ReminderFormViewState extends ConsumerState<ReminderFormView> {
     }
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            isEdit
-                ? 'Pengingat berhasil diperbarui'
-                : 'Pengingat berhasil dibuat',
-          ),
-        ),
+      CardlyToast.showSuccess(
+        context,
+        isEdit
+            ? 'Pengingat berhasil diperbarui'
+            : 'Pengingat berhasil dibuat',
       );
       context.pop();
     }

@@ -104,13 +104,18 @@ class _SplashViewState extends ConsumerState<SplashView>
   Future<void> _navigateNext() async {
     if (!mounted) return;
     _timer?.cancel();
+    ref.read(isSplashCompletedProvider.notifier).state = true;
     final storage = ref.read(localStorageServiceProvider);
     if (!storage.isOnboardingDone) {
       context.go('/onboarding');
       return;
     }
 
-    context.go('/welcome');
+    if (storage.isLoggedIn) {
+      context.go('/shell');
+    } else {
+      context.go('/welcome');
+    }
   }
 
   @override

@@ -237,12 +237,26 @@ class AppUpdateService {
     }
   }
 
+  /// Meminta izin notifikasi runtime di Android 13+ (POST_NOTIFICATIONS)
+  Future<bool> requestNotificationPermission() async {
+    if (!Platform.isAndroid) return true;
+    try {
+      final res = await _updaterChannel.invokeMethod<bool>(
+        'requestNotificationPermission',
+      );
+      return res ?? false;
+    } catch (_) {
+      return true;
+    }
+  }
+
   /// Menampilkan notifikasi pembaruan di status bar / drawer sistem Android/iOS
   Future<void> showSystemNotification({
     required String version,
     required String changelog,
   }) async {
     try {
+      await requestNotificationPermission();
       await _updaterChannel.invokeMethod('showUpdateNotification', {
         'version': version,
         'changelog': changelog,
@@ -294,9 +308,46 @@ class AppUpdateService {
   }
 
   /// Mendapatkan path file sementara untuk menyimpan berkas APK unduhan
-  Future<String> getApkDestinationPath() async {
+  Future<String> getApkDestinationPath({AppUpdateInfo? info}) async {
     final tempDir = await getTemporaryDirectory();
+    if (info != null) {
+      final safeVer = info.latestVersion.replaceAll(
+        RegExp(r'[^a-zA-Z0-9_\.]'),
+        '_',
+      );
+      return '${tempDir.path}/cardly_${safeVer}_${info.buildNumber}.apk';
+    }
     return '${tempDir.path}/cardly_update.apk';
+  }
+
+  /// Memeriksa apakah berkas APK versi ini sudah berhasil diunduh secara lokal dan valid
+  Future<String?> getValidDownloadedApkPath(AppUpdateInfo info) async {
+    try {
+      final path = await getApkDestinationPath(info: info);
+      final file = File(path);
+      if (file.existsSync()) {
+        final length = file.lengthSync();
+        if (length > 0) {
+          if (info.fileSizeBytes > 0 &&
+              (length - info.fileSizeBytes).abs() > 4096) {
+            return null;
+          }
+          return path;
+        }
+      }
+
+      final legacyTempDir = await getTemporaryDirectory();
+      final legacyFile = File('${legacyTempDir.path}/cardly_update.apk');
+      if (legacyFile.existsSync()) {
+        final length = legacyFile.lengthSync();
+        if (length > 0 &&
+            (info.fileSizeBytes <= 0 ||
+                (length - info.fileSizeBytes).abs() <= 4096)) {
+          return legacyFile.path;
+        }
+      }
+    } catch (_) {}
+    return null;
   }
 
   /// Memicu installer paket APK bawaan Android melalui FileProvider native

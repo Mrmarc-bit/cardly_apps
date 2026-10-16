@@ -7,6 +7,7 @@ import '../../../app/providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/cardly_bottom_sheet.dart';
+import '../../../core/widgets/cardly_toast.dart';
 import 'widgets/cardly_pin_pad.dart';
 
 enum PinScreenMode { create, verify, change }
@@ -140,12 +141,7 @@ class _PinScreenState extends ConsumerState<PinScreen> {
         if (_currentPin == _firstEnteredPin) {
           await secureStorage.saveAppPin(_currentPin);
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('PIN keamanan berhasil dibuat!'),
-              backgroundColor: AppColors.ink,
-            ),
-          );
+          CardlyToast.showSuccess(context, 'PIN keamanan berhasil dibuat!');
           _complete(true);
         } else {
           _triggerError('PIN konfirmasi tidak cocok. Silakan coba lagi.');
@@ -192,12 +188,7 @@ class _PinScreenState extends ConsumerState<PinScreen> {
         if (_currentPin == _firstEnteredPin) {
           await secureStorage.saveAppPin(_currentPin);
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('PIN Brankas berhasil diperbarui!'),
-              backgroundColor: AppColors.ink,
-            ),
-          );
+          CardlyToast.showSuccess(context, 'PIN Brankas berhasil diperbarui!');
           _complete(true);
         } else {
           _triggerError('Konfirmasi PIN baru tidak cocok.');
@@ -254,13 +245,9 @@ class _PinScreenState extends ConsumerState<PinScreen> {
       _complete(true);
     } else {
       HapticFeedback.vibrate();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            authRes.errorMessage ?? 'Verifikasi biometrik tidak cocok.',
-          ),
-          duration: const Duration(seconds: 2),
-        ),
+      CardlyToast.showError(
+        context,
+        authRes.errorMessage ?? 'Verifikasi biometrik tidak cocok.',
       );
     }
   }

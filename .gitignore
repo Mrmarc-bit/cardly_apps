@@ -57,6 +57,7 @@ key.properties
 # Android build outputs
 *.apk
 *.aab
+releases/
 
 # Google Services / Firebase Credentials
 google-services.json

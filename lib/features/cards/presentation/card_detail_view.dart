@@ -11,6 +11,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/cardly_bottom_sheet.dart';
 import '../../../core/widgets/cardly_buttons.dart';
+import '../../../core/widgets/cardly_toast.dart';
 import '../../../core/widgets/cardly_visual_card.dart';
 import '../domain/card_model.dart';
 
@@ -67,15 +68,11 @@ class CardDetailView extends ConsumerWidget {
             ),
             onPressed: () {
               ref.read(cardListProvider.notifier).toggleFavorite(card.id);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    card.isFavorite
-                        ? 'Dihapus dari favorit'
-                        : 'Ditambahkan ke favorit',
-                  ),
-                  duration: const Duration(seconds: 2),
-                ),
+              CardlyToast.showSuccess(
+                context,
+                card.isFavorite
+                    ? 'Dihapus dari favorit'
+                    : 'Ditambahkan ke favorit',
               );
             },
           ),
@@ -293,11 +290,9 @@ class CardDetailView extends ConsumerWidget {
             tooltip: 'Salin',
             onPressed: () {
               Clipboard.setData(ClipboardData(text: value));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Nomor berhasil disalin ke clipboard'),
-                  duration: Duration(seconds: 2),
-                ),
+              CardlyToast.showSuccess(
+                context,
+                'Nomor berhasil disalin ke clipboard',
               );
             },
           ),
@@ -401,14 +396,11 @@ class CardDetailView extends ConsumerWidget {
                   .read(cardListProvider.notifier)
                   .archiveCard(card.id, !card.isArchived);
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    card.isArchived
-                        ? 'Kartu dikembalikan dari arsip'
-                        : 'Kartu berhasil diarsipkan',
-                  ),
-                ),
+              CardlyToast.showSuccess(
+                context,
+                card.isArchived
+                    ? 'Kartu dikembalikan dari arsip'
+                    : 'Kartu berhasil diarsipkan',
               );
             },
           ),
@@ -457,9 +449,7 @@ class CardDetailView extends ConsumerWidget {
               ref.read(cardListProvider.notifier).deleteCard(card.id);
               Navigator.pop(context); // Close bottom sheet
               context.pop(); // Pop back to cards list
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Kartu berhasil dihapus')),
-              );
+              CardlyToast.showSuccess(context, 'Kartu berhasil dihapus');
             },
           ),
           const SizedBox(height: AppSpacing.sm),

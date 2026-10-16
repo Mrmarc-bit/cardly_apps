@@ -35,6 +35,15 @@ class _CardlyAppState extends ConsumerState<CardlyApp> {
         _lastBackgroundTimestamp = DateTime.now();
       },
       onResume: () {
+        // Jika kembali dari aktivitas kamera sistem / Google Scanner / Image Picker,
+        // jangan kunci sesi agar data hasil scan tidak hilang.
+        final isExternal = ref.read(isExternalOperationInProgressProvider);
+        if (isExternal) {
+          ref.read(isExternalOperationInProgressProvider.notifier).state = false;
+          _lastBackgroundTimestamp = null;
+          return;
+        }
+
         final last = _lastBackgroundTimestamp;
         if (last == null) return;
         final elapsedSeconds = DateTime.now().difference(last).inSeconds;

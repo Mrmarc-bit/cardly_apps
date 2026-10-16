@@ -8,6 +8,15 @@ import 'package:path_provider/path_provider.dart';
 
 /// Helper utilitas untuk pemotongan cerdas (Auto-Crop) dan rotasi gambar kartu
 class CardCropHelper {
+  static Future<Directory> _getPersistentCardsDir() async {
+    final appDocs = await getApplicationDocumentsDirectory();
+    final cardDir = Directory('${appDocs.path}/cards');
+    if (!cardDir.existsSync()) {
+      cardDir.createSync(recursive: true);
+    }
+    return cardDir;
+  }
+
   /// Memotong gambar ke rasio kartu identitas standar (ISO/IEC 7810 ID-1 ≈ 1.586)
   /// secara otomatis di area jendela bidik kamera dengan opsi sudut melengkung fisik.
   static Future<String> autoCropCard({
@@ -75,9 +84,9 @@ class CardCropHelper {
 
       if (byteData == null) return imagePath;
 
-      final tempDir = await getTemporaryDirectory();
+      final persistentDir = await _getPersistentCardsDir();
       final outPath =
-          '${tempDir.path}/cardly_crop_${DateTime.now().millisecondsSinceEpoch}.png';
+          '${persistentDir.path}/cardly_crop_${DateTime.now().millisecondsSinceEpoch}.png';
       final outFile = File(outPath);
       await outFile.writeAsBytes(byteData.buffer.asUint8List());
 
@@ -135,9 +144,9 @@ class CardCropHelper {
 
       if (byteData == null) return imagePath;
 
-      final tempDir = await getTemporaryDirectory();
+      final persistentDir = await _getPersistentCardsDir();
       final outPath =
-          '${tempDir.path}/cardly_round_${DateTime.now().millisecondsSinceEpoch}.png';
+          '${persistentDir.path}/cardly_round_${DateTime.now().millisecondsSinceEpoch}.png';
       final outFile = File(outPath);
       await outFile.writeAsBytes(byteData.buffer.asUint8List());
 
@@ -201,9 +210,9 @@ class CardCropHelper {
 
       if (byteData == null) return imagePath;
 
-      final tempDir = await getTemporaryDirectory();
+      final persistentDir = await _getPersistentCardsDir();
       final outPath =
-          '${tempDir.path}/cardly_rot_${DateTime.now().millisecondsSinceEpoch}.png';
+          '${persistentDir.path}/cardly_rot_${DateTime.now().millisecondsSinceEpoch}.png';
       final outFile = File(outPath);
       await outFile.writeAsBytes(byteData.buffer.asUint8List());
 

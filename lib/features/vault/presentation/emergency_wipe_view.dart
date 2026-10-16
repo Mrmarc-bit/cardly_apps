@@ -9,6 +9,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/cardly_buttons.dart';
 import '../../../core/widgets/cardly_text_field.dart';
+import '../../../core/widgets/cardly_toast.dart';
 
 class EmergencyWipeView extends ConsumerStatefulWidget {
   const EmergencyWipeView({super.key});
@@ -53,11 +54,9 @@ class _EmergencyWipeViewState extends ConsumerState<EmergencyWipeView> {
     ref.read(reminderListProvider.notifier).refresh();
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Seluruh data lokal berhasil dihapus secara permanen.'),
-          backgroundColor: AppColors.error,
-        ),
+      CardlyToast.showSuccess(
+        context,
+        'Seluruh data lokal berhasil dihapus secara permanen.',
       );
       // Navigate to welcome
       context.go('/welcome');

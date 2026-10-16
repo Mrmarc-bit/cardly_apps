@@ -13,6 +13,8 @@ import '../../../core/widgets/cardly_buttons.dart';
 import '../../../core/widgets/cardly_toast.dart';
 import 'pin_screen.dart';
 
+import '../../../app/app_router.dart';
+
 /// Gerbang Kunci Sesi Global Cardly (App Lock Gate)
 /// Memproteksi seluruh antarmuka aplikasi ketika sesi terkunci karena batas waktu
 /// kunci otomatis tercapai atau aplikasi kembali dibuka dari latar belakang.
@@ -21,17 +23,40 @@ class AppLockGate extends ConsumerWidget {
 
   const AppLockGate({super.key, required this.child});
 
+  static bool isPublicRoute(String path) {
+    if (path.isEmpty ||
+        path == '/' ||
+        path == '/splash' ||
+        path == '/onboarding' ||
+        path == '/welcome') {
+      return true;
+    }
+    if (path.startsWith('/login') ||
+        path.startsWith('/register') ||
+        path.startsWith('/forgot-password') ||
+        path.startsWith('/reset-password')) {
+      return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProfileProvider);
     final isLocked = ref.watch(appLockedProvider);
+    final isSplashDone = ref.watch(isSplashCompletedProvider);
 
-    // Jika pengguna belum masuk akun atau sesi tidak terkunci, tampilkan antarmuka normal
-    if (!user.isLoggedIn || !isLocked) {
+    String currentPath = '/splash';
+    try {
+      currentPath = appRouter.routerDelegate.currentConfiguration.uri.path;
+    } catch (_) {}
+
+    // Jangan kunci jika splash belum selesai, belum login, sesi tidak terkunci, atau di rute publik
+    if (!isSplashDone || !user.isLoggedIn || !isLocked || isPublicRoute(currentPath)) {
       return child;
     }
 
-    // Jika sesi terkunci dan akun aktif, blokir dengan layar kunci Master Cardly
+    // Jika sesi terkunci dan akun aktif di halaman terlindungi, blokir dengan layar kunci Master Cardly
     return _AppLockOverlay(user: user);
   }
 }
@@ -52,7 +77,11 @@ class _AppLockOverlayState extends ConsumerState<_AppLockOverlay> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _attemptBiometricAuth(autoTrigger: true);
+      Future.delayed(const Duration(milliseconds: 250), () {
+        if (mounted) {
+          _attemptBiometricAuth(autoTrigger: true);
+        }
+      });
     });
   }
 
@@ -122,6 +151,9 @@ class _AppLockOverlayState extends ConsumerState<_AppLockOverlay> {
     final supabase = ref.read(supabaseServiceProvider);
     await supabase.signOut();
     await supabase.signOutGoogle();
+    try {
+      appRouter.go('/welcome');
+    } catch (_) {}
   }
 
   @override

@@ -22,37 +22,27 @@
 
     // Fallback bawaan jika semua jaringan offline
     fallbackData: {
-      latest_version: '1.0.1',
-      build_number: 2,
-      download_url: 'https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.1/cardly-release-v1.0.1.apk',
-      release_date: '14 Oktober 2026',
-      file_size_bytes: 35203072,
+      latest_version: '1.0.9',
+      build_number: 10,
+      download_url: 'https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.9/cardly-release-v1.0.9.apk',
+      release_date: '16 Oktober 2026',
+      file_size_bytes: 42482435,
       changelog: [
-        'Fitur unggah dan ganti foto profil avatar (kamera, galeri, dan hapus foto)',
-        'Anonimitas total penyimpanan cloud (perlindungan data privat tanpa ekspos vendor backend)',
-        'Optimasi antarmuka responsif mobile portal web & pendeteksi perangkat cerdas',
-        'Kompresi ukuran APK 64% lebih ramping (33.6 MB) dengan dukungan arsitektur terpisah'
+        'Optimasi lifecycle biometrik & perbaikan pencegahan kunci berulang saat pemindaian dokumen',
+        'Modernisasi menyeluruh CardlyToast mengambang dengan aksen Lime dan getaran haptic halus',
+        'Peningkatan akurasi AI OCR on-device dengan pemilih jenis dokumen interaktif',
+        'Kompresi dan optimasi arsitektur universal APK (40.5 MB) untuk seluruh perangkat Android'
       ],
       variants: [
         {
-          arch: 'arm64-v8a',
-          label: 'ARM64 (64-bit)',
-          badge: 'Rekomendasi Utama',
-          desc: 'Optimal untuk smartphone Android modern (Samsung, Xiaomi, Oppo, Vivo, Pixel, dll)',
-          file_name: 'cardly-arm64-v8a-v1.0.1.apk',
-          download_url: 'https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.1/cardly-arm64-v8a-v1.0.1.apk',
-          file_size_bytes: 35203072,
-          sha256: '52ab4d4bd5d8bfb0f3e4b522e7621de25f07b38384d1b9e660e4ce745af083f6'
-        },
-        {
-          arch: 'armeabi-v7a',
-          label: 'ARMv7 (32-bit)',
-          badge: 'Ponsel Lawas',
-          desc: 'Untuk ponsel Android generasi sebelumnya atau prosesor 32-bit',
-          file_name: 'cardly-armeabi-v7a-v1.0.1.apk',
-          download_url: 'https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.1/cardly-armeabi-v7a-v1.0.1.apk',
-          file_size_bytes: 28418674,
-          sha256: 'ff9cf4db3baf2e93a7554b4066eaa8979a91c467d3f296d36c1e77b1b09faa9d'
+          arch: 'universal',
+          label: 'Universal (Semua HP)',
+          badge: 'Kompatibilitas Penuh',
+          desc: 'Memuat pustaka 64-bit dan 32-bit, dijamin dapat dipasang di seluruh perangkat Android',
+          file_name: 'cardly-release-v1.0.9.apk',
+          download_url: 'https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.9/cardly-release-v1.0.9.apk',
+          file_size_bytes: 42482435,
+          sha256: 'c5579f57fa59339350edfc4af083a294cc877bb09512a8a2c1fd6156e1c57037'
         }
       ]
     }
@@ -486,11 +476,16 @@
       const fileName = recommendedVariant ? recommendedVariant.file_name : `cardly-${versionText}.apk`;
       btn.setAttribute('download', fileName);
 
-      // Label tombol cerdas yang mencerminkan varian & ukuran
-      const btnSpan = btn.querySelector('span');
-      if (btnSpan) {
-        const archLabel = recommendedVariant ? recommendedVariant.arch : 'APK';
-        btnSpan.textContent = `Download APK (${versionText} • ${archLabel} ${activeSizeText})`;
+      // Label tombol cerdas yang mencerminkan varian & ukuran tanpa duplikasi
+      const archLabel = recommendedVariant ? (recommendedVariant.badge || recommendedVariant.label || 'Universal') : 'Universal';
+      const metaEl = btn.querySelector('.btn-meta');
+      if (metaEl) {
+        metaEl.textContent = `${versionText} • ${archLabel} (${activeSizeText})`;
+      } else {
+        const btnSpan = btn.querySelector('span');
+        if (btnSpan && !btn.querySelector('.btn-label-wrap')) {
+          btnSpan.textContent = `Download APK (${versionText} • ${activeSizeText})`;
+        }
       }
     });
 
@@ -500,27 +495,33 @@
         const archName = recommendedVariant ? recommendedVariant.label : '64-bit';
         banner.innerHTML = `
           <span class="device-dot online"></span>
-          <span>Terdeteksi: <strong>${escapeHtml(device.displayName)}</strong> — Otomatis memilih versi <strong>${archName} (${activeSizeText})</strong> yang optimal untuk ponsel Anda.</span>
+          <span class="device-hint-text">Terdeteksi: <strong>${escapeHtml(device.displayName)}</strong> — Otomatis memilih versi <strong>${archName} (${activeSizeText})</strong> yang optimal untuk ponsel Anda.</span>
         `;
       } else if (device.isIOS) {
         banner.innerHTML = `
           <span class="device-dot ios"></span>
-          <span>Terdeteksi: <strong>${escapeHtml(device.displayName)}</strong> — Berkas APK di bawah khusus smartphone Android. Versi iOS TestFlight sedang dipersiapkan.</span>
+          <span class="device-hint-text">Terdeteksi: <strong>${escapeHtml(device.displayName)}</strong> — Berkas APK di bawah khusus smartphone Android. Versi iOS TestFlight sedang dipersiapkan.</span>
         `;
       } else if (device.isMobile) {
         banner.innerHTML = `
           <span class="device-dot online"></span>
-          <span>Terdeteksi: <strong>Perangkat Seluler</strong> — Tautan unduhan APK resmi siap dipasang (${activeSizeText}).</span>
+          <span class="device-hint-text">Terdeteksi: <strong>Perangkat Seluler</strong> — Tautan unduhan APK resmi siap dipasang (${activeSizeText}).</span>
         `;
       } else {
         banner.innerHTML = `
           <span class="device-dot desktop"></span>
-          <span>Terdeteksi: <strong>${escapeHtml(device.displayName)}</strong> — Anda dapat langsung mengunduh berkas APK ke komputer atau buka tautan ini langsung dari smartphone Anda.</span>
+          <span class="device-hint-text">Terdeteksi: <strong>${escapeHtml(device.displayName)}</strong> — Anda dapat langsung mengunduh berkas APK ke komputer atau buka tautan ini langsung dari smartphone Anda.</span>
         `;
       }
     });
 
-    // 5. Perbarui daftar changelog secara dinamis
+    // 5. Perbarui timeline changelog terpadu jika di laman Changelog
+    const timelineContainer = document.querySelector('[data-cardly-timeline-entries]');
+    if (timelineContainer && data && data.latest_version) {
+      updateTimelineCurrentRelease(timelineContainer, data);
+    }
+
+    // 5b. Perbarui daftar changelog sederhana jika ada
     document.querySelectorAll('[data-cardly-changelog]').forEach(container => {
       container.innerHTML = '';
       if (Array.isArray(data.changelog) && data.changelog.length > 0) {
@@ -616,6 +617,59 @@
       img.setAttribute('src', qrDataUrl);
       img.setAttribute('alt', `Scan untuk unduh Cardly ${versionText}`);
     });
+  }
+
+  /**
+   * Perbarui Timeline Changelog Terpadu secara Otomatis & Cerdas
+   */
+  function updateTimelineCurrentRelease(container, data) {
+    if (!container || !data || !data.latest_version) return;
+    const versionText = `Version ${data.latest_version}`;
+    const dateText = data.release_date || 'Terbaru';
+
+    // Periksa apakah entri pertama sudah versi terbaru
+    const firstEntry = container.querySelector('.changelog-entry');
+    const firstPill = firstEntry ? firstEntry.querySelector('.badge-version-pill') : null;
+    const firstVersion = firstPill ? firstPill.textContent.trim() : '';
+
+    if (firstVersion === versionText) {
+      // Perbarui tanggal jika berbeda
+      const dateEl = firstEntry.querySelector('.changelog-date');
+      if (dateEl && dateText) dateEl.textContent = dateText;
+      return;
+    }
+
+    // Jika entri pertama belum ada versi ini (misal rilis versi baru di masa depan), buat entri dinamis
+    container.querySelectorAll('.badge-version-pill.current').forEach(p => p.classList.remove('current'));
+
+    const newArticle = document.createElement('article');
+    newArticle.className = 'changelog-entry';
+
+    const itemsHtml = Array.isArray(data.changelog) && data.changelog.length > 0
+      ? data.changelog.map(item => `<li>${escapeHtml(item)}</li>`).join('')
+      : '<li>Peningkatan stabilitas, keamanan brankas, dan optimasi performa aplikasi.</li>';
+
+    newArticle.innerHTML = `
+      <div class="changelog-meta-col">
+        <span class="badge-version-pill current">${escapeHtml(versionText)}</span>
+        <time class="changelog-date">${escapeHtml(dateText)}</time>
+      </div>
+      <div class="changelog-content-col">
+        <h2 class="changelog-entry-title">Pembaruan Resmi Cardly Mobile (${escapeHtml(versionText)})</h2>
+        <p class="changelog-entry-desc">Rilis terbaru yang menghadirkan peningkatan fitur privat, penyempurnaan antarmuka responsif, dan stabilitas sistem.</p>
+        <ul class="changelog-entry-list">
+          ${itemsHtml}
+        </ul>
+        <div class="changelog-entry-footer">
+          <a href="https://github.com/Mrmarc-bit/cardly_apps/releases/tag/v${escapeHtml(data.latest_version)}" target="_blank" rel="noopener noreferrer" class="changelog-link-btn">
+            <span>Catatan Rilis di GitHub</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </a>
+        </div>
+      </div>
+    `;
+
+    container.insertBefore(newArticle, container.firstChild);
   }
 
   function escapeHtml(str) {

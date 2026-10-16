@@ -21,6 +21,7 @@ import 'widgets/crop_rotate_editor.dart';
 import 'widgets/ocr_review_form.dart';
 import 'widgets/pre_scan_sheet.dart';
 import 'widgets/scan_laser_overlay.dart';
+import '../../../core/widgets/cardly_toast.dart';
 
 enum ScanStep { preScan, permissionDenied, capture, cropRotate, ocrReview }
 
@@ -658,6 +659,7 @@ class _CameraScanFlowViewState extends ConsumerState<CameraScanFlowView> {
     HapticFeedback.lightImpact();
     // 1. Luncurkan Google Play Services Document Scanner resmi (Teknologi Google Wallet)
     final scanService = ref.read(documentScanServiceProvider);
+    ref.read(isExternalOperationInProgressProvider.notifier).state = true;
     try {
       final pictures = await scanService.scanDocument(
         documentType: _selectedType,
@@ -684,7 +686,10 @@ class _CameraScanFlowViewState extends ConsumerState<CameraScanFlowView> {
         });
         return;
       }
-    } catch (_) {}
+    } catch (_) {
+    } finally {
+      ref.read(isExternalOperationInProgressProvider.notifier).state = false;
+    }
 
     // 2. Jika batal atau pengguna menekan tombol kembali pada Google Scanner:
     // Pada mode testing otomatis headless (FLUTTER_TEST), lanjutkan ke ScanStep.capture
@@ -711,6 +716,7 @@ class _CameraScanFlowViewState extends ConsumerState<CameraScanFlowView> {
     final scanService = ref.read(documentScanServiceProvider);
     await _stopImageStreamIfNeeded();
     setState(() => _isScanning = true);
+    ref.read(isExternalOperationInProgressProvider.notifier).state = true;
     try {
       final pictures = await scanService.scanDocument(
         documentType: _selectedType,
@@ -736,7 +742,10 @@ class _CameraScanFlowViewState extends ConsumerState<CameraScanFlowView> {
         });
         return;
       }
-    } catch (_) {}
+    } catch (_) {
+    } finally {
+      ref.read(isExternalOperationInProgressProvider.notifier).state = false;
+    }
     if (mounted) {
       setState(() => _isScanning = false);
       _startImageStreamIfNeeded();
@@ -794,6 +803,7 @@ class _CameraScanFlowViewState extends ConsumerState<CameraScanFlowView> {
     HapticFeedback.lightImpact();
     final scanService = ref.read(documentScanServiceProvider);
     setState(() => _isScanning = true);
+    ref.read(isExternalOperationInProgressProvider.notifier).state = true;
     try {
       final path = await scanService.pickFromGallery();
       if (!mounted) return;
@@ -818,7 +828,10 @@ class _CameraScanFlowViewState extends ConsumerState<CameraScanFlowView> {
         });
         return;
       }
-    } catch (_) {}
+    } catch (_) {
+    } finally {
+      ref.read(isExternalOperationInProgressProvider.notifier).state = false;
+    }
     if (mounted) {
       setState(() {
         _isScanning = false;
@@ -967,11 +980,9 @@ class _CameraScanFlowViewState extends ConsumerState<CameraScanFlowView> {
     }
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$docTitle berhasil disimpan ke Dokumen!'),
-        backgroundColor: AppColors.ink,
-      ),
+    CardlyToast.showSuccess(
+      context,
+      '$docTitle berhasil disimpan ke Dokumen!',
     );
     _handleClose();
   }
@@ -1021,11 +1032,9 @@ class _CameraScanFlowViewState extends ConsumerState<CameraScanFlowView> {
     await ref.read(cardListProvider.notifier).addCard(card);
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$cardTitle berhasil disimpan ke Dompet Kartu!'),
-        backgroundColor: AppColors.ink,
-      ),
+    CardlyToast.showSuccess(
+      context,
+      '$cardTitle berhasil disimpan ke Dompet Kartu!',
     );
     _handleClose();
   }
@@ -1055,8 +1064,9 @@ class _CameraScanFlowViewState extends ConsumerState<CameraScanFlowView> {
       case ScanStep.permissionDenied:
         return CameraPermissionView(
           onOpenSettings: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Membuka Pengaturan Aplikasi...')),
+            CardlyToast.showInfo(
+              context,
+              'Membuka Pengaturan Aplikasi...',
             );
           },
           onImportFallback: _handlePickGallery,

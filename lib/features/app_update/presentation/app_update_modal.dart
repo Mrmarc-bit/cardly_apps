@@ -43,24 +43,79 @@ class _AppUpdateModalState extends ConsumerState<AppUpdateModal> {
   String? _errorMessage;
   String? _downloadedFilePath;
   StreamSubscription<DownloadProgress>? _downloadSub;
+  late final AppLifecycleListener _lifecycleListener;
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycleListener = AppLifecycleListener(
+      onResume: _checkPermissionAndResumeInstall,
+    );
+    _checkExistingDownloadedApk();
+  }
 
   @override
   void dispose() {
+    _lifecycleListener.dispose();
     _downloadSub?.cancel();
     super.dispose();
+  }
+
+  /// Memeriksa apakah berkas APK versi ini sudah pernah selesai diunduh sebelumnya
+  Future<void> _checkExistingDownloadedApk() async {
+    final updateService = ref.read(appUpdateServiceProvider);
+    final existingPath = await updateService.getValidDownloadedApkPath(
+      widget.updateInfo,
+    );
+    if (existingPath != null && mounted) {
+      setState(() {
+        _downloadedFilePath = existingPath;
+      });
+    }
+  }
+
+  /// Mendeteksi saat pengguna kembali dari Pengaturan HP dan otomatis melanjutkan instalasi
+  Future<void> _checkPermissionAndResumeInstall() async {
+    final updateService = ref.read(appUpdateServiceProvider);
+    final canInstall = await updateService.canRequestPackageInstalls();
+    if (canInstall && mounted) {
+      setState(() {
+        _permissionNeeded = false;
+      });
+      if (_downloadedFilePath != null) {
+        await updateService.triggerApkInstall(_downloadedFilePath!);
+      }
+    }
   }
 
   Future<void> _startDownloadAndInstall() async {
     HapticFeedback.mediumImpact();
     setState(() {
-      _isDownloading = true;
       _errorMessage = null;
     });
 
     final updateService = ref.read(appUpdateServiceProvider);
 
+    // Cek apakah berkas APK sudah pernah diunduh secara utuh
+    final existingPath = await updateService.getValidDownloadedApkPath(
+      widget.updateInfo,
+    );
+    if (existingPath != null) {
+      setState(() {
+        _downloadedFilePath = existingPath;
+      });
+      await _handleInstallApk(existingPath);
+      return;
+    }
+
+    setState(() {
+      _isDownloading = true;
+    });
+
     try {
-      final destPath = await updateService.getApkDestinationPath();
+      final destPath = await updateService.getApkDestinationPath(
+        info: widget.updateInfo,
+      );
       final stream = updateService.downloadApk(
         downloadUrl: widget.updateInfo.downloadUrl,
         savePath: destPath,
@@ -405,6 +460,43 @@ class _AppUpdateModalState extends ConsumerState<AppUpdateModal> {
                 const SizedBox(height: 16.0),
               ],
 
+              // Indikator Berkas Sudah Siap Pasang
+              if (_downloadedFilePath != null && !_isDownloading) ...[
+                Container(
+                  padding: const EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(
+                    color: AppColors.lime.withValues(
+                      alpha: isDark ? 0.15 : 0.2,
+                    ),
+                    borderRadius: BorderRadius.circular(AppRadius.control),
+                    border: Border.all(
+                      color: AppColors.lime.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.check_circle_outline_rounded,
+                        color: AppColors.lime,
+                        size: 20.0,
+                      ),
+                      const SizedBox(width: 10.0),
+                      Expanded(
+                        child: Text(
+                          'Berkas pembaruan sudah terunduh dan siap dipasang langsung di perangkat Anda.',
+                          style: TextStyle(
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? AppColors.white : AppColors.ink,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14.0),
+              ],
+
               // Panduan Izin Sumber Tidak Dikenal jika diperlukan (Android 8.0+)
               if (_permissionNeeded) ...[
                 Container(
@@ -428,7 +520,7 @@ class _AppUpdateModalState extends ConsumerState<AppUpdateModal> {
                           ),
                           SizedBox(width: 8.0),
                           Text(
-                            'Izin Pemasangan Diperlukan',
+                            'Keamanan Android: Izin Sumber Mandiri',
                             style: TextStyle(
                               fontSize: 13.0,
                               fontWeight: FontWeight.w700,
@@ -439,7 +531,7 @@ class _AppUpdateModalState extends ConsumerState<AppUpdateModal> {
                       ),
                       const SizedBox(height: 6.0),
                       Text(
-                        'Agar pembaruan dapat dipasang otomatis tanpa Google Play, aktifkan "Izinkan dari sumber ini" di Pengaturan sistem Android.',
+                        'Karena Cardly diunduh langsung dari rilis resmi GitHub (bukan Play Store), sistem Android meminta konfirmasi "Izinkan dari sumber ini". Berkas APK Cardly 100% aman, terverifikasi, dan bebas malware.',
                         style: TextStyle(
                           fontSize: 12.0,
                           height: 1.4,

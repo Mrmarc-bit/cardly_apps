@@ -8,6 +8,7 @@ import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/cardly_buttons.dart';
+import '../../../core/widgets/cardly_toast.dart';
 import '../domain/document_model.dart';
 
 class DocumentPrivateView extends ConsumerWidget {
@@ -51,10 +52,9 @@ class DocumentPrivateView extends ConsumerWidget {
             tooltip: 'Kunci Kembali',
             icon: const Icon(Icons.lock_outline, color: Colors.white),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Tampilan dokumen diamankan kembali'),
-                ),
+              CardlyToast.showSuccess(
+                context,
+                'Tampilan dokumen diamankan kembali',
               );
               context.pop();
             },
@@ -193,12 +193,9 @@ class DocumentPrivateView extends ConsumerWidget {
                     icon: const Icon(Icons.share_outlined),
                     tooltip: 'Bagikan Eksternal Aman',
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Mempersiapkan berkas terenkripsi untuk dibagikan...',
-                          ),
-                        ),
+                      CardlyToast.showInfo(
+                        context,
+                        'Mempersiapkan berkas terenkripsi untuk dibagikan...',
                       );
                     },
                   ),

@@ -11,6 +11,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/cardly_bottom_sheet.dart';
 import '../../../core/widgets/cardly_buttons.dart';
+import '../../../core/widgets/cardly_toast.dart';
 import '../domain/document_model.dart';
 import '../../vault/presentation/pin_screen.dart';
 
@@ -318,8 +319,9 @@ class DocumentDetailView extends ConsumerWidget {
             tooltip: 'Salin nomor',
             onPressed: () {
               Clipboard.setData(ClipboardData(text: value));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Nomor dokumen berhasil disalin')),
+              CardlyToast.showSuccess(
+                context,
+                'Nomor dokumen berhasil disalin',
               );
             },
           ),
@@ -409,9 +411,7 @@ class DocumentDetailView extends ConsumerWidget {
               ref.read(documentListProvider.notifier).deleteDocument(doc.id);
               Navigator.pop(context);
               context.pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Dokumen berhasil dihapus')),
-              );
+              CardlyToast.showSuccess(context, 'Dokumen berhasil dihapus');
             },
           ),
           const SizedBox(height: AppSpacing.sm),

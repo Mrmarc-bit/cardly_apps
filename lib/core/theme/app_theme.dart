@@ -134,6 +134,21 @@ abstract final class AppTheme {
           minimumSize: const Size(double.infinity, 52.0),
         ),
       ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.ink,
+        contentTextStyle: const TextStyle(
+          color: AppColors.white,
+          fontFamily: 'Inter',
+          fontSize: 13.5,
+          fontWeight: FontWeight.w600,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.input),
+        ),
+        elevation: 6,
+        insetPadding: const EdgeInsets.only(bottom: 96, left: 16, right: 16),
+      ),
     );
   }
 
@@ -259,6 +274,22 @@ abstract final class AppTheme {
           ),
           minimumSize: const Size(double.infinity, 52.0),
         ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.charcoal,
+        contentTextStyle: const TextStyle(
+          color: AppColors.white,
+          fontFamily: 'Inter',
+          fontSize: 13.5,
+          fontWeight: FontWeight.w600,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.input),
+          side: const BorderSide(color: AppColors.elevatedDark, width: 1),
+        ),
+        elevation: 6,
+        insetPadding: const EdgeInsets.only(bottom: 96, left: 16, right: 16),
       ),
     );
   }

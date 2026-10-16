@@ -43,6 +43,18 @@ class MainActivity : FlutterFragmentActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, UPDATER_CHANNEL)
             .setMethodCallHandler { call, result ->
                 when (call.method) {
+                    "requestNotificationPermission" -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 101)
+                                result.success(false)
+                            } else {
+                                result.success(true)
+                            }
+                        } else {
+                            result.success(true)
+                        }
+                    }
                     "canRequestPackageInstalls" -> {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             result.success(packageManager.canRequestPackageInstalls())

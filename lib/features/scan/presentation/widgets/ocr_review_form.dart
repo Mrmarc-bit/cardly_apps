@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -93,6 +94,22 @@ class OcrReviewForm extends StatefulWidget {
 }
 
 class _OcrReviewFormState extends State<OcrReviewForm> {
+  late RecognizedDocumentType _activeType;
+
+  @override
+  void initState() {
+    super.initState();
+    _activeType = widget.recognizedType;
+  }
+
+  @override
+  void didUpdateWidget(covariant OcrReviewForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.recognizedType != widget.recognizedType) {
+      _activeType = widget.recognizedType;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -143,6 +160,11 @@ class _OcrReviewFormState extends State<OcrReviewForm> {
             // 1. Badge Hasil Ekstraksi On-Device & Status Dokumen Terdeteksi
             _buildSmartDetectionBadge(isDark),
 
+            const SizedBox(height: 12.0),
+
+            // Pengalih Tipe Dokumen Manual & Cepat
+            _buildDocumentTypeSelector(isDark),
+
             const SizedBox(height: 16.0),
 
             // 2. Card Hero Preview dengan Sudut Rounded Fisik (ISO/IEC 7810 ID-1 standard)
@@ -151,10 +173,9 @@ class _OcrReviewFormState extends State<OcrReviewForm> {
             const SizedBox(height: 24.0),
 
             // 3. Form Input Field Lengkap yang Menyesuaikan Jenis Dokumen
-            if (widget.recognizedType == RecognizedDocumentType.ktp) ...[
+            if (_activeType == RecognizedDocumentType.ktp) ...[
               _buildKtpDetailedForm(isDark),
-            ] else if (widget.recognizedType ==
-                RecognizedDocumentType.bankCard) ...[
+            ] else if (_activeType == RecognizedDocumentType.bankCard) ...[
               _buildBankCardForm(isDark),
             ] else ...[
               _buildGeneralDocumentForm(isDark),
@@ -334,22 +355,95 @@ class _OcrReviewFormState extends State<OcrReviewForm> {
 
   // --- Sub-widgets Komponen Tinjau OCR ---
 
+  Widget _buildDocumentTypeSelector(bool isDark) {
+    final types = [
+      (RecognizedDocumentType.ktp, 'e-KTP', Icons.badge_outlined),
+      (RecognizedDocumentType.bankCard, 'Kartu Bank', Icons.credit_card_outlined),
+      (RecognizedDocumentType.generalDocument, 'Dokumen Umum', Icons.description_outlined),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(4.0),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.charcoal : AppColors.softGray.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(AppRadius.control),
+      ),
+      child: Row(
+        children: types.map((item) {
+          final isSelected = _activeType == item.$1;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                setState(() {
+                  _activeType = item.$1;
+                  if (_activeType == RecognizedDocumentType.ktp &&
+                      (widget.titleController.text.isEmpty ||
+                          widget.titleController.text.contains('Dokumen'))) {
+                    widget.titleController.text = 'KTP Republik Indonesia';
+                  } else if (_activeType == RecognizedDocumentType.bankCard &&
+                      (widget.titleController.text.isEmpty ||
+                          widget.titleController.text.contains('Dokumen'))) {
+                    widget.titleController.text = 'Kartu Debit / Bank';
+                  }
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? (isDark ? AppColors.lime : AppColors.ink)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(AppRadius.control - 2),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      item.$3,
+                      size: 15.0,
+                      color: isSelected
+                          ? (isDark ? AppColors.ink : AppColors.white)
+                          : (isDark ? AppColors.mutedText : AppColors.muted),
+                    ),
+                    const SizedBox(width: 6.0),
+                    Text(
+                      item.$2,
+                      style: TextStyle(
+                        fontSize: 12.0,
+                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        color: isSelected
+                            ? (isDark ? AppColors.ink : AppColors.white)
+                            : (isDark ? AppColors.white.withValues(alpha: 0.8) : AppColors.ink),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   Widget _buildSmartDetectionBadge(bool isDark) {
     String badgeTitle = 'Ekstraksi Teks On-Device (Offline)';
     String badgeSubtitle =
         'Harap periksa dan koreksi data di bawah sebelum menyimpan berkas.';
     IconData badgeIcon = Icons.auto_awesome_rounded;
 
-    if (widget.recognizedType == RecognizedDocumentType.ktp) {
+    if (_activeType == RecognizedDocumentType.ktp) {
       badgeTitle = 'KTP Republik Indonesia (e-KTP)';
       badgeSubtitle =
           'Format NIK 16 digit, data personal, dan alamat terdeteksi otomatis.';
       badgeIcon = Icons.verified_user_rounded;
-    } else if (widget.recognizedType == RecognizedDocumentType.bankCard) {
+    } else if (_activeType == RecognizedDocumentType.bankCard) {
       badgeTitle = 'Kartu Bank / Debit Terdeteksi';
       badgeSubtitle = 'Penerbit dan 4 digit terakhir berhasil dibaca secara aman (PCI-DSS).';
       badgeIcon = Icons.account_balance_wallet_rounded;
-    } else if (widget.recognizedType == RecognizedDocumentType.sim) {
+    } else if (_activeType == RecognizedDocumentType.sim) {
       badgeTitle = 'Surat Izin Mengemudi (SIM)';
       badgeSubtitle =
           'Nomor registrasi pengemudi dan tanggal berlaku terdeteksi.';

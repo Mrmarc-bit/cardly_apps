@@ -7,6 +7,7 @@ import '../../../app/providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/cardly_buttons.dart';
+import '../../../core/widgets/cardly_toast.dart';
 import '../../vault/presentation/pin_screen.dart';
 import 'widgets/auth_illustrations.dart';
 import 'widgets/cardly_brand_header.dart';
@@ -64,12 +65,9 @@ class _WelcomeViewState extends ConsumerState<WelcomeView> {
       final canCheck = await biometricService.canCheckBiometrics();
       if (!canCheck) {
         if (!autoTrigger && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Sensor biometrik tidak tersedia di perangkat ini.',
-              ),
-            ),
+          CardlyToast.showInfo(
+            context,
+            'Sensor biometrik tidak tersedia di perangkat ini.',
           );
         }
         return;
@@ -91,13 +89,9 @@ class _WelcomeViewState extends ConsumerState<WelcomeView> {
 
       if (!autoTrigger && !result.isNotEnrolled) {
         HapticFeedback.vibrate();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              result.errorMessage ?? 'Verifikasi biometrik tidak cocok.',
-            ),
-            duration: const Duration(seconds: 2),
-          ),
+        CardlyToast.showError(
+          context,
+          result.errorMessage ?? 'Verifikasi biometrik tidak cocok.',
         );
       }
     } finally {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/widgets/cardly_bottom_nav_bar.dart';
@@ -102,6 +103,10 @@ class _MainShellScreenState extends ConsumerState<MainShellScreen> {
           ref.read(appLockedProvider.notifier).lock();
           ref.read(vaultLockedProvider.notifier).lock();
         }
+        // Arahkan kembali ke splash screen agar saat aplikasi dibuka kembali, splash tampil pertama kali
+        try {
+          context.go('/splash');
+        } catch (_) {}
         SystemNavigator.pop();
       },
       child: Scaffold(

@@ -254,6 +254,14 @@ class AppLockNotifier extends StateNotifier<bool> {
   }
 }
 
+/// Menandakan apakah operasi eksternal (Kamera / Google Doc Scanner / Image Picker) sedang berjalan
+/// agar event lifecycle onResume tidak memicu penguncian otomatis sesi secara keliru.
+final isExternalOperationInProgressProvider = StateProvider<bool>((ref) => false);
+
+/// Menandakan apakah alur Splash screen telah selesai agar otentikasi biometrik
+/// tidak memotong animasi splash di depan.
+final isSplashCompletedProvider = StateProvider<bool>((ref) => false);
+
 // --- Reactive Card List Notifier ---
 
 final cardListProvider =

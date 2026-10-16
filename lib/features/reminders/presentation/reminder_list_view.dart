@@ -10,6 +10,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/cardly_bottom_sheet.dart';
 import '../../../core/widgets/cardly_empty_state.dart';
+import '../../../core/widgets/cardly_toast.dart';
 import '../domain/reminder_model.dart';
 
 class ReminderListView extends ConsumerStatefulWidget {
@@ -292,9 +293,7 @@ class _ReminderListViewState extends ConsumerState<ReminderListView> {
             onTap: () {
               Navigator.pop(context);
               ref.read(reminderListProvider.notifier).deleteReminder(item.id);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Pengingat dihapus')),
-              );
+              CardlyToast.showSuccess(context, 'Pengingat berhasil dihapus');
             },
           ),
         ],

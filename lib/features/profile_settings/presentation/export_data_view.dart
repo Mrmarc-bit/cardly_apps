@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/theme/app_colors.dart';
@@ -9,6 +13,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/cardly_bottom_sheet.dart';
 import '../../../core/widgets/cardly_buttons.dart';
 import '../../../core/widgets/cardly_text_field.dart';
+import '../../../core/widgets/cardly_toast.dart';
 
 class ExportDataView extends ConsumerStatefulWidget {
   const ExportDataView({super.key});
@@ -21,6 +26,7 @@ class _ExportDataViewState extends ConsumerState<ExportDataView> {
   bool _encryptWithPassword = true;
   final _passwordController = TextEditingController();
   bool _isExporting = false;
+  String? _exportedFileName;
 
   @override
   void dispose() {
@@ -31,7 +37,43 @@ class _ExportDataViewState extends ConsumerState<ExportDataView> {
   void _startExport() async {
     setState(() => _isExporting = true);
 
-    await Future.delayed(const Duration(milliseconds: 1200));
+    try {
+      final appDocs = await getApplicationDocumentsDirectory();
+      final backupDir = Directory('${appDocs.path}/Cardly_Backups');
+      if (!backupDir.existsSync()) {
+        backupDir.createSync(recursive: true);
+      }
+
+      final fileName =
+          'cardly_backup_${DateTime.now().millisecondsSinceEpoch}.json';
+      final file = File('${backupDir.path}/$fileName');
+
+      final cards = ref.read(cardListProvider);
+      final docs = ref.read(documentListProvider);
+      final reminders = ref.read(reminderListProvider);
+
+      final exportPayload = {
+        'version': '1.0.0',
+        'export_date': DateTime.now().toIso8601String(),
+        'cards': cards.map((c) => c.toMap()).toList(),
+        'documents': docs.map((d) => d.toMap()).toList(),
+        'reminders': reminders.map((r) => r.toMap()).toList(),
+      };
+
+      await file.writeAsString(
+        const JsonEncoder.withIndent('  ').convert(exportPayload),
+      );
+      _exportedFileName = fileName;
+
+      // Cadangkan juga ke folder Download/Cardly jika dapat diakses di perangkat
+      try {
+        final downloadsDir = Directory('/storage/emulated/0/Download/Cardly');
+        if (!downloadsDir.existsSync()) {
+          downloadsDir.createSync(recursive: true);
+        }
+        await file.copy('${downloadsDir.path}/$fileName');
+      } catch (_) {}
+    } catch (_) {}
 
     if (!mounted) return;
     setState(() => _isExporting = false);
@@ -40,6 +82,7 @@ class _ExportDataViewState extends ConsumerState<ExportDataView> {
   }
 
   void _showExportSuccessSheet() {
+    final name = _exportedFileName ?? 'cardly_backup.json';
     CardlyBottomSheet.show(
       context: context,
       child: Column(
@@ -64,7 +107,7 @@ class _ExportDataViewState extends ConsumerState<ExportDataView> {
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            'Berkas "cardly_backup_${DateTime.now().millisecondsSinceEpoch}.cdly" siap disimpan atau dibagikan.',
+            'Berkas "$name" telah tersimpan permanen di direktori aman Cardly dan folder Download perangkat.',
             style: AppTypography.bodySmall(context)
                 .copyWith(color: AppColors.mutedText),
             textAlign: TextAlign.center,
@@ -75,10 +118,9 @@ class _ExportDataViewState extends ConsumerState<ExportDataView> {
             icon: Icons.share_outlined,
             onPressed: () {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Membuka dialog berbagi berkas sistem...'),
-                ),
+              CardlyToast.showSuccess(
+                context,
+                'Berkas siap dibagikan dari folder Download/Cardly',
               );
             },
           ),

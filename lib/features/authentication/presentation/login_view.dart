@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/cardly_buttons.dart';
+import '../../../core/widgets/cardly_toast.dart';
 import '../../../app/providers.dart';
 import 'widgets/cardly_brand_header.dart';
 import 'widgets/cardly_card_input.dart';
@@ -135,38 +136,25 @@ class _LoginViewState extends ConsumerState<LoginView> {
       }
 
       if (result.isCancelled) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Masuk dengan Google dibatalkan.')),
-        );
+        CardlyToast.showInfo(context, 'Masuk dengan Google dibatalkan.');
         return;
       }
 
       // Hybrid Resilient Fallback: Jika native SDK mengalami kendala,
       // beralih secara mulus ke Supabase OAuth In-App Browser Sheet
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Menghubungkan akun Google...'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      CardlyToast.showInfo(context, 'Menghubungkan akun Google...');
       final webSuccess = await supabase.signInWithGoogle();
       if (!webSuccess && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              result.isDevSha1Missing
-                  ? 'Tidak dapat menghubungkan akun Google. Silakan masuk menggunakan Email & Kata Sandi.'
-                  : (result.errorMessage ?? 'Gagal masuk dengan Google.'),
-            ),
-            duration: const Duration(seconds: 4),
-          ),
+        CardlyToast.showError(
+          context,
+          result.isDevSha1Missing
+              ? 'Tidak dapat menghubungkan akun Google. Silakan masuk menggunakan Email & Kata Sandi.'
+              : (result.errorMessage ?? 'Gagal masuk dengan Google.'),
         );
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Gagal masuk dengan Google: $e')));
+      CardlyToast.showError(context, 'Gagal masuk dengan Google: $e');
     } finally {
       if (mounted) {
         setState(() => _isGoogleLoading = false);

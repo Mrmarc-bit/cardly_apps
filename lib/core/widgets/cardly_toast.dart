@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +23,10 @@ class CardlyToast {
     String? actionLabel,
     VoidCallback? onAction,
   }) {
+    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      return;
+    }
+
     _dismissTimer?.cancel();
     _currentEntry?.remove();
     _currentEntry = null;

@@ -365,12 +365,9 @@ class ProfileDashboardView extends ConsumerWidget {
               onTap: () {
                 ref.read(userProfileProvider.notifier).removeAvatar();
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Foto profil berhasil dihapus.'),
-                    backgroundColor: AppColors.ink,
-                    duration: Duration(seconds: 2),
-                  ),
+                CardlyToast.showSuccess(
+                  context,
+                  'Foto profil berhasil dihapus.',
                 );
               },
             ),
@@ -392,6 +389,7 @@ class ProfileDashboardView extends ConsumerWidget {
     WidgetRef ref,
     ImageSource source,
   ) async {
+    ref.read(isExternalOperationInProgressProvider.notifier).state = true;
     try {
       final picker = ImagePicker();
       final xFile = await picker.pickImage(
@@ -416,23 +414,20 @@ class ProfileDashboardView extends ConsumerWidget {
 
       if (context.mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Foto profil berhasil diperbarui!'),
-            backgroundColor: AppColors.ink,
-            duration: Duration(seconds: 2),
-          ),
+        CardlyToast.showSuccess(
+          context,
+          'Foto profil berhasil diperbarui!',
         );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal memperbarui foto profil: $e'),
-            backgroundColor: AppColors.error,
-          ),
+        CardlyToast.showError(
+          context,
+          'Gagal memperbarui foto profil: $e',
         );
       }
+    } finally {
+      ref.read(isExternalOperationInProgressProvider.notifier).state = false;
     }
   }
 
@@ -620,12 +615,9 @@ class ProfileDashboardView extends ConsumerWidget {
                     email: emailController.text.trim(),
                   );
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Profil berhasil diperbarui.'),
-                  backgroundColor: AppColors.ink,
-                  duration: Duration(seconds: 2),
-                ),
+              CardlyToast.showSuccess(
+                context,
+                'Profil berhasil diperbarui.',
               );
             },
           ),
