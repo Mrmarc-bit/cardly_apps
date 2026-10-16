@@ -248,8 +248,11 @@ header.site-header {
   font-weight: 600;
   color: var(--lime);
   margin-bottom: 24px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.2px;
+}
+
+.pulse-indicator {
+  flex-shrink: 0;
 }
 
 .hero-title {
@@ -1268,29 +1271,53 @@ footer.site-footer {
   font-size: 13.5px;
 }
 
-/* Toast Notification */
+/* Toast Notification (Modern Floating Glass Card) */
 .cardly-toast {
   position: fixed;
-  bottom: 28px;
+  bottom: 24px;
   left: 50%;
-  transform: translateX(-50%) translateY(100px);
-  background: var(--charcoal);
-  border: 1px solid var(--lime);
+  transform: translateX(-50%) translateY(80px);
+  width: calc(100% - 32px);
+  max-width: 420px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(20, 20, 24, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(200, 244, 90, 0.4);
   color: var(--text-primary);
-  padding: 14px 24px;
-  border-radius: var(--radius-pill);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
-  font-size: 13.5px;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 24px rgba(200, 244, 90, 0.15);
+  font-size: 13px;
   font-weight: 500;
+  line-height: 1.45;
   z-index: 9999;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .cardly-toast.visible {
   opacity: 1;
+  pointer-events: auto;
   transform: translateX(-50%) translateY(0);
+}
+
+.cardly-toast-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--lime);
+  flex-shrink: 0;
+  display: block;
+}
+
+.cardly-toast-text {
+  flex: 1;
+  text-align: left;
+  color: var(--text-primary);
 }
 
 /* ==========================================================================
@@ -1571,12 +1598,16 @@ footer.site-footer {
   }
 
   .badge-pill {
-    font-size: 11px;
+    font-size: 11.5px;
     padding: 6px 14px;
-    max-width: 100%;
-    white-space: normal;
-    line-height: 1.4;
+    max-width: 92%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.35;
     text-align: center;
+    justify-content: center;
+    letter-spacing: 0.1px;
   }
 
   .hero-title {
@@ -2103,12 +2134,35 @@ footer.site-footer {
     line-height: 1.4;
     justify-content: center;
   }
+
+  /* Toast Notification Mobile Override */
+  .cardly-toast {
+    width: calc(100% - 24px);
+    max-width: 380px;
+    bottom: 20px;
+    padding: 10px 14px;
+    font-size: 12px;
+    border-radius: 14px;
+    gap: 10px;
+  }
+
+  .cardly-toast-icon {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 /* Extra Small Devices (Galaxy Fold, Narrow 360px & below) */
 @media (max-width: 380px) {
   .container {
     padding: 0 12px;
+  }
+
+  .badge-pill {
+    font-size: 10.5px;
+    padding: 5px 10px;
+    gap: 6px;
+    max-width: 96%;
   }
 
   .nav-shell {

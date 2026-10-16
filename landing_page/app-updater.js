@@ -683,8 +683,9 @@
   }
 
   /**
-   * Notifikasi Toast Modern
+   * Notifikasi Toast Modern (Glass Floating Card dengan Ikon)
    */
+  let toastTimer = null;
   function showToast(message) {
     let toast = document.getElementById('cardly-toast');
     if (!toast) {
@@ -693,9 +694,13 @@
       toast.className = 'cardly-toast';
       document.body.appendChild(toast);
     }
-    toast.textContent = message;
+    toast.innerHTML = `
+      <svg class="cardly-toast-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      <span class="cardly-toast-text">${escapeHtml(message)}</span>
+    `;
     toast.classList.add('visible');
-    setTimeout(() => {
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
       toast.classList.remove('visible');
     }, 4000);
   }
