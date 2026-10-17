@@ -20,22 +20,35 @@ const yellow = '\x1B[33m';
 const red = '\x1B[31m';
 const gray = '\x1B[90m';
 
+/// Target rilis dan publikasi APK
+enum ReleaseTarget { unugha, personal, both }
+
 void main(List<String> args) async {
   // Handle argumen bantuan CLI
   if (args.contains('--help') || args.contains('-h')) {
     stdout.writeln('');
     stdout.writeln(
-      '$cyan$bold Cardly Automated Release Engine & Disk Maintenance$reset',
+      '$cyan$bold Cardly Automated Release Engine & Multi-Target Publisher$reset',
     );
     stdout.writeln('Penggunaan:');
     stdout.writeln(
-      '  ./scripts/release.sh                 Mode interaktif (Pilihan Versi, Auto-Publish & Cache Clean)',
+      '  ./scripts/release.sh                 Mode interaktif (Pilihan Versi, Target, & Publish)',
     );
     stdout.writeln(
       '  ./scripts/release.sh [versi+build]   Mode cepat (contoh: 1.0.7+8)',
     );
     stdout.writeln(
       '  ./scripts/release.sh --clean         Pembersihan cache Gradle & proyek (~1-14 GB)',
+    );
+    stdout.writeln('\nOpsi Target Publikasi:');
+    stdout.writeln(
+      '  -u, --unugha                         Target rilis ke UNUGHA Kampus (UNUGHA-Informatika-26)',
+    );
+    stdout.writeln(
+      '  -p, --origin                         Target rilis ke Personal GitHub (Mrmarc-bit)',
+    );
+    stdout.writeln(
+      '  -a, --both                           Dual rilis ke UNUGHA dan Personal sekaligus',
     );
     stdout.writeln('');
     exit(0);
@@ -216,6 +229,42 @@ void main(List<String> args) async {
     }
   }
 
+  // Pemilihan Target Publikasi Rilis
+  ReleaseTarget releaseTarget;
+  if (args.contains('--unugha') || args.contains('-u')) {
+    releaseTarget = ReleaseTarget.unugha;
+  } else if (args.contains('--origin') || args.contains('-p')) {
+    releaseTarget = ReleaseTarget.personal;
+  } else if (args.contains('--both') || args.contains('-a')) {
+    releaseTarget = ReleaseTarget.both;
+  } else {
+    stdout.writeln('$bold$cyan Pilih Target Publikasi & Distribusi APK:$reset');
+    stdout.writeln(
+      '  $bold[1] UNUGHA Kampus$reset  -> $green UNUGHA-Informatika-26/cardly_apps$reset',
+    );
+    stdout.writeln(
+      '  $bold[2] Personal$reset       -> $cyan Mrmarc-bit/cardly_apps$reset',
+    );
+    stdout.writeln(
+      '  $bold[3] Dual Release$reset   -> $yellow Publikasikan ke Keduanya Sekaligus$reset',
+    );
+    stdout.write('$bold Masukkan pilihan [1-3] (default 1): $reset');
+    final targetInput = stdin.readLineSync()?.trim();
+    if (targetInput == '2') {
+      releaseTarget = ReleaseTarget.personal;
+    } else if (targetInput == '3') {
+      releaseTarget = ReleaseTarget.both;
+    } else {
+      releaseTarget = ReleaseTarget.unugha;
+    }
+  }
+
+  final targetLabel = releaseTarget == ReleaseTarget.unugha
+      ? 'UNUGHA Kampus (UNUGHA-Informatika-26/cardly_apps)'
+      : releaseTarget == ReleaseTarget.personal
+          ? 'Personal GitHub (Mrmarc-bit/cardly_apps)'
+          : 'Dual Release (UNUGHA & Personal Sekaligus)';
+
   // Ringkasan Target
   stdout.writeln('');
   stdout.writeln(
@@ -225,6 +274,7 @@ void main(List<String> args) async {
     'Target Versi : $bold$green v$targetVersion (Build $targetBuildNumber)$reset',
   );
   stdout.writeln('Tag Git      : $bold$cyan v$targetVersion$reset');
+  stdout.writeln('Target Repo  : $bold$yellow $targetLabel$reset');
   stdout.writeln(
     '$cyan------------------------------------------------------$reset',
   );
@@ -295,8 +345,11 @@ void main(List<String> args) async {
     '\n$cyan[4/4]$reset Memperbarui version.json & landing_page/version.json...',
   );
   final todayStr = DateTime.now().toIso8601String().split('T').first;
+  final primaryRepoOwner = releaseTarget == ReleaseTarget.personal
+      ? 'Mrmarc-bit'
+      : 'UNUGHA-Informatika-26';
   final downloadUrl =
-      'https://github.com/Mrmarc-bit/cardly_apps/releases/download/v$targetVersion/cardly-release-v$targetVersion.apk';
+      'https://github.com/$primaryRepoOwner/cardly_apps/releases/download/v$targetVersion/cardly-release-v$targetVersion.apk';
 
   List<dynamic> changelog = [
     'Pembaruan performa, perbaikan bug, dan stabilitas keamanan rilis v$targetVersion',
@@ -440,44 +493,84 @@ void main(List<String> args) async {
       stdout.writeln('$green✓$reset');
     }
 
-    // d. Git push origin main
-    stdout.write('  -> Mendorong commit ke branch origin main... ');
-    final pushMainResult = await Process.run('git', ['push', 'origin', 'main']);
-    if (pushMainResult.exitCode != 0) {
-      stderr.writeln(
-        '\n$red Peringatan: Gagal push ke origin main: ${pushMainResult.stderr}$reset',
-      );
-    } else {
-      stdout.writeln('$green✓$reset');
+    // d. Git push ke Remote Target (UNUGHA, Personal, atau Keduanya)
+    final remotesToPush = <String>[];
+    if (releaseTarget == ReleaseTarget.unugha || releaseTarget == ReleaseTarget.both) {
+      remotesToPush.add('unugha');
+    }
+    if (releaseTarget == ReleaseTarget.personal || releaseTarget == ReleaseTarget.both) {
+      remotesToPush.add('origin');
     }
 
-    // e. Git push origin tag
-    stdout.write('  -> Mendorong tag v$targetVersion ke GitHub... ');
-    final pushTagResult = await Process.run('git', [
-      'push',
-      'origin',
-      'v$targetVersion',
-    ]);
-    if (pushTagResult.exitCode != 0) {
-      stderr.writeln(
-        '\n$red Gagal push tag ke GitHub: ${pushTagResult.stderr}$reset',
-      );
-      stdout.writeln('\n$yellow Anda dapat mencoba push manual nanti:$reset');
-      stdout.writeln('  git push origin v$targetVersion\n');
-    } else {
-      stdout.writeln('$green✓$reset');
-      stdout.writeln('');
-      stdout.writeln('$green$bold🎉 BERHASIL DIPUBLIKASIKAN KE GITHUB!$reset');
+    final currentBranchRes = await Process.run('git', ['branch', '--show-current']);
+    final currentBranch = currentBranchRes.stdout.toString().trim();
+
+    for (final remote in remotesToPush) {
+      // Pastikan remote terdaftar
+      final checkRemote = await Process.run('git', ['remote', 'get-url', remote]);
+      if (checkRemote.exitCode != 0 && remote == 'unugha') {
+        await Process.run('git', [
+          'remote',
+          'add',
+          'unugha',
+          'git@github.com:UNUGHA-Informatika-26/cardly_apps.git',
+        ]);
+      }
+
+      final branchRef = (remote == 'unugha' && currentBranch == 'unugha-main')
+          ? 'unugha-main:main'
+          : (currentBranch.isNotEmpty ? currentBranch : 'main');
+
+      stdout.write('  -> Mendorong commit ke [$remote $branchRef]... ');
+      final pushBranchResult = await Process.run('git', ['push', '-u', remote, branchRef]);
+      if (pushBranchResult.exitCode != 0) {
+        stderr.writeln(
+          '\n$red Peringatan: Gagal push branch ke $remote: ${pushBranchResult.stderr}$reset',
+        );
+      } else {
+        stdout.writeln('$green✓$reset');
+      }
+
+      stdout.write('  -> Mendorong tag v$targetVersion ke [$remote]... ');
+      final pushTagResult = await Process.run('git', [
+        'push',
+        remote,
+        'v$targetVersion',
+      ]);
+      if (pushTagResult.exitCode != 0) {
+        stderr.writeln(
+          '\n$red Gagal push tag ke $remote: ${pushTagResult.stderr}$reset',
+        );
+        stdout.writeln('\n$yellow Anda dapat mencoba push manual nanti:$reset');
+        stdout.writeln('  git push $remote v$targetVersion\n');
+      } else {
+        stdout.writeln('$green✓$reset');
+      }
+    }
+
+    // e. Direct GitHub Release Asset Upload (jika GITHUB_TOKEN tersedia)
+    await tryDirectAssetUploadIfPossible(
+      target: releaseTarget,
+      targetVersion: targetVersion,
+      apkFile: apkFile,
+    );
+
+    stdout.writeln('');
+    stdout.writeln('$green$bold🎉 BERHASIL DIPUBLIKASIKAN KE GITHUB!$reset');
+    stdout.writeln('Tautan Pemantauan GitHub Actions & Rilis:');
+    if (releaseTarget == ReleaseTarget.unugha || releaseTarget == ReleaseTarget.both) {
       stdout.writeln(
-        'GitHub Actions sedang membangun rilis resmi dan menyinkronkan ke Supabase:',
-      );
-      stdout.writeln(
-        '$cyan$bold https://github.com/Mrmarc-bit/cardly_apps/actions$reset',
-      );
-      stdout.writeln(
-        '$green$bold======================================================$reset\n',
+        '  • UNUGHA Kampus : $cyan${bold}https://github.com/UNUGHA-Informatika-26/cardly_apps/actions$reset',
       );
     }
+    if (releaseTarget == ReleaseTarget.personal || releaseTarget == ReleaseTarget.both) {
+      stdout.writeln(
+        '  • Personal      : $cyan${bold}https://github.com/Mrmarc-bit/cardly_apps/actions$reset',
+      );
+    }
+    stdout.writeln(
+      '$green$bold======================================================$reset\n',
+    );
   } else {
     stdout.writeln(
       '\n$yellow Publikasi ke GitHub dilewati (perubahan disimpan lokal).$reset',
@@ -490,7 +583,7 @@ void main(List<String> args) async {
       '  git commit -m "chore(release): v$targetVersion+$targetBuildNumber"',
     );
     stdout.writeln('  git tag -a v$targetVersion -m "Release v$targetVersion"');
-    stdout.writeln('  git push origin main && git push origin v$targetVersion');
+    stdout.writeln('  git push unugha main && git push unugha v$targetVersion');
     stdout.writeln(
       '$cyan======================================================$reset\n',
     );
@@ -672,5 +765,95 @@ Future<void> safeDeleteDirectory(Directory dir) async {
         dir.deleteSync(recursive: true);
       }
     } catch (_) {}
+  }
+}
+
+/// Mencoba mengunggah berkas APK langsung ke GitHub Releases jika GITHUB_TOKEN tersedia
+Future<void> tryDirectAssetUploadIfPossible({
+  required ReleaseTarget target,
+  required String targetVersion,
+  required File apkFile,
+}) async {
+  final token = Platform.environment['GITHUB_TOKEN'];
+  if (token == null || token.isEmpty) {
+    stdout.writeln(
+      '$gray  (Catatan: Tag rilis telah terkirim. GitHub Actions di cloud akan merilis dan melampirkan berkas APK secara otomatis).$reset',
+    );
+    return;
+  }
+
+  final owners = <String>[];
+  if (target == ReleaseTarget.unugha || target == ReleaseTarget.both) {
+    owners.add('UNUGHA-Informatika-26');
+  }
+  if (target == ReleaseTarget.personal || target == ReleaseTarget.both) {
+    owners.add('Mrmarc-bit');
+  }
+
+  for (final owner in owners) {
+    stdout.write('  -> Mengunggah APK langsung ke GitHub Releases [$owner]... ');
+    final client = HttpClient();
+    try {
+      // 1. Dapatkan Release by Tag
+      final releaseReq = await client.getUrl(
+        Uri.parse('https://api.github.com/repos/$owner/cardly_apps/releases/tags/v$targetVersion'),
+      );
+      releaseReq.headers.set('Authorization', 'Bearer $token');
+      releaseReq.headers.set('User-Agent', 'Cardly-Release-Engine');
+      final releaseRes = await releaseReq.close();
+
+      int? releaseId;
+      if (releaseRes.statusCode == 200) {
+        final body = await releaseRes.transform(utf8.decoder).join();
+        final json = jsonDecode(body) as Map<String, dynamic>;
+        releaseId = json['id'] as int?;
+      } else if (releaseRes.statusCode == 404) {
+        // Buat release baru jika belum ada
+        final createReq = await client.postUrl(
+          Uri.parse('https://api.github.com/repos/$owner/cardly_apps/releases'),
+        );
+        createReq.headers.set('Authorization', 'Bearer $token');
+        createReq.headers.set('User-Agent', 'Cardly-Release-Engine');
+        createReq.headers.set('Content-Type', 'application/json');
+        createReq.write(jsonEncode({
+          'tag_name': 'v$targetVersion',
+          'name': 'Cardly Release v$targetVersion',
+          'draft': false,
+          'prerelease': false,
+        }));
+        final createRes = await createReq.close();
+        if (createRes.statusCode >= 200 && createRes.statusCode < 300) {
+          final body = await createRes.transform(utf8.decoder).join();
+          final json = jsonDecode(body) as Map<String, dynamic>;
+          releaseId = json['id'] as int?;
+        }
+      }
+
+      if (releaseId != null) {
+        final assetName = 'cardly-release-v$targetVersion.apk';
+        final uploadUri = Uri.parse(
+          'https://uploads.github.com/repos/$owner/cardly_apps/releases/$releaseId/assets?name=$assetName',
+        );
+        final uploadReq = await client.postUrl(uploadUri);
+        uploadReq.headers.set('Authorization', 'Bearer $token');
+        uploadReq.headers.set('User-Agent', 'Cardly-Release-Engine');
+        uploadReq.headers.set('Content-Type', 'application/vnd.android.package-archive');
+        uploadReq.headers.set('Content-Length', apkFile.lengthSync().toString());
+
+        await uploadReq.addStream(apkFile.openRead());
+        final uploadRes = await uploadReq.close();
+        if (uploadRes.statusCode >= 200 && uploadRes.statusCode < 300) {
+          stdout.writeln('$green✓ Terunggah$reset');
+        } else {
+          stdout.writeln('$yellow⚠️ Gagal upload asset (${uploadRes.statusCode})$reset');
+        }
+      } else {
+        stdout.writeln('$yellow⚠️ Release belum siap di GitHub$reset');
+      }
+    } catch (_) {
+      stdout.writeln('$yellow⚠️ Dilewati (GitHub Actions akan memproses di cloud)$reset');
+    } finally {
+      client.close();
+    }
   }
 }
