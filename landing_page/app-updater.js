@@ -12,26 +12,29 @@
 
   // Konfigurasi Multi-Source & Default Fallback
   const CONFIG = {
-    repoOwner: 'Mrmarc-bit',
+    repoOwner: 'UNUGHA-Informatika-26',
     repoName: 'cardly_apps',
+    fallbackRepoOwner: 'Mrmarc-bit',
     localVersionUrl: '/version.json',
-    rawVersionUrl: 'https://raw.githubusercontent.com/Mrmarc-bit/cardly_apps/main/version.json',
-    githubApiUrl: 'https://api.github.com/repos/Mrmarc-bit/cardly_apps/releases/latest',
+    rawVersionUrl: 'https://raw.githubusercontent.com/UNUGHA-Informatika-26/cardly_apps/main/version.json',
+    githubApiUrl: 'https://api.github.com/repos/UNUGHA-Informatika-26/cardly_apps/releases/latest',
+    fallbackGithubApiUrl: 'https://api.github.com/repos/Mrmarc-bit/cardly_apps/releases/latest',
     supabaseEndpoint: 'https://tsmdqyqftxriqgfurrae.supabase.co/rest/v1/app_versions?select=*&order=build_number.desc&limit=1',
     supabaseAnonKey: 'sb_publishable_L8AGlfFIeB0E4rXvHt7tUg_V-1nrga1',
 
     // Fallback bawaan jika semua jaringan offline
     fallbackData: {
-      latest_version: '1.0.9',
-      build_number: 10,
-      download_url: 'https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.9/cardly-release-v1.0.9.apk',
-      release_date: '16 Oktober 2026',
-      file_size_bytes: 42482435,
+      latest_version: '1.0.11',
+      build_number: 12,
+      download_url: 'https://github.com/UNUGHA-Informatika-26/cardly_apps/releases/download/v1.0.11/cardly-release-v1.0.11.apk',
+      stable_fallback_url: 'https://github.com/UNUGHA-Informatika-26/cardly_apps/releases/download/v1.0.10/cardly-release-v1.0.10.apk',
+      release_date: '17 Oktober 2026',
+      file_size_bytes: 42522455,
       changelog: [
-        'Optimasi lifecycle biometrik & perbaikan pencegahan kunci berulang saat pemindaian dokumen',
-        'Modernisasi menyeluruh CardlyToast mengambang dengan aksen Lime dan getaran haptic halus',
-        'Peningkatan akurasi AI OCR on-device dengan pemilih jenis dokumen interaktif',
-        'Kompresi dan optimasi arsitektur universal APK (40.5 MB) untuk seluruh perangkat Android'
+        'Sinkronisasi Cloud Avatar ke Supabase Storage (otomatis lintas perangkat)',
+        'Alur Verifikasi Email Pendaftaran dengan Deep Linking langsung kembali ke aplikasi',
+        'Tombol interaktif kirim ulang tautan verifikasi pada layar Masuk',
+        'Optimasi performa arsitektur universal APK (40.5 MB) untuk seluruh perangkat Android'
       ],
       variants: [
         {
@@ -39,10 +42,10 @@
           label: 'Universal (Semua HP)',
           badge: 'Kompatibilitas Penuh',
           desc: 'Memuat pustaka 64-bit dan 32-bit, dijamin dapat dipasang di seluruh perangkat Android',
-          file_name: 'cardly-release-v1.0.9.apk',
-          download_url: 'https://github.com/Mrmarc-bit/cardly_apps/releases/download/v1.0.9/cardly-release-v1.0.9.apk',
-          file_size_bytes: 42482435,
-          sha256: 'c5579f57fa59339350edfc4af083a294cc877bb09512a8a2c1fd6156e1c57037'
+          file_name: 'cardly-release-v1.0.11.apk',
+          download_url: 'https://github.com/UNUGHA-Informatika-26/cardly_apps/releases/download/v1.0.11/cardly-release-v1.0.11.apk',
+          file_size_bytes: 42522455,
+          sha256: 'ebc2e1f5784915f5a06d95341da9026fe49dacca5fdb0bedabc09f112f716bc1'
         }
       ]
     }
@@ -349,18 +352,35 @@
 
     // 3. Coba ambil aset langsung dari GitHub Releases API untuk ukuran berkas live & multi-arsitektur
     try {
-      const res = await fetch(CONFIG.githubApiUrl, { cache: 'no-store' });
+      let res = await fetch(CONFIG.githubApiUrl, { cache: 'no-store' });
+      if (!res.ok && CONFIG.fallbackGithubApiUrl) {
+        res = await fetch(CONFIG.fallbackGithubApiUrl, { cache: 'no-store' });
+      }
       if (res.ok) {
         const release = await res.json();
         const rawVersion = (release.tag_name || '').replace(/^v/, '');
         
-        if (rawVersion && compareVersions(rawVersion, result.latest_version) >= 0) {
-          result.latest_version = rawVersion;
-          result.release_date = formatDate(release.published_at);
-        }
-
         if (Array.isArray(release.assets)) {
           githubAssets = release.assets.filter(a => a.name && a.name.endsWith('.apk'));
+        }
+
+        // SMART VERIFICATION (Rekomendasi 3):
+        // Periksa apakah berkas APK rilis benar-benar sudah berstatus Published & siap unduh
+        if (githubAssets.length > 0) {
+          result.isLive = true;
+          result.isBuildingInCloud = false;
+          if (rawVersion && compareVersions(rawVersion, result.latest_version) >= 0) {
+            result.latest_version = rawVersion;
+            result.release_date = formatDate(release.published_at);
+          }
+        } else {
+          // Rilis belum memuat berkas APK (sedang dalam antrean kompilasi Cloud CI/CD)
+          if (compareVersions(result.latest_version, rawVersion) >= 0) {
+            result.isBuildingInCloud = true;
+            result.pendingVersion = result.latest_version;
+            // Gunakan stable fallback url agar link tidak pernah 404
+            result.download_url = CONFIG.fallbackData.stable_fallback_url || CONFIG.fallbackData.download_url;
+          }
         }
 
         // Jika changelog di result masih default, parse dari release.body
@@ -368,6 +388,11 @@
           const parsed = parseChangelogFromReleaseBody(release.body);
           if (parsed.length > 0) result.changelog = parsed;
         }
+      } else {
+        // Jika endpoint API release belum ada (masih tahap tag baru)
+        result.isBuildingInCloud = true;
+        result.pendingVersion = result.latest_version;
+        result.download_url = CONFIG.fallbackData.stable_fallback_url || CONFIG.fallbackData.download_url;
       }
     } catch (_) {}
 
@@ -470,6 +495,9 @@
       el.textContent = activeSizeText;
     });
 
+    window.__cardlyIsPendingCloudBuild = !!data.isBuildingInCloud;
+    window.__cardlyPendingVersion = data.pendingVersion || data.latest_version;
+
     // 3. Perbarui tombol download utama agar otomatis mengarah ke paket optimal
     document.querySelectorAll('[data-cardly-download]').forEach(btn => {
       btn.setAttribute('href', activeDownloadUrl);
@@ -480,7 +508,11 @@
       const archLabel = recommendedVariant ? (recommendedVariant.badge || recommendedVariant.label || 'Universal') : 'Universal';
       const metaEl = btn.querySelector('.btn-meta');
       if (metaEl) {
-        metaEl.textContent = `${versionText} • ${archLabel} (${activeSizeText})`;
+        if (data.isBuildingInCloud) {
+          metaEl.innerHTML = `<span style="color:#C8F45A; font-weight:600;">⏳ Menyiapkan v${escapeHtml(data.pendingVersion || data.latest_version)}</span> • Mengunduh Versi Siap Pakai`;
+        } else {
+          metaEl.textContent = `${versionText} • ${archLabel} (${activeSizeText})`;
+        }
       } else {
         const btnSpan = btn.querySelector('span');
         if (btnSpan && !btn.querySelector('.btn-label-wrap')) {
@@ -730,15 +762,49 @@
   }
 
   /**
-   * Setup Download Click Feedback
+   * Setup Download Click Feedback dengan Smart Fallback Notification
    */
   function setupDownloadListeners() {
     document.addEventListener('click', e => {
       const btn = e.target.closest('[data-cardly-download], .btn-variant-download');
       if (btn) {
-        showToast('Memulai pengunduhan APK Cardly... Periksa bar notifikasi ponsel Anda.');
+        if (window.__cardlyIsPendingCloudBuild) {
+          showToast(`Paket v${window.__cardlyPendingVersion || ''} sedang diselesaikan di server cloud. Mengunduh rilis stabil yang siap dipasang.`);
+        } else {
+          showToast('Memulai pengunduhan APK Cardly... Periksa bar notifikasi ponsel Anda.');
+        }
       }
     });
+  }
+
+  let healthCheckPollTimer = null;
+  /**
+   * Smart Background Health-Check Polling (Rekomendasi 3):
+   * Jika rilis baru masih dalam antrean Cloud CI/CD, lakukan polling otomatis setiap 15 detik
+   * sampai paket APK resmi muncul di GitHub, lalu perbarui UI secara halus tanpa refresh.
+   */
+  function scheduleBackgroundHealthCheck(data, device) {
+    if (!data || !data.isBuildingInCloud) {
+      if (healthCheckPollTimer) {
+        clearInterval(healthCheckPollTimer);
+        healthCheckPollTimer = null;
+      }
+      return;
+    }
+
+    if (healthCheckPollTimer) return;
+
+    healthCheckPollTimer = setInterval(async () => {
+      try {
+        const fresh = await fetchLatestRelease();
+        if (fresh && !fresh.isBuildingInCloud) {
+          clearInterval(healthCheckPollTimer);
+          healthCheckPollTimer = null;
+          applyReleaseToUI(fresh, device);
+          showToast(`Paket resmi Cardly v${fresh.latest_version} kini siap diunduh! 🎉`);
+        }
+      } catch (_) {}
+    }, 15000);
   }
 
   /**
@@ -754,6 +820,7 @@
         fetchLatestRelease()
       ]);
       applyReleaseToUI(releaseData, device);
+      scheduleBackgroundHealthCheck(releaseData, device);
     } catch (e) {
       console.warn('[CardlyUpdater] Init error, applying fallback:', e);
       const device = await detectSmartDevice();
