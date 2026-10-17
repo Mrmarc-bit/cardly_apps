@@ -91,11 +91,27 @@ class _CardlyAppState extends ConsumerState<CardlyApp> {
               (user.userMetadata?['full_name'] as String?) ??
               (user.userMetadata?['name'] as String?) ??
               (email.isNotEmpty ? email.split('@').first : 'Pengguna Cardly');
+          final metadataAvatar = user.userMetadata?['avatar_url'] as String?;
 
-          ref.read(userProfileProvider.notifier).login(fullName, email);
+          ref.read(userProfileProvider.notifier).login(
+                fullName,
+                email,
+                avatarUrl: metadataAvatar,
+              );
           ref.read(appLockedProvider.notifier).unlock();
 
-          // Jika user masuk melalui alur OAuth (Google dll), arahkan ke beranda
+          // Ambil avatar dari cloud database Supabase secara asinkron
+          supabase.getProfileAvatarUrl(user.id).then((cloudAvatar) {
+            if (cloudAvatar != null && mounted) {
+              ref.read(userProfileProvider.notifier).login(
+                    fullName,
+                    email,
+                    avatarUrl: cloudAvatar,
+                  );
+            }
+          }).catchError((_) {});
+
+          // Jika user masuk melalui alur OAuth atau deep link verifikasi email, arahkan ke beranda
           try {
             appRouter.go('/shell');
           } catch (_) {}

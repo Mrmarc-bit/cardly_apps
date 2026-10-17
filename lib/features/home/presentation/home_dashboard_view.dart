@@ -10,6 +10,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/cardly_avatar.dart';
 import '../../../core/widgets/cardly_empty_state.dart';
 import '../../../core/widgets/cardly_toast.dart';
 import '../../../core/widgets/cardly_visual_card.dart';
@@ -703,51 +704,14 @@ class _HomeDashboardViewState extends ConsumerState<HomeDashboardView> {
               ),
             ),
             const SizedBox(width: 10.0),
-            // Avatar Bulat (Foto Profil jika ada, fallback ke Inisial)
-            GestureDetector(
+            // Avatar Bulat Universal (Cloud, Local, atau Inisial)
+            CardlyAvatar(
+              avatarPath: user.avatarPath,
+              name: user.fullName,
+              size: 44.0,
+              showBorder: true,
+              borderColor: isDark ? AppColors.lime : AppColors.ink,
               onTap: () => widget.onSwitchTab?.call(4), // Tab Profil
-              child: Builder(
-                builder: (context) {
-                  final hasAvatar =
-                      user.avatarPath.isNotEmpty &&
-                      File(user.avatarPath).existsSync();
-                  if (hasAvatar) {
-                    return Container(
-                      width: 44.0,
-                      height: 44.0,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isDark ? AppColors.lime : AppColors.ink,
-                          width: 1.5,
-                        ),
-                        image: DecorationImage(
-                          image: FileImage(File(user.avatarPath)),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    );
-                  }
-                  return Container(
-                    width: 44.0,
-                    height: 44.0,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: isDark ? AppColors.charcoal : AppColors.softGray,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      user.fullName.isNotEmpty
-                          ? user.fullName[0].toUpperCase()
-                          : 'M',
-                      style: AppTypography.bodySemiBold.copyWith(
-                        fontSize: 16.0,
-                        color: isDark ? AppColors.white : AppColors.ink,
-                      ),
-                    ),
-                  );
-                },
-              ),
             ),
           ],
         ),

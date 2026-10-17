@@ -28,6 +28,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
   bool _rememberMe = true;
   bool _isLoading = false;
   bool _isGoogleLoading = false;
+  bool _canResendVerification = false;
+  bool _isResending = false;
   String? _emailError;
   String? _passwordError;
 
@@ -43,10 +45,41 @@ class _LoginViewState extends ConsumerState<LoginView> {
     super.dispose();
   }
 
+  Future<void> _handleResendVerification() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty) return;
+    setState(() => _isResending = true);
+    try {
+      final supabase = ref.read(supabaseServiceProvider);
+      final success = await supabase.resendSignUpConfirmation(email);
+      if (!mounted) return;
+      if (success) {
+        CardlyToast.showSuccess(
+          context,
+          'Tautan verifikasi telah dikirim ulang ke $email. Silakan periksa kotak masuk.',
+        );
+      } else {
+        CardlyToast.showError(
+          context,
+          'Gagal mengirim ulang email verifikasi. Coba beberapa saat lagi.',
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      CardlyToast.showError(
+        context,
+        'Terjadi kendala saat mengirim email: $e',
+      );
+    } finally {
+      if (mounted) setState(() => _isResending = false);
+    }
+  }
+
   Future<void> _handleLogin() async {
     setState(() {
       _emailError = null;
       _passwordError = null;
+      _canResendVerification = false;
     });
 
     final email = _emailController.text.trim();
@@ -87,7 +120,15 @@ class _LoginViewState extends ConsumerState<LoginView> {
             (user?.userMetadata?['full_name'] as String?) ??
             email.split('@').first;
 
-        ref.read(userProfileProvider.notifier).login(fullName, email);
+        // Ambil foto avatar yang tersimpan di Cloud jika ada
+        final cloudAvatar = await supabase.getProfileAvatarUrl(user?.id ?? '');
+        if (!mounted) return;
+
+        ref.read(userProfileProvider.notifier).login(
+          fullName,
+          email,
+          avatarUrl: cloudAvatar,
+        );
         context.go('/shell');
         return;
       }
@@ -100,6 +141,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
           _passwordError = 'Email atau kata sandi tidak cocok. Silakan periksa kembali atau buat akun baru.';
         } else if (msg.contains('not confirmed')) {
           _emailError = 'Email belum diverifikasi. Silakan periksa kotak masuk email Anda.';
+          _canResendVerification = true;
         } else {
           _passwordError = e.message;
         }
@@ -130,7 +172,15 @@ class _LoginViewState extends ConsumerState<LoginView> {
       if (result.isSuccess && result.account != null) {
         final account = result.account!;
         final name = account.displayName ?? account.email.split('@').first;
-        ref.read(userProfileProvider.notifier).login(name, account.email);
+        final currentUserId = supabase.currentUser?.id ?? '';
+        final cloudAvatar = await supabase.getProfileAvatarUrl(currentUserId);
+        if (!mounted) return;
+
+        ref.read(userProfileProvider.notifier).login(
+          name,
+          account.email,
+          avatarUrl: cloudAvatar ?? account.photoUrl,
+        );
         context.go('/shell');
         return;
       }
@@ -232,9 +282,51 @@ class _LoginViewState extends ConsumerState<LoginView> {
                 keyboardType: TextInputType.emailAddress,
                 errorText: _emailError,
                 onChanged: (_) {
-                  if (_emailError != null) setState(() => _emailError = null);
+                  if (_emailError != null || _canResendVerification) {
+                    setState(() {
+                      _emailError = null;
+                      _canResendVerification = false;
+                    });
+                  }
                 },
               ),
+              if (_canResendVerification) ...[
+                const SizedBox(height: 8.0),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: InkWell(
+                    onTap: _isResending ? null : _handleResendVerification,
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 4.0,
+                        horizontal: 2.0,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.mark_email_unread_outlined,
+                            size: 16.0,
+                            color: isDark ? AppColors.lime : AppColors.ink,
+                          ),
+                          const SizedBox(width: 6.0),
+                          Text(
+                            _isResending
+                                ? 'Mengirim tautan...'
+                                : 'Kirim ulang email verifikasi',
+                            style: AppTypography.captionMedium.copyWith(
+                              color: isDark ? AppColors.lime : AppColors.ink,
+                              fontWeight: FontWeight.w600,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 16.0),
               CardlyCardInput(
                 controller: _passwordController,

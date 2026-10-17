@@ -11,6 +11,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/widgets/cardly_avatar.dart';
 import '../../../core/widgets/cardly_bottom_sheet.dart';
 import '../../../core/widgets/cardly_buttons.dart';
 import '../../../core/widgets/cardly_toast.dart';
@@ -64,43 +65,10 @@ class ProfileDashboardView extends ConsumerWidget {
                     onTap: () => _showAvatarBottomSheet(context, ref, profile),
                     child: Stack(
                       children: [
-                        Container(
-                          width: 64,
-                          height: 64,
-                          decoration: BoxDecoration(
-                            color: AppColors.lime,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.lime.withValues(alpha: 0.25),
-                                blurRadius: 8,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: ClipOval(
-                            child:
-                                (profile.avatarPath.isNotEmpty &&
-                                    File(profile.avatarPath).existsSync())
-                                ? Image.file(
-                                    File(profile.avatarPath),
-                                    width: 64,
-                                    height: 64,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Center(
-                                    child: Text(
-                                      profile.fullName.isNotEmpty
-                                          ? profile.fullName[0].toUpperCase()
-                                          : 'U',
-                                      style: const TextStyle(
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.w800,
-                                        color: AppColors.ink,
-                                      ),
-                                    ),
-                                  ),
-                          ),
+                        CardlyAvatar(
+                          avatarPath: profile.avatarPath,
+                          name: profile.fullName,
+                          size: 64,
                         ),
                         Positioned(
                           bottom: 0,
@@ -267,8 +235,9 @@ class ProfileDashboardView extends ConsumerWidget {
     UserProfile profile,
   ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final hasAvatar =
-        profile.avatarPath.isNotEmpty && File(profile.avatarPath).existsSync();
+    final hasAvatar = profile.avatarPath.isNotEmpty &&
+        (profile.avatarPath.startsWith('http') ||
+            File(profile.avatarPath).existsSync());
 
     CardlyBottomSheet.show(
       context: context,
@@ -278,45 +247,10 @@ class ProfileDashboardView extends ConsumerWidget {
         children: [
           // Centered Avatar Preview
           Center(
-            child: Stack(
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: AppColors.lime,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.lime.withValues(alpha: 0.3),
-                        blurRadius: 14,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: ClipOval(
-                    child: hasAvatar
-                        ? Image.file(
-                            File(profile.avatarPath),
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                          )
-                        : Center(
-                            child: Text(
-                              profile.fullName.isNotEmpty
-                                  ? profile.fullName[0].toUpperCase()
-                                  : 'U',
-                              style: const TextStyle(
-                                fontSize: 34,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.ink,
-                              ),
-                            ),
-                          ),
-                  ),
-                ),
-              ],
+            child: CardlyAvatar(
+              avatarPath: profile.avatarPath,
+              name: profile.fullName,
+              size: 80,
             ),
           ),
           const SizedBox(height: AppSpacing.md),
@@ -364,6 +298,10 @@ class ProfileDashboardView extends ConsumerWidget {
               isDestructive: true,
               onTap: () {
                 ref.read(userProfileProvider.notifier).removeAvatar();
+                final userId = ref.read(supabaseServiceProvider).currentUserId;
+                if (userId != null) {
+                  ref.read(supabaseServiceProvider).deleteAvatar(userId);
+                }
                 Navigator.pop(context);
                 CardlyToast.showSuccess(
                   context,
@@ -412,6 +350,19 @@ class ProfileDashboardView extends ConsumerWidget {
 
       ref.read(userProfileProvider.notifier).updateAvatar(savedFile.path);
 
+      // Unggah ke Supabase Storage dan perbarui cloud profile jika sedang login
+      final supabase = ref.read(supabaseServiceProvider);
+      final userId = supabase.currentUserId;
+      if (userId != null) {
+        supabase
+            .uploadAvatar(filePath: savedFile.path, userId: userId)
+            .then((cloudUrl) {
+          if (cloudUrl != null) {
+            ref.read(userProfileProvider.notifier).updateAvatar(cloudUrl);
+          }
+        });
+      }
+
       if (context.mounted) {
         Navigator.pop(context);
         CardlyToast.showSuccess(context, 'Foto profil berhasil diperbarui!');
@@ -433,8 +384,6 @@ class ProfileDashboardView extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final nameController = TextEditingController(text: profile.fullName);
     final emailController = TextEditingController(text: profile.email);
-    final hasAvatar =
-        profile.avatarPath.isNotEmpty && File(profile.avatarPath).existsSync();
 
     CardlyBottomSheet.show(
       context: context,
@@ -468,41 +417,10 @@ class ProfileDashboardView extends ConsumerWidget {
               },
               child: Stack(
                 children: [
-                  Container(
-                    width: 72,
-                    height: 72,
-                    decoration: BoxDecoration(
-                      color: AppColors.lime,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.lime.withValues(alpha: 0.25),
-                          blurRadius: 10,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: ClipOval(
-                      child: hasAvatar
-                          ? Image.file(
-                              File(profile.avatarPath),
-                              width: 72,
-                              height: 72,
-                              fit: BoxFit.cover,
-                            )
-                          : Center(
-                              child: Text(
-                                profile.fullName.isNotEmpty
-                                    ? profile.fullName[0].toUpperCase()
-                                    : 'U',
-                                style: const TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.ink,
-                                ),
-                              ),
-                            ),
-                    ),
+                  CardlyAvatar(
+                    avatarPath: profile.avatarPath,
+                    name: profile.fullName,
+                    size: 72,
                   ),
                   Positioned(
                     bottom: 0,

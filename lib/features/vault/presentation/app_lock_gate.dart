@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/widgets/cardly_avatar.dart';
 import '../../../core/widgets/cardly_buttons.dart';
 import '../../../core/widgets/cardly_toast.dart';
 import 'pin_screen.dart';
@@ -163,8 +162,6 @@ class _AppLockOverlayState extends ConsumerState<_AppLockOverlay> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final user = widget.user;
-    final hasAvatar =
-        user.avatarPath.isNotEmpty && File(user.avatarPath).existsSync();
 
     return PopScope(
       canPop: false,
@@ -251,32 +248,11 @@ class _AppLockOverlayState extends ConsumerState<_AppLockOverlay> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: const BoxDecoration(
-                          color: AppColors.lime,
-                          shape: BoxShape.circle,
-                        ),
-                        child: ClipOval(
-                          child: hasAvatar
-                              ? Image.file(
-                                  File(user.avatarPath),
-                                  fit: BoxFit.cover,
-                                )
-                              : Center(
-                                  child: Text(
-                                    user.fullName.isNotEmpty
-                                        ? user.fullName[0].toUpperCase()
-                                        : 'U',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w800,
-                                      color: AppColors.ink,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                        ),
+                      CardlyAvatar(
+                        avatarPath: user.avatarPath,
+                        name: user.fullName,
+                        size: 36,
+                        showBorder: false,
                       ),
                       const SizedBox(width: 12),
                       Flexible(

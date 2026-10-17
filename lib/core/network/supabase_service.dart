@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -97,6 +98,7 @@ class SupabaseService {
     required String email,
     required String password,
     String? fullName,
+    String? emailRedirectTo,
   }) async {
     final c = client;
     if (c == null) {
@@ -105,8 +107,90 @@ class SupabaseService {
     return await c.auth.signUp(
       email: email,
       password: password,
+      emailRedirectTo: emailRedirectTo ?? SupabaseConfig.oauthCallbackUrl,
       data: fullName != null ? {'full_name': fullName} : null,
     );
+  }
+
+  /// Mengirim ulang email verifikasi pendaftaran
+  Future<bool> resendSignUpConfirmation(String email) async {
+    final c = client;
+    if (c == null) return false;
+    try {
+      await c.auth.resend(
+        type: OtpType.signup,
+        email: email,
+        emailRedirectTo: SupabaseConfig.oauthCallbackUrl,
+      );
+      return true;
+    } catch (e) {
+      debugPrint('Resend verification note: $e');
+      return false;
+    }
+  }
+
+  /// Mengunggah avatar ke Supabase Storage (bucket: cardly_avatars) dan memperbarui profiles
+  Future<String?> uploadAvatar({
+    required String filePath,
+    required String userId,
+  }) async {
+    final c = client;
+    if (c == null) return null;
+    try {
+      final file = File(filePath);
+      if (!file.existsSync()) return null;
+
+      final ext = filePath.split('.').last.toLowerCase();
+      final storagePath = '$userId/avatar.$ext';
+
+      // 1. Unggah ke bucket cardly_avatars dengan opsi upsert
+      await c.storage.from('cardly_avatars').upload(
+            storagePath,
+            file,
+            fileOptions: const FileOptions(upsert: true),
+          );
+
+      // 2. Dapatkan URL Publik resmi dari Supabase CDN
+      final publicUrl =
+          c.storage.from('cardly_avatars').getPublicUrl(storagePath);
+      final cacheBustedUrl =
+          '$publicUrl?v=${DateTime.now().millisecondsSinceEpoch}';
+
+      // 3. Simpan URL avatar ke tabel profiles
+      await c.from('profiles').update({
+        'avatar_url': cacheBustedUrl,
+      }).eq('id', userId);
+
+      return cacheBustedUrl;
+    } catch (e) {
+      debugPrint('Upload avatar note: $e');
+      return null;
+    }
+  }
+
+  /// Mengambil URL avatar profil pengguna dari cloud Supabase
+  Future<String?> getProfileAvatarUrl(String userId) async {
+    final c = client;
+    if (c == null || userId.isEmpty) return null;
+    try {
+      final res = await c
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', userId)
+          .maybeSingle();
+      return res?['avatar_url'] as String?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Menghapus avatar dari cloud profiles
+  Future<void> deleteAvatar(String userId) async {
+    final c = client;
+    if (c == null || userId.isEmpty) return;
+    try {
+      await c.from('profiles').update({'avatar_url': null}).eq('id', userId);
+    } catch (_) {}
   }
 
   /// Keluar dari sesi Supabase

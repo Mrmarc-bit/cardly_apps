@@ -207,10 +207,19 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
     _storage.setIsLoggedIn(false);
   }
 
-  void login(String name, String email) {
-    state = state.copyWith(fullName: name, email: email, isLoggedIn: true);
+  void login(String name, String email, {String? avatarUrl}) {
+    final effectiveAvatar = avatarUrl ?? state.avatarPath;
+    state = state.copyWith(
+      fullName: name,
+      email: email,
+      avatarPath: effectiveAvatar,
+      isLoggedIn: true,
+    );
     _storage.setUserName(name);
     _storage.setUserEmail(email);
+    if (avatarUrl != null && avatarUrl.isNotEmpty) {
+      _storage.setUserAvatarPath(avatarUrl);
+    }
     _storage.setIsLoggedIn(true);
   }
 }

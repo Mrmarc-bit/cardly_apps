@@ -50,7 +50,13 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/register/success',
-      builder: (context, state) => const AccountCreatedView(),
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        return AccountCreatedView(
+          needsVerification: extra?['needsVerification'] as bool? ?? false,
+          email: extra?['email'] as String?,
+        );
+      },
     ),
     GoRoute(
       path: '/forgot-password',

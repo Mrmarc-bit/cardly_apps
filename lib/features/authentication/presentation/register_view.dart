@@ -130,11 +130,23 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
 
         if (!mounted) return;
         final user = authRes?.user;
+        final session = authRes?.session;
         final actualName =
             (user?.userMetadata?['full_name'] as String?) ?? name;
 
-        ref.read(userProfileProvider.notifier).login(actualName, email);
-        context.push('/register/success');
+        if (session != null) {
+          ref.read(userProfileProvider.notifier).login(actualName, email);
+          context.push(
+            '/register/success',
+            extra: {'needsVerification': false, 'email': email},
+          );
+        } else {
+          // Supabase konfirmasi email aktif: tautan verifikasi telah dikirim ke email
+          context.push(
+            '/register/success',
+            extra: {'needsVerification': true, 'email': email},
+          );
+        }
         return;
       }
     } on AuthException catch (e) {
@@ -162,7 +174,10 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
     // Fallback environment tanpa koneksi aktif
     if (!mounted) return;
     ref.read(userProfileProvider.notifier).login(name, email);
-    context.push('/register/success');
+    context.push(
+      '/register/success',
+      extra: {'needsVerification': false, 'email': email},
+    );
   }
 
   Future<void> _handleGoogleSignUp() async {
@@ -175,8 +190,15 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
       if (result.isSuccess && result.account != null) {
         final account = result.account!;
         final name = account.displayName ?? account.email.split('@').first;
-        ref.read(userProfileProvider.notifier).login(name, account.email);
-        context.push('/register/success');
+        ref.read(userProfileProvider.notifier).login(
+          name,
+          account.email,
+          avatarUrl: account.photoUrl,
+        );
+        context.push(
+          '/register/success',
+          extra: {'needsVerification': false, 'email': account.email},
+        );
         return;
       }
 
